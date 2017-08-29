@@ -7,7 +7,7 @@ printf(" M");
 }
 printf(" |\n");
 }
-printf(" -----------------\n  "); //may need to add spaces
+printf("  -----------------\n  ");
 for (i = 65; i < 74; i++){
 printf(" %c", i);
 }
