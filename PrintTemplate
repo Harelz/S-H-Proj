@@ -1,0 +1,14 @@
+/* hoshri
+int i, j;
+for (i = 8; i > 0; i--){
+printf("%d|",i);
+for (j = 0; j < 8; j++){
+printf(" M");
+}
+printf(" |\n");
+}
+printf(" -----------------\n  "); //may need to add spaces
+for (i = 65; i < 74; i++){
+printf(" %c", i);
+}
+*/
