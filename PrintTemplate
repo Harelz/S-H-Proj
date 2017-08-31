@@ -10,5 +10,5 @@ printf(" |\n");
 printf("  -----------------\n  ");
 for (i = 65; i < 74; i++){
 printf(" %c", i);
-}  asdasdf
+}  asdasd
 */
