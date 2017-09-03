@@ -7,8 +7,8 @@
 #include <stdio.h>
 
 typedef enum sp_game_mode_t {
-	SP_MODE_1P_GAME = 1,
-	SP_MODE_2P_GAME
+	SP_MODE_1P = 1,
+	SP_MODE_2P
 } SP_GAME_MODE;
 
 typedef enum sp_difficulty_t {
@@ -47,7 +47,5 @@ void set_user_color(game_sett* settings, SP_USER_COLOR color);
 void print(game_settings* settings);
 
 void start(game_settings*);
-
-
 
 #endif

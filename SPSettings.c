@@ -25,21 +25,13 @@ void set_user_color(game_settings* settings, SP_USER_COLOR color) {
 
 
 game_settings* load(char* fpath) {
-	char * data = get_data_from_file(fpath);
 
 }
 
-game_sett* default_values() {
-	return init_settings(1, 2, 1);
+game_settings* default_values() {
+	return init_settings(SP_MODE_1P, SP_DIFF_EASY, SP_USER_COLOR_WHITE);
 }
 
 void print(game_settings* settings);
 
 void start(game_settings*);
-
-char* get_data_from_file(char* fpath) {
-	char c = '';
-	char* data = NULL;
-	FILE* f = fopen(fpath);
-
-}
