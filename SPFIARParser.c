@@ -1,4 +1,4 @@
-#include "SPFIARParser.h"
+#include "SPParser.h"
 
 bool spParserIsInt(const char* str){
 	if(str == NULL) return false;

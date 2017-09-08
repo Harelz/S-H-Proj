@@ -1,6 +1,6 @@
 #ifndef SPMINIMAX_H_
 #define SPMINIMAX_H_
-#include "SPFIARGame.h"
+#include "SPGame.h"
 #include <limits.h>
 #include "SPMiniMaxNode.h"
 #include <stdio.h>
@@ -18,10 +18,10 @@
 * @param maxDepth - The maximum depth of the miniMax algorithm
 * @return
 * -1 if either currentGame is NULL or maxDepth <= 0.
-* On success the function returns a number between [0,SP_FIAR_GAME_N_COLUMNS -1]
+* On success the function returns a number between [0,SP_GAME_N_COLUMNS -1]
 * which is the best move for the current player.
 */
-int spMinimaxSuggestMove(SPFiarGame* currentGame,
+int spMinimaxSuggestMove(SPGame* currentGame,
 	unsigned int maxDepth);
 
 /**
@@ -45,7 +45,7 @@ int checkCell(char cell);
 * @return
 * void
 */
-void updateCounter(SPFiarGame* game, int count[8], int row, int col);
+void updateCounter(SPGame* game, int count[8], int row, int col);
 
 
 /**
@@ -55,10 +55,10 @@ void updateCounter(SPFiarGame* game, int count[8], int row, int col);
 * @param currentGame - The current game state
 * @return
 * -1 if either currentGame is NULL
-* On success the function returns a number between [0,SP_FIAR_GAME_N_COLUMNS -1]
+* On success the function returns a number between [0,SP_GAME_N_COLUMNS -1]
 * which is the best move for the current player.
 */
-int spMinimaxScoring(SPFiarGame* currentGame);
+int spMinimaxScoring(SPGame* currentGame);
 
 
 #endif

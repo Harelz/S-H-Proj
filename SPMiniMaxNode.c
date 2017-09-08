@@ -11,7 +11,7 @@
 * @return
 * score of node in the Minmax Tree
 */
-int spMinimaxNodeCalc(SPFiarGame* currentGame,
+int spMinimaxNodeCalc(SPGame* currentGame,
 	unsigned int nodeDepth, bool imax) {
 	int tempScore, finalScore;
 	bool madeMove = false;
@@ -21,22 +21,22 @@ int spMinimaxNodeCalc(SPFiarGame* currentGame,
 		return spMinimaxScoring(currentGame);
 	}
 
-	if ((win = spFiarCheckWinner(currentGame)) == SP_FIAR_GAME_PLAYER_1_SYMBOL)
+	if ((win = spCheckWinner(currentGame)) == SP_GAME_PLAYER_1_SYMBOL)
 	{
 		return INT_MAX;
 	}
-	if (win == SP_FIAR_GAME_PLAYER_2_SYMBOL)
+	if (win == SP_GAME_PLAYER_2_SYMBOL)
 	{
 		return INT_MIN;
 	}
 
-	for (int i = 0; i < SP_FIAR_GAME_N_COLUMNS; i++)
+	for (int i = 0; i < SP_GAME_N_COLUMNS; i++)
 	{
-		if (spFiarGameIsValidMove(currentGame, i))
+		if (spGameIsValidMove(currentGame, i))
 		{
-			spFiarGameSetMove(currentGame, i);
+			spGameSetMove(currentGame, i);
 			tempScore = spMinimaxNodeCalc(currentGame, nodeDepth - 1, !imax);
-			spFiarGameUndoPrevMove(currentGame);
+			spGameUndoPrevMove(currentGame);
 			if (!madeMove)
 			{
 				finalScore = tempScore;

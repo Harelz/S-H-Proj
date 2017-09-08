@@ -10,7 +10,7 @@
 * @return
 * score of node in the Minmax Tree
 */
-int spMinimaxNodeCalc(SPFiarGame* currentGame,
+int spMinimaxNodeCalc(SPGame* currentGame,
 	unsigned int nodeDepth, bool imax);
 
 

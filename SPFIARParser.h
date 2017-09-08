@@ -1,9 +1,9 @@
-#ifndef SPFIARPARSER_H_
-#define SPFIARPARSER_H_
+#ifndef SPPARSER_H_
+#define SPPARSER_H_
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include "SPFIARGame.h"
+#include "SPGame.h"
 
 //specify the maximum line length
 #define SP_MAX_LINE_LENGTH 1024

@@ -3,7 +3,7 @@
 
 #define SIZE_OF_HISTORY 20
 
-#include "SPFIARParser.h" // include SPFIARGame.h which includes SPArrayList
+#include "SPParser.h" // include SPGame.h which includes SPArrayList
 #include "SPMiniMax.h"
 
 
@@ -12,7 +12,7 @@
  * and printing the starting massage.
  * @return NULL if malloc error occurred, else return a new game.
  */
-SPFiarGame* StartNewGame();
+SPGame* StartNewGame();
 
 /**
  * check if the game is over. if so, the function prints the game's winner or a
@@ -20,7 +20,7 @@ SPFiarGame* StartNewGame();
  * @param game - the game which will be checked
  * @return 1 - if the game is over , 0 - otherwise
  */
-int handleIfOver(SPFiarGame* game);
+int handleIfOver(SPGame* game);
 
 
 /**
@@ -33,6 +33,6 @@ int handleIfOver(SPFiarGame* game);
  * NULL - if a the input was a 'quit' command.
  * otherwise, the function returns the game after executing the command.
  */
-SPFiarGame* ExecuteCmd(SPFiarGame* game , SPCommand cmd , int difficulty);
+SPGame* ExecuteCmd(SPGame* game , SPCommand cmd , int difficulty);
 
 #endif

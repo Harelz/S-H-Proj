@@ -9,10 +9,10 @@
 * the value of the cell to the Scoring Function as described above
 */
 int checkCell(char cell) {
-	if (cell == SP_FIAR_GAME_PLAYER_1_SYMBOL) {
+	if (cell == SP_GAME_PLAYER_1_SYMBOL) {
 		return 1;
 	}
-	if (cell == SP_FIAR_GAME_PLAYER_2_SYMBOL) {
+	if (cell == SP_GAME_PLAYER_2_SYMBOL) {
 		return -1;
 	}
 	return 0;
@@ -29,16 +29,16 @@ int checkCell(char cell) {
 * @return
 * void
 */
-void setCounter(SPFiarGame* game, int count[8], int row, int col) {
+void setCounter(SPGame* game, int count[8], int row, int col) {
 	int dirCount[4] = { 0,0,0,0 };
 	for (int i = 0; i < 4; i++) {
-		if (col <= SP_FIAR_GAME_N_COLUMNS - 4) {
+		if (col <= SP_GAME_N_COLUMNS - 4) {
 			dirCount[0] += checkCell(game->gameBoard[row][col + i]);//right
 		}
 		if (row >= 3) {
 			dirCount[1] += checkCell(game->gameBoard[row - i][col]);//down
 		}
-		if (row >= 3 && col <= SP_FIAR_GAME_N_COLUMNS - 4) {
+		if (row >= 3 && col <= SP_GAME_N_COLUMNS - 4) {
 			dirCount[2] += checkCell(game->gameBoard[row - i][col + i]);//right down diagonal
 		}
 		if (row >= 3 && col >= 3) {
@@ -63,10 +63,10 @@ void setCounter(SPFiarGame* game, int count[8], int row, int col) {
 * @param currentGame - The current game state
 * @return
 * -1 if either currentGame is NULL
-* On success the function returns a number between [0,SP_FIAR_GAME_N_COLUMNS -1]
+* On success the function returns a number between [0,SP_GAME_N_COLUMNS -1]
 * which is the best move for the current player.
 */
-int spMinimaxScoring(SPFiarGame* currentGame) {
+int spMinimaxScoring(SPGame* currentGame) {
 	if (currentGame == NULL)
 	{
 		return -1;
@@ -74,8 +74,8 @@ int spMinimaxScoring(SPFiarGame* currentGame) {
 	int weight[WEIGHT_VECTOR_SIZE] = { INT_MIN, -5, -2, -1, 1, 2, 5, INT_MAX };
 	int count[WEIGHT_VECTOR_SIZE] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 	int score = 0, i = 0;
-	for (i = 0; i < SP_FIAR_GAME_N_ROWS; i++) {
-		for (int j = 0; j < SP_FIAR_GAME_N_COLUMNS; j++) {
+	for (i = 0; i < SP_GAME_N_ROWS; i++) {
+		for (int j = 0; j < SP_GAME_N_COLUMNS; j++) {
 			setCounter(currentGame, count, i, j);
 		}
 	}
@@ -104,29 +104,29 @@ int spMinimaxScoring(SPFiarGame* currentGame) {
 * @param maxDepth - The maximum depth of the miniMax algorithm
 * @return
 * -1 if either currentGame is NULL or maxDepth <= 0.
-* On success the function returns a number between [0,SP_FIAR_GAME_N_COLUMNS -1]
+* On success the function returns a number between [0,SP_GAME_N_COLUMNS -1]
 * which is the best move for the current player.
 */
-int spMinimaxSuggestMove(SPFiarGame* currentGame,
+int spMinimaxSuggestMove(SPGame* currentGame,
 	unsigned int maxDepth) {
-	SPFiarGame* game;
+	SPGame* game;
 	int tempScore, finalScore, col = -1;
 	bool imax = false, madeMove = false;
 	if (maxDepth <= 0 || currentGame == NULL)
 	{
 		return -1;
 	}
-	imax = (spFiarGameGetCurrentPlayer(currentGame) == SP_FIAR_GAME_PLAYER_1_SYMBOL);
+	imax = (spGameGetCurrentPlayer(currentGame) == SP_GAME_PLAYER_1_SYMBOL);
 	finalScore = INT_MAX ? imax : INT_MIN;
-	for (int i = 0; i < SP_FIAR_GAME_N_COLUMNS; i++)
+	for (int i = 0; i < SP_GAME_N_COLUMNS; i++)
 	{
-		if (spFiarGameIsValidMove(currentGame, i))
+		if (spGameIsValidMove(currentGame, i))
 		{
-			if (!(game = spFiarGameCopy(currentGame))) {
-				spFiarGameDestroy(currentGame);
+			if (!(game = spGameCopy(currentGame))) {
+				spGameDestroy(currentGame);
 				return -1;
 			}
-			spFiarGameSetMove(game, i);
+			spGameSetMove(game, i);
 			tempScore = spMinimaxNodeCalc(game, maxDepth - 1, !imax);
 			if (!madeMove)
 			{
@@ -142,12 +142,12 @@ int spMinimaxSuggestMove(SPFiarGame* currentGame,
 				col = i;
 				finalScore = tempScore;
 			}
-			spFiarGameDestroy(game);
+			spGameDestroy(game);
 		}
 	}
 	if (col == -1) {
-		for (int i = 0; i < SP_FIAR_GAME_N_COLUMNS; i++)
-			if (currentGame->tops[i] != SP_FIAR_GAME_N_ROWS)
+		for (int i = 0; i < SP_GAME_N_COLUMNS; i++)
+			if (currentGame->tops[i] != SP_GAME_N_ROWS)
 				return i;
 	}
 	return col;

@@ -1,24 +1,24 @@
 CC = gcc
-OBJS = SPMiniMaxNode.o SPMiniMax.o SPFIARGame.o SPArrayList.o SPFIARParser.o SPMainAux.o main.o
-EXEC = SPFIAR
-GAME_TEST_OBJS = SPArrayList.o SPFIARGame.o SPFIARGameUnitTest.o
+OBJS = SPMiniMaxNode.o SPMiniMax.o SPGame.o SPArrayList.o SPParser.o SPMainAux.o main.o
+EXEC = SP
+GAME_TEST_OBJS = SPArrayList.o SPGame.o SPGameUnitTest.o
 ARRAY_LIST_TEST_OBJS = SPArrayListUnitTest.o SPArrayList.o
-PARSER_TEST_OBJS = SPFIARParser.o SPFIARParserUnitTest.o
-MINMAXNode_TEST_OBJ = SPMiniMaxNode.o SPMiniMaxNodeUnitTest.o SPFIARGame.o SPArrayList.o
-MINMAX_TEST_OBJ = SPMiniMaxNode.o SPMiniMax.o SPMiniMaxUnitTest.o SPFIARGame.o SPArrayList.o
-MAINAUX_TEST_OBJS = SPMainAux.o SPArrayList.o SPFIARGame.o SPMiniMax.o SPMiniMaxNode.o
+PARSER_TEST_OBJS = SPParser.o SPParserUnitTest.o
+MINMAXNode_TEST_OBJ = SPMiniMaxNode.o SPMiniMaxNodeUnitTest.o SPGame.o SPArrayList.o
+MINMAX_TEST_OBJ = SPMiniMaxNode.o SPMiniMax.o SPMiniMaxUnitTest.o SPGame.o SPArrayList.o
+MAINAUX_TEST_OBJS = SPMainAux.o SPArrayList.o SPGame.o SPMiniMax.o SPMiniMaxNode.o
 COMP_FLAG = -std=c99 -Wall -Wextra \
 -Werror -pedantic-errors
-UNIT_TESTS = SPFIARGameUnitTest SPArrayListUnitTest SPFIARParser SPMiniMaxUnitTest\
+UNIT_TESTS = SPGameUnitTest SPArrayListUnitTest SPParser SPMiniMaxUnitTest\
 SPMiniMaxNodeUnitTest SPMainAuxUnitTest
 
 $(EXEC): $(OBJS)
 	$(CC) $(OBJS) -o $@
-SPFIARGameUnitTest: $(GAME_TEST_OBJS)
+SPGameUnitTest: $(GAME_TEST_OBJS)
 	$(CC) $(GAME_TEST_OBJS) -o $@
 SPArrayListUnitTest: $(ARRAY_LIST_TEST_OBJS)
 	$(CC) $(ARRAY_LIST_TEST_OBJS) -o $@
-SPFIARParserUnitTest: $(PARSER_TEST_OBJS)
+SPParserUnitTest: $(PARSER_TEST_OBJS)
 	$(CC) $(PARSER_TEST_OBJS) -o $@
 SPMiniMaxUnitTest: $(MINMAX_TEST_OBJ)
 	$(CC) $(MINMAX_TEST_OBJ) -o $@
@@ -26,29 +26,29 @@ SPMiniMaxNodeUnitTest: $(MINMAXNode_TEST_OBJ)
 	$(CC) $(MINMAXNode_TEST_OBJ) -o $@
 SPMainAuxUnitTest: $(MAINAUX_TEST_OBJS)
 	$(CC) $(MAINAUX_TEST_OBJS) -o $@
-SPFIARGameUnitTest.o: SPFIARGameUnitTest.c unit_test_util.h SPArrayList.h SPFIARGame.h
+SPGameUnitTest.o: SPGameUnitTest.c unit_test_util.h SPArrayList.h SPGame.h
 	$(CC) $(COMP_FLAG) -c $*.c
 SPArrayListUnitTest.o: SPArrayListUnitTest.c SPArrayList.h unit_test_util.h
 	$(CC) $(COMP_FLAG) -c $*.c
-SPFIARParserUnitTest.o: SPFIARParserUnitTest.c SPFIARParser.h unit_test_util.h
+SPParserUnitTest.o: SPParserUnitTest.c SPParser.h unit_test_util.h
 	$(CC) $(COMP_FLAG) -c $*.c
-SPMiniMaxUnitTest.o: SPMiniMaxUnitTest.c SPMiniMax.h SPFIARGame.h SPMiniMaxNode.h unit_test_util.h
+SPMiniMaxUnitTest.o: SPMiniMaxUnitTest.c SPMiniMax.h SPGame.h SPMiniMaxNode.h unit_test_util.h
 	$(CC) $(COMP_FLAG) -c $*.c
-SPMiniMaxNodeUnitTest.o: SPMiniMaxNodeUnitTest.c SPMiniMaxNode.h unit_test_util.h SPFIARGame.h
+SPMiniMaxNodeUnitTest.o: SPMiniMaxNodeUnitTest.c SPMiniMaxNode.h unit_test_util.h SPGame.h
 	$(CC) $(COMP_FLAG) -c $*.c
 SPArrayList.o: SPArrayList.h SPArrayList.c
 	$(CC) $(COMP_FLAG) -c $*.c
-SPFIARGame.o: SPFIARGame.c SPFIARGame.h SPArrayList.h
+SPGame.o: SPGame.c SPGame.h SPArrayList.h
 	$(CC) $(COMP_FLAG) -c $*.c
-SPFIARParser.o: SPFIARParser.c SPFIARParser.h
+SPParser.o: SPParser.c SPParser.h
 	$(CC) $(COMP_FLAG) -c $*.c
-SPMiniMaxNode.o: SPMiniMaxNode.c SPMiniMaxNode.h SPFIARGame.h
+SPMiniMaxNode.o: SPMiniMaxNode.c SPMiniMaxNode.h SPGame.h
 	$(CC) $(COMP_FLAG) -c $*.c 
-SPMiniMax.o: SPMiniMax.c SPMiniMax.h SPMiniMaxNode.h SPFIARGame.h
+SPMiniMax.o: SPMiniMax.c SPMiniMax.h SPMiniMaxNode.h SPGame.h
 	$(CC) $(COMP_FLAG) -c $*.c
-SPMainAux.o: SPMainAux.c SPMainAux.h SPFIARGame.h SPMiniMax.h
+SPMainAux.o: SPMainAux.c SPMainAux.h SPGame.h SPMiniMax.h
 	$(CC) $(COMP_FLAG) -c $*.c
-main.o: main.c SPMainAux.h SPFIARGame.h SPMiniMax.h
+main.o: main.c SPMainAux.h SPGame.h SPMiniMax.h
 	$(CC) $(COMP_FLAG) -c $*.c
 clean:
 	rm -f *.o $(EXEC) $(UNIT_TESTS)

@@ -1,6 +1,6 @@
 #include "SPMainAux.h"
 
-static SPFiarGame* game = NULL;
+static SPGame* game = NULL;
 static int difficulty = -1;
 
 int main(void) {
@@ -8,13 +8,18 @@ int main(void) {
 	int isRestart = 0;
 	do{
 		while(difficulty == -1){
-			printf("Please enter the difficulty level between [1-7]:\n");
+			printf("Specify game setting or type 'start' to begin a game with the current setting:\n");
 			fgets(s,SP_MAX_LINE_LENGTH,stdin);
 			if(s == NULL){
 				printf("Error: fgets has failed\n");
 				return 0;
 			}
 			s[strcspn(s, "\r\n")] = 0;
+            if (s == "start"){
+                SPGame a = spGameCreate();
+                spGamePrintBoard(a);
+                return 0;
+            }
 			if(spParserIsInt(s) == true){
 				difficulty = atoi(s);
 				if(difficulty < 1 || difficulty > 7){
