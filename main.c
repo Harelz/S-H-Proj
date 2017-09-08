@@ -8,15 +8,15 @@ int main(void) {
 	int isRestart = 0;
 	do{
 		while(difficulty == -1){
-			printf("Specify game setting or type 'start' to begin a game with the current setting:\n");
+            printf("Specify game setting or type 'start' to begin a game with the current setting:\n");
 			fgets(s,SP_MAX_LINE_LENGTH,stdin);
 			if(s == NULL){
 				printf("Error: fgets has failed\n");
 				return 0;
 			}
 			s[strcspn(s, "\r\n")] = 0;
-            if (s == "start"){
-                SPGame a = spGameCreate();
+            if (s == "start" || s[5] == '\0'){
+                SPGame* a = spGameCreate();
                 spGamePrintBoard(a);
                 return 0;
             }

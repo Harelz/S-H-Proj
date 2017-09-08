@@ -33,6 +33,7 @@ typedef struct sp_game_t {
 	char gameBoard[SP_GAME_ROWS][SP_GAME_COLUMNS];
 	int currentPlayer;
     SPArrayList* history;
+	int* tops;
 } SPGame;
 
 /**
@@ -41,7 +42,7 @@ typedef struct sp_game_t {
 typedef enum sp_game_message_t {
 	SP_GAME_INVALID_MOVE,
 	SP_GAME_INVALID_ARGUMENT,
-	SP_GAME_NO_HISTORY,
+	SP_GAMEO_HISTORY,
 	SP_GAME_SUCCESS,
 //You may add any message you like
 } SP_GAME_MESSAGE;
@@ -58,7 +59,7 @@ typedef enum sp_game_message_t {
  * NULL if either a memory allocation failure occurs or historySize <= 0.
  * Otherwise, a new game instant is returned.
  */
-spGame* spGameCreate(int historySize);
+SPGame* spGameCreate();
 
 /**
  *	Creates a copy of a given game.
@@ -70,7 +71,7 @@ spGame* spGameCreate(int historySize);
  *	Otherwise, an new copy of the source game is returned.
  *
  */
-spGame* spGameCopy(spGame* src);
+SPGame* spGameCopy(SPGame* src);
 
 /**
  * Frees all memory allocation associated with a given game. If src==NULL
@@ -78,11 +79,11 @@ spGame* spGameCopy(spGame* src);
  *
  * @param src - the source game
  */
-void spGameDestroy(spGame* src);
+void spGameDestroy(SPGame* src);
 
 /**
  * Sets the next move in a given game by specifying column index. The
- * columns are 0-based and in the range [0,SP_GAME_N_COLUMNS -1].
+ * columns are 0-based and in the range [0,SP_GAME_COLUMNS -1].
  *
  * @param src - The target game
  * @param col - The target column, the columns are 0-based
@@ -91,7 +92,7 @@ void spGameDestroy(spGame* src);
  * SP_GAME_INVALID_MOVE - if the given column is full.
  * SP_GAME_SUCCESS - otherwise
  */
-SP_GAME_MESSAGE spGameSetMove(spGame* src, int col);
+SP_GAME_MESSAGE spGameSetMove(SPGame* src, int col);
 
 /**
  * Checks if a disk can be put in the specified column.
@@ -102,7 +103,7 @@ SP_GAME_MESSAGE spGameSetMove(spGame* src, int col);
  * true  - if the a disc can be put in the target column
  * false - otherwise.
  */
-bool spGameIsValidMove(spGame* src, int col);
+bool spGameIsValidMove(SPGame* src, int col);
 
 /**
  * Removes a disc that was put in the previous move and changes the current
@@ -112,12 +113,12 @@ bool spGameIsValidMove(spGame* src, int col);
  * @param src - The source game
  * @return
  * SP_GAME_INVALID_ARGUMENT - if src == NULL
- * SP_GAME_NO_HISTORY       - if the user invoked this function more then
+ * SP_GAMEO_HISTORY       - if the user invoked this function more then
  *                                 historySize in a row.
  * SP_GAME_SUCCESS          - on success. The last disc that was put on the
  *                                 board is removed and the current player is changed
  */
-SP_GAME_MESSAGE spGameUndoPrevMove(spGame* src);
+SP_GAME_MESSAGE spGameUndoPrevMove(SPGame* src);
 
 /**
  * On success, the function prints the board game. If an error occurs, then the
@@ -130,7 +131,7 @@ SP_GAME_MESSAGE spGameUndoPrevMove(spGame* src);
  * SP_GAME_SUCCESS - otherwise
  *
  */
-SP_GAME_MESSAGE spGamePrintBoard(spGame* src);
+SP_GAME_MESSAGE spGamePrintBoard(SPGame* src);
 
 /**
  * Returns the current player of the specified game.
@@ -140,7 +141,7 @@ SP_GAME_MESSAGE spGamePrintBoard(spGame* src);
  * SP_GAME_PLAYER_2_SYMBOL - if it's player two's turn
  * SP_GAME_EMPTY_ENTRY     - otherwise
  */
-char spGameGetCurrentPlayer(spGame* src);
+char spGameGetCurrentPlayer(SPGame* src);
 
 /**
 * Checks if there's a winner in the specified game status. The function returns either
@@ -155,7 +156,7 @@ char spGameGetCurrentPlayer(spGame* src);
 * SP_GAME_TIE_SYMBOL - If the game is over and there's a tie
 * null character - otherwise
 */
-char spCheckWinner(spGame* src);
+char spCheckWinner(SPGame* src);
 
 /**
  * Checks if the board is full in the specified game status.
@@ -164,6 +165,6 @@ char spCheckWinner(spGame* src);
  * true - if game board is full
  * false - if game board isn't full
  */
-bool fullBoard(spGame* src);
+bool fullBoard(SPGame* src);
 
 #endif

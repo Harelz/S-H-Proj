@@ -1,7 +1,7 @@
 #include "SPMainAux.h"
 
 SPGame* StartNewGame(){
-	SPGame* game = spGameCreate(SIZE_OF_HISTORY);
+	SPGame* game = spGameCreate();
 	if (game == NULL){
 		printf("Error: malloc has failed\n");
 		return NULL;

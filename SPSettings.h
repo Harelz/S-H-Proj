@@ -42,7 +42,7 @@ void set_game_mode(game_settings* settings, SP_GAME_MODE mode);
 
 void set_difficulty(game_settings* settings, SP_GAME_DIFFICULTY difficulty);
 
-void set_user_color(game_sett* settings, SP_USER_COLOR color);
+void set_user_color(game_settings* settings, SP_USER_COLOR color);
 
 void print(game_settings* settings);
 

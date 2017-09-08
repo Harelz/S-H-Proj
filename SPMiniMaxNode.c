@@ -30,7 +30,7 @@ int spMinimaxNodeCalc(SPGame* currentGame,
 		return INT_MIN;
 	}
 
-	for (int i = 0; i < SP_GAME_N_COLUMNS; i++)
+	for (int i = 0; i < SP_GAME_COLUMNS; i++)
 	{
 		if (spGameIsValidMove(currentGame, i))
 		{
