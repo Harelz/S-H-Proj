@@ -1,13 +1,14 @@
 #include "SPMainAux.h"
 
 static SPGame* game = NULL;
-static int difficulty = -1;
+static int mode = 0;
 
 int main(void) {
 	char s[SP_MAX_LINE_LENGTH];
+    game = spGameCreate();
 	int isRestart = 0;
 	do{
-		while(difficulty == -1){
+		while(mode == 0){
             printf("Specify game setting or type 'start' to begin a game with the current setting:\n");
 			fgets(s,SP_MAX_LINE_LENGTH,stdin);
 			if(s == NULL){
@@ -15,28 +16,18 @@ int main(void) {
 				return 0;
 			}
 			s[strcspn(s, "\r\n")] = 0;
-            if (s == "start" || s[5] == '\0'){
-                SPGame* a = spGameCreate();
-                spGamePrintBoard(a);
-                return 0;
+            SPCommand cmd = spSettingsParser(s);
+            mode = settingsHandler(game->settings, cmd);
+            if(mode == 2){
+                spGameDestroy(game);
+                return EXIT_SUCCESS;
             }
-			if(spParserIsInt(s) == true){
-				difficulty = atoi(s);
-				if(difficulty < 1 || difficulty > 7){
-					difficulty = -1;
-					printf("Error: invalid level (should be between 1 to 7)\n");
-				}
-			}
-			else{
-				SPCommand cmd = spParserPraseLine(s);
-				if(cmd.cmd == SP_QUIT){
-					printf("Exiting...\n");
-					return EXIT_SUCCESS;
-				}
-				else
-					printf("Error: invalid level (should be between 1 to 7)\n");
-			}
 		}
+			if (s == "start" || s[5] == '\0'){
+				SPGame* a = spGameCreate();
+				spGamePrintBoard(a);
+				return 0;
+			}
 			if(isRestart){
 				game = NULL;
 				isRestart = 0;
@@ -49,10 +40,10 @@ int main(void) {
 				return 0;
 			}
 			s[strcspn(s, "\r\n")] = 0;
-			SPCommand cmd = spParserPraseLine(s);
-			game = ExecuteCmd(game , cmd , difficulty);
-			if(cmd.cmd == SP_RESTART){
-				difficulty = -1;
+			SPCommand cmd = spSettingsParser(s);
+			game = ExecuteCmd(game , cmd , mode);
+			if(cmd.cmd == SP_START){
+				mode = -1;
 				printf("Game restarted!\n");
 				isRestart = 1;
 			}

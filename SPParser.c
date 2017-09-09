@@ -1,4 +1,6 @@
+#include <stdio.h>
 #include "SPParser.h"
+#define CHECK_VALID(spcmd) if(strtok(NULL , " \t\r\n") == NULL) spcmd.validArg = true
 
 bool spParserIsInt(const char* str){
 	if(str == NULL) return false;
@@ -17,11 +19,10 @@ bool spParserIsInt(const char* str){
 	return true;
 }
 
-SPCommand spParserPraseLine(const char* str){
+SPCommand spSettingsParser(const char* str){
 	char s[SP_MAX_LINE_LENGTH];
 	strcpy(s,str);
 	SPCommand spcmd;
-	spcmd.validArg = false;
 	if (s == NULL){
 		spcmd.cmd = SP_INVALID_LINE;
 		return spcmd;
@@ -31,28 +32,39 @@ SPCommand spParserPraseLine(const char* str){
 		spcmd.cmd = SP_INVALID_LINE;
 		return spcmd;
 	}
-	else if (strcmp(token,"suggest_move") == 0)
-		spcmd.cmd = SP_SUGGEST_MOVE;
-	else if (strcmp(token,"undo_move") == 0)
-		spcmd.cmd = SP_UNDO_MOVE;
+	else if (strcmp(token,"game_mode") == 0)
+		spcmd.cmd = SP_CHOOSE_GAME_MODE;
+    else if (strcmp(token,"difficulty") == 0)
+        spcmd.cmd = SP_DIFFICULTY;
+	else if (strcmp(token,"user_color") == 0)
+		spcmd.cmd = SP_CHOOSE_USER_COLOR;
+    else if (strcmp(token,"load") == 0)
+        spcmd.cmd = SP_LOAD;
+    else if (strcmp(token,"default") == 0)
+        spcmd.cmd = SP_DEFAULT;
+    else if (strcmp(token,"print_setting") == 0)
+        spcmd.cmd = SP_PRINT;
 	else if (strcmp(token,"quit") == 0)
 		spcmd.cmd = SP_QUIT;
-	else if (strcmp(token,"restart_game") == 0)
-		spcmd.cmd = SP_RESTART;
-	else if (strcmp(token,"add_disc") == 0)
-		spcmd.cmd = SP_ADD_DISC;
+	else if (strcmp(token,"start") == 0)
+		spcmd.cmd = SP_START;
 	else
 		spcmd.cmd = SP_INVALID_LINE;
 	token = (char*)strtok(NULL , " \t\r\n");
-	if(token == NULL)
-		return spcmd;
-	else if(spcmd.cmd != SP_ADD_DISC)
+	if(token == NULL) {
+        spcmd.arg = -1;
+        return spcmd;
+    }
+    else if(spcmd.cmd == SP_LOAD) {
+        spcmd.pathArg = token;
+        CHECK_VALID(spcmd);
+    }
+	else if(spcmd.cmd == SP_START || spcmd.cmd == SP_QUIT || spcmd.cmd == SP_PRINT ||spcmd.cmd == SP_DEFAULT)
 		spcmd.cmd = SP_INVALID_LINE;
-	else if(spParserIsInt(token)){
+    else if(spParserIsInt(token)){
 		spcmd.arg = atoi(token);
-		if(strtok(NULL , " \t\r\n") == NULL)
-			spcmd.validArg = true;
-	}
+        CHECK_VALID(spcmd);
+    }
 	return spcmd;
 }
 

@@ -6,6 +6,8 @@ SPGame* spGameCreate(){
 	SPGame* game = (SPGame *) malloc(sizeof(SPGame));
 	if(game == NULL) return NULL;	//puts("Error: malloc has failed");
 	game->currentPlayer = 1;
+    game->history = spArrayListCreate(3);
+    game->settings = init_settings(SP_MODE_1P, SP_DIFF_EASY, SP_USER_COLOR_WHITE);
 	game->gameBoard[0][0] = game->gameBoard[7][0] = game->gameBoard[0][7] = game->gameBoard[7][7] = 'R';
 	game->gameBoard[0][1] = game->gameBoard[7][1] = game->gameBoard[0][6] = game->gameBoard[7][6] = 'N';
 	game->gameBoard[0][2] = game->gameBoard[7][2] = game->gameBoard[0][5] = game->gameBoard[7][5] = 'B';
@@ -104,6 +106,8 @@ void spGameDestroy(SPGame* src){
 	if(src != NULL){
 		if(src->history != NULL)
 			spArrayListDestroy(src->history);
+        if(src->settings != NULL)
+            spSettingsDestroy(src->settings);
 		free(src);
 	}
 }

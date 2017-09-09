@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "SPParser.h" // include SPGame.h which includes SPArrayList
 
 typedef enum sp_game_mode_t {
 	SP_MODE_1P = 1,
@@ -28,24 +29,24 @@ typedef struct sp_game_sett_t {
 	SP_GAME_MODE game_mode;
 	SP_GAME_DIFFICULTY difficulty;
 	SP_USER_COLOR color;
-} game_settings;
+} SPSettings;
 
-void setting_handler();
+int settingsHandler(SPSettings* game, SPCommand cmd);
 
-game_settings* init_settings(SP_GAME_MODE mode, SP_GAME_DIFFICULTY diff, SP_USER_COLOR color);
+SPSettings* init_settings(SP_GAME_MODE mode, SP_GAME_DIFFICULTY diff, SP_USER_COLOR color);
 
-game_settings* load(char* fpath);
+SPSettings* load(char* fpath);
 
-game_settings* default_values();
+SPSettings* settings_default_values();
 
-void set_game_mode(game_settings* settings, SP_GAME_MODE mode);
+void set_game_mode(SPSettings* settings, SP_GAME_MODE mode);
 
-void set_difficulty(game_settings* settings, SP_GAME_DIFFICULTY difficulty);
+void set_difficulty(SPSettings* settings, SP_GAME_DIFFICULTY difficulty);
 
-void set_user_color(game_settings* settings, SP_USER_COLOR color);
+void set_user_color(SPSettings* settings, SP_USER_COLOR color);
 
-void print(game_settings* settings);
+void settings_print(SPSettings* settings);
 
-void start(game_settings*);
+void spSettingsDestroy(SPSettings* settings);
 
 #endif

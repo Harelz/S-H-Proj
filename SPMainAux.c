@@ -36,9 +36,9 @@ SPGame* ExecuteCmd(SPGame* game , SPCommand cmd , int difficulty){
 	case SP_INVALID_LINE:
 		printf("Error: invalid command\n");
 		return game;
-	case SP_RESTART:
+	case SP_START:
 		return game;
-	case SP_UNDO_MOVE:
+	case 1:
 		last = spArrayListGetLast(game->history) + 1;
 		if(spGameUndoPrevMove(game) != SP_GAME_SUCCESS)
 			printf("Error: cannot undo previous move!\n");
@@ -51,14 +51,14 @@ SPGame* ExecuteCmd(SPGame* game , SPCommand cmd , int difficulty){
 			printf("Please make the next move:\n");
 		}
 		return game;
-	case SP_SUGGEST_MOVE:
+	case 2:
 		if(flag != '\0'){
 			printf("Error: the game is over\n");
 			return game;
 		}
 		printf("Suggested move: drop a disc to column %d\n", spMinimaxSuggestMove(game , difficulty) + 1);
 		return game;
-	case SP_ADD_DISC:
+	case 3:
 		if(flag != '\0'){
 			printf("Error: the game is over\n");
 			return game;

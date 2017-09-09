@@ -3,18 +3,21 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include "SPGame.h"
+
 
 //specify the maximum line length
 #define SP_MAX_LINE_LENGTH 1024
 
 //a type used to represent a command
 typedef enum {
-	SP_UNDO_MOVE,
-	SP_ADD_DISC,
-	SP_SUGGEST_MOVE,
+	SP_CHOOSE_GAME_MODE,
+	SP_DIFFICULTY,
+	SP_CHOOSE_USER_COLOR,
+	SP_LOAD,
+	SP_DEFAULT,
+	SP_PRINT,
 	SP_QUIT,
-	SP_RESTART,
+	SP_START,
 	SP_INVALID_LINE,
 } SP_COMMAND;
 
@@ -22,6 +25,7 @@ typedef enum {
 typedef struct command_t {
 	SP_COMMAND cmd;
 	bool validArg; //is set to true if the line contains a valid argument
+	char* pathArg;
 	int arg;
 } SPCommand;
 
@@ -48,6 +52,6 @@ bool spParserIsInt(const char* str);
  *              is valid
  *   arg      - the integer argument in case validArg is set to true
  */
-SPCommand spParserPraseLine(const char* str);
+SPCommand spSettingsParser(const char* str);
 
 #endif

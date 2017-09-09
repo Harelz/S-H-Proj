@@ -2,6 +2,7 @@
 #define SPGAME_H_
 #include <stdbool.h>
 #include "SPArrayList.h"
+#include "SPSettings.h"
 
 /**
  * SPGame Summary:
@@ -21,7 +22,6 @@
  */
 
 //Definitions
-#define SP_GAME_SPAN 4
 #define SP_GAME_ROWS 8
 #define SP_GAME_COLUMNS 8
 #define SP_GAME_PLAYER_1_SYMBOL 'X'
@@ -34,6 +34,7 @@ typedef struct sp_game_t {
 	int currentPlayer;
     SPArrayList* history;
 	int* tops;
+    SPSettings* settings;
 } SPGame;
 
 /**
