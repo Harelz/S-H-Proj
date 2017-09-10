@@ -51,7 +51,7 @@ int settingsHandler(SPSettings* settings, SPCommand cmd) {
             load(cmd.pathArg);
             return 0;
         case SP_DEFAULT:
-            settings_default_values();
+            settings_default_values(settings);
             return 0;
         case SP_PRINT:
             settings_print(settings);
@@ -84,8 +84,8 @@ SPSettings* load(char* fpath) {
 
 }
 
-SPSettings* settings_default_values() {
-    //**!!!!!make sure you free the previous settings!!!!!**
+SPSettings* settings_default_values(SPSettings* settings) {
+    spSettingsDestroy(settings);
 	return init_settings(SP_MODE_1P, SP_DIFF_EASY, SP_USER_COLOR_WHITE);
 }
 
