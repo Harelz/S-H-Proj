@@ -33,6 +33,6 @@ int handleIfOver(SPGame* game);
  * NULL - if a the input was a 'quit' command.
  * otherwise, the function returns the game after executing the command.
  */
-SPGame* ExecuteCmd(SPGame* game , SPCommand cmd , int difficulty);
+SPGame* ExecuteCmd(SPGame* game , SPSettingCommand cmd , int difficulty);
 
 #endif

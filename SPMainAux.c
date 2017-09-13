@@ -1,7 +1,7 @@
 #include "SPMainAux.h"
-
+/*
 SPGame* StartNewGame(){
-	SPGame* game = spGameCreate();
+	SPGame* game = spGameCreateDef();
 	if (game == NULL){
 		printf("Error: malloc has failed\n");
 		return NULL;
@@ -26,14 +26,14 @@ int handleIfOver(SPGame* game){
 	}
 	return 0;
 }
-SPGame* ExecuteCmd(SPGame* game , SPCommand cmd , int difficulty){
+SPGame* ExecuteCmd(SPGame* game , SPSettingCommand cmd , int difficulty){
 	int last = -1 , flag = spCheckWinner(game);
 	switch(cmd.cmd){
-	case SP_QUIT:
+	case SP_SQUIT:
 		printf("Exiting...\n");
 		spGameDestroy(game);
 		return NULL;
-	case SP_INVALID_LINE:
+	case SP_SINVALID_LINE:
 		printf("Error: invalid command\n");
 		return game;
 	case SP_START:
@@ -81,4 +81,4 @@ SPGame* ExecuteCmd(SPGame* game , SPCommand cmd , int difficulty){
 		return game;
 	}
 	return 0;
-}
+}*/

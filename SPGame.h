@@ -4,6 +4,7 @@
 #include <math.h>
 #include "SPArrayList.h"
 #include "SPSettings.h"
+#include "SPQueue.h"
 
 /**
  * SPGame Summary:
@@ -23,17 +24,17 @@
  */
 
 //Definitions
-#define SP_GAME_ROWS 8
-#define SP_GAME_COLUMNS 8
+#define SP_GAMEBOARD_SIZE 8
 #define SP_GAME_PLAYER_1_SYMBOL 'X'
 #define SP_GAME_PLAYER_2_SYMBOL 'Y'
 #define SP_GAME_TIE_SYMBOL '-'
 #define SP_GAME_EMPTY_ENTRY ' '
 
 typedef struct sp_game_t {
-	char gameBoard[SP_GAME_ROWS][SP_GAME_COLUMNS];
+	char gameBoard[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE];
 	int currentPlayer;
-    SPArrayList* history;
+    Queue* history;
+	int* tops;
     SPSettings* settings;
 } SPGame;
 
@@ -49,7 +50,7 @@ typedef enum sp_game_message_t {
 //You may add any message you like
 } SP_GAME_MESSAGE;
 
-SP_GAME_MESSAGE spSetNewBoard(SPGame* src);
+SPGame* spSetNewBoard(SPGame* src);
 SPGame* spGameCreateDef();
 
 
@@ -85,7 +86,7 @@ void spGameDestroy(SPGame* src);
 
 /**
  * Sets the next move in a given game by specifying column index. The
- * columns are 0-based and in the range [0,SP_GAME_COLUMNS -1].
+ * columns are 0-based and in the range [0,SP_GAMEBOARD_SIZE -1].
  *
  * @param src - The target game
  * @param col - The target column, the columns are 0-based
@@ -168,5 +169,12 @@ char spCheckWinner(SPGame* src);
  * false - if game board isn't full
  */
 bool fullBoard(SPGame* src);
+
+bool checkValidStepForP(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
+bool checkValidStepForR(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
+bool checkValidStepForB(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
+bool checkValidStepForN(int srcRow , int srcCol , int desRow, int desCol);
+bool checkValidStepForK(int srcRow , int srcCol , int desRow, int desCol);
+bool checkValidStep(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
 
 #endif

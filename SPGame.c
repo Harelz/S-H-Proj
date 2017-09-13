@@ -1,12 +1,12 @@
 #include "SPGame.h"
-#include "SPMiniMax.h"
+//#include "SPMiniMax.h"
 
 SPGame* spGameCreateDef(){
     SPGame* game = (SPGame *) malloc(sizeof(SPGame));
     if(game == NULL) return NULL;	//puts("Error: malloc has failed");
     game->currentPlayer = 1;
-    game->history = spArrayListCreate(3);
-    game->settings = settings_default_values(NULL);
+    game->history = spCreateQueue(3);
+    game->settings = defaultSettings(NULL);
     spSetNewBoard(game);
 }
 
@@ -14,22 +14,22 @@ SPGame* spGameCreate (SPSettings* settings){
 	SPGame* game = (SPGame *) malloc(sizeof(SPGame));
 	if(game == NULL) return NULL;	//puts("Error: malloc has failed");
 	game->currentPlayer = 1;
-    game->history = spArrayListCreate(3);
-    if(settings == NULL)    game->settings = settings_default_values(NULL);
+    game->history = spCreateQueue(3);
+    if(settings == NULL)    game->settings = defaultSettings(NULL);
     else game ->settings = settings;
     spSetNewBoard(game);
     return game;
 }
 
-SP_GAME_MESSAGE spSetNewBoard(SPGame* game) {
+SPGame* spSetNewBoard(SPGame* game) {
     if (game == NULL)
-        return SP_GAME_INVALID_ARGUMENT;
+        return game;
     game->gameBoard[0][0] = game->gameBoard[7][0] = game->gameBoard[0][7] = game->gameBoard[7][7] = 'R';
     game->gameBoard[0][1] = game->gameBoard[7][1] = game->gameBoard[0][6] = game->gameBoard[7][6] = 'N';
     game->gameBoard[0][2] = game->gameBoard[7][2] = game->gameBoard[0][5] = game->gameBoard[7][5] = 'B';
     game->gameBoard[0][4] = game->gameBoard[7][4] = 'K';
     game->gameBoard[0][3] = game->gameBoard[7][3] = 'Q';
-    for(int i = 0; i < SP_GAME_ROWS; i++) {
+    for(int i = 0; i < SP_GAMEBOARD_SIZE; i++) {
         game->gameBoard[6][i] = 'M';
         game->gameBoard[1][i] = 'm';
         game->gameBoard[0][i] += 32;
@@ -61,7 +61,7 @@ SP_GAME_MESSAGE spGamePrintBoard(SPGame* src){
 
 
 SP_GAME_MESSAGE spGameSetMove(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
-    if (src == NULL || srcCol < 0 || srcCol >= SP_GAME_COLUMNS || srcRow < 0 || srcRow >= SP_GAME_ROWS || desCol < 0 || desCol >= SP_GAME_COLUMNS || desRow < 0 || desRow >= SP_GAME_ROWS)
+    if (src == NULL || srcCol < 0 || srcCol >= SP_GAMEBOARD_SIZE || srcRow < 0 || srcRow >= SP_GAMEBOARD_SIZE || desCol < 0 || desCol >= SP_GAMEBOARD_SIZE || desRow < 0 || desRow >= SP_GAMEBOARD_SIZE)
 		return SP_ARRAY_LIST_INVALID_ARGUMENT;
     if(src ->gameBoard[srcRow][srcCol] == SP_GAME_EMPTY_ENTRY)
         return SP_GAME_EMPTY_ENTRY_MOVE;
@@ -69,14 +69,14 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, int srcRow , int srcCol , int desRow,
 		return SP_GAME_INVALID_MOVE;
     src->gameBoard[desRow][desCol] = src->gameBoard[srcRow][srcCol];
 	if (src->history->actualSize == src->history->maxSize)
-		spArrayListRemoveFirst(src->history);
-	spArrayListAddLast(src->history, srcRow*1000+srcCol*100+desRow*10+desCol); // need to think of a new way for saving history!
+		//spArrayListRemoveFirst(src->history);
+	//spArrayListAddLast(src->history, srcRow*1000+srcCol*100+desRow*10+desCol); // need to think of a new way for saving history!
 	return SP_GAME_SUCCESS;
 }
 
 bool spGameIsValidMove(SPGame* src, int srcRow , int srcCol , int desRow, int desCol) {
-    if (src == NULL || srcCol < 0 || srcCol >= SP_GAME_COLUMNS || srcRow < 0 || srcRow >= SP_GAME_ROWS || desCol < 0 ||
-        desCol >= SP_GAME_COLUMNS || desRow < 0 || desRow >= SP_GAME_ROWS)
+    if (src == NULL || srcCol < 0 || srcCol >= SP_GAMEBOARD_SIZE || srcRow < 0 || srcRow >= SP_GAMEBOARD_SIZE || desCol < 0 ||
+        desCol >= SP_GAMEBOARD_SIZE || desRow < 0 || desRow >= SP_GAMEBOARD_SIZE)
         return false;
     if(srcCol == desCol && srcRow == desRow) return false;
     if (src->gameBoard[srcRow][srcCol] >= 'A' && src->gameBoard[srcRow][srcCol] <= 'Z') {
@@ -191,7 +191,7 @@ char spGameGetCurrentPlayer(SPGame* src){
 	return SP_GAME_EMPTY_ENTRY;
 }
 
-char spCheckWinner(SPGame* src) {
+/*char spCheckWinner(SPGame* src) {
 	if (src != NULL) {
 		int score = spMinimaxScoring(src);
 		if (score == INT_MIN) //computer win
@@ -202,20 +202,20 @@ char spCheckWinner(SPGame* src) {
 			return SP_GAME_TIE_SYMBOL;
 	}
 	return '\0';
-}
+}*/
 
 SPGame* spGameCopy(SPGame* src){
 	if(src == NULL) return NULL;
 	SPGame* cpy = (SPGame *) malloc(sizeof(SPGame));
 	if(cpy == NULL) return NULL;
-	cpy->history = spArrayListCopy(src->history);
+	//cpy->history = spArrayListCopy(src->history);
 	if(cpy->history == NULL){
 		free(cpy);
 		return NULL;
 	}
 	cpy->currentPlayer = src->currentPlayer;
-	for(int i = 0; i < SP_GAME_ROWS; i++)
-		for(int j = 0; j < SP_GAME_COLUMNS; j++)
+	for(int i = 0; i < SP_GAMEBOARD_SIZE; i++)
+		for(int j = 0; j < SP_GAMEBOARD_SIZE; j++)
 			cpy->gameBoard[i][j] = src->gameBoard[i][j];
     // copy settings
 	return cpy;
@@ -224,19 +224,21 @@ SPGame* spGameCopy(SPGame* src){
 void spGameDestroy(SPGame* src){
 	if(src != NULL){
 		if(src->history != NULL)
-			spArrayListDestroy(src->history);
+			//spArrayListDestroy(src->history);
         if(src->settings != NULL)
             spSettingsDestroy(src->settings);
 		free(src);
 	}
 }
 
+
+
 SP_GAME_MESSAGE spGameUndoPrevMove(SPGame* src) {
-	if (src == NULL)
+	/*if (src == NULL)
 		return SP_GAME_INVALID_ARGUMENT;
 	if (spArrayListIsEmpty(src->history))
 		return SP_GAME_HISTORY;
 	int history = spArrayListGetLast(src->history);
-	spArrayListRemoveLast(src->history);
+	spArrayListRemoveLast(src->history);*/
 	return SP_GAME_SUCCESS;
 }

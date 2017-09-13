@@ -1,6 +1,4 @@
 #include "SPSettings.h"
-#define IN_RANGE(i, min, max) (i > min) && (i < max)
-#define PRINT_INVALID_COMMAND printf("Error: invalid command\n")
 
 SPSettings* init_settings(SP_GAME_MODE mode, SP_GAME_DIFFICULTY diff, SP_USER_COLOR color) {
     SPSettings* settings = (SPSettings*)calloc(1, sizeof(SPSettings));
@@ -10,14 +8,15 @@ SPSettings* init_settings(SP_GAME_MODE mode, SP_GAME_DIFFICULTY diff, SP_USER_CO
 	return settings;
 }
 
-int settingsHandler(SPSettings* settings, SPCommand cmd) {
+int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
     switch(cmd.cmd){
         case SP_START:
             return 1;
-        case SP_QUIT:
+        case SP_SQUIT:
             printf("Exiting...\n");
             return 2;
         case SP_CHOOSE_GAME_MODE:
+            IS_VALID(cmd);
             if (IN_RANGE(cmd.arg, 0,3))
                 set_game_mode(settings, cmd.arg);
             else if (cmd.arg == -1)
@@ -26,6 +25,7 @@ int settingsHandler(SPSettings* settings, SPCommand cmd) {
                 printf("Wrong game mode\n");
             return 0;
         case SP_DIFFICULTY:
+            IS_VALID(cmd);
             if (IN_RANGE(cmd.arg, 0,5))
                 set_difficulty(settings, cmd.arg);
             else if (cmd.arg == 5)
@@ -36,6 +36,7 @@ int settingsHandler(SPSettings* settings, SPCommand cmd) {
                 printf("Wrong difficulty level. The value should be between 1 to 5\n");
             return 0;
         case SP_CHOOSE_USER_COLOR:
+            IS_VALID(cmd);
             if(settings->game_mode == SP_MODE_2P){
                 printf("Error: set user p1_color command is only vaild for 1-player mode\n");
                 return 0;
@@ -48,15 +49,16 @@ int settingsHandler(SPSettings* settings, SPCommand cmd) {
                 PRINT_INVALID_COMMAND;
             return 0;
         case SP_LOAD:
-            load(cmd.pathArg);
+            IS_VALID(cmd);
+            loadGame(cmd.pathArg);
             return 0;
         case SP_DEFAULT:
-            settings_default_values(settings);
+            defaultSettings(settings);
             return 0;
         case SP_PRINT:
             settings_print(settings);
             return 0;
-        case SP_INVALID_LINE:
+        case SP_SINVALID_LINE:
             PRINT_INVALID_COMMAND;
             return 0;
     }
@@ -80,11 +82,11 @@ void set_user_color(SPSettings* settings, SP_USER_COLOR color) {
 }
 
 
-SPSettings* load(char* fpath) {
+SPSettings* loadGame(char* fpath) {
 
 }
 
-SPSettings* settings_default_values(SPSettings* settings) {
+SPSettings* defaultSettings(SPSettings* settings) {
     spSettingsDestroy(settings);
 	return init_settings(SP_MODE_1P, SP_DIFF_EASY, SP_USER_COLOR_WHITE);
 }

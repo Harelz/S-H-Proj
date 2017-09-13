@@ -3,11 +3,12 @@
 static SPGame* game = NULL;
 static int mode = 0;
 
-int main(void) {/*
+int main(void) {
 	char s[SP_MAX_LINE_LENGTH];
-    game = spGameCreate();
+    game = spGameCreateDef();
 	try_save(game);
 	exit(1);
+    /*
 	int isRestart = 0;
 	do{
 		while(mode == 0){
@@ -18,7 +19,7 @@ int main(void) {/*
 				return 0;
 			}
 			s[strcspn(s, "\r\n")] = 0;
-            SPCommand cmd = spSettingsParser(s);
+            SPSettingCommand cmd = spSettingsParser(s);
             mode = settingsHandler(game->settings, cmd);
             if(mode == 2){
                 spGameDestroy(game);
@@ -42,7 +43,7 @@ int main(void) {/*
 				return 0;
 			}
 			s[strcspn(s, "\r\n")] = 0;
-			SPCommand cmd = spSettingsParser(s);
+			SPSettingCommand cmd = spSettingsParser(s);
 			game = ExecuteCmd(game , cmd , mode);
 			if(cmd.cmd == SP_START){
 				mode = -1;
@@ -50,7 +51,7 @@ int main(void) {/*
 				isRestart = 1;
 			}
 	}while(game != NULL);
-	return 0;
+	return 0;*/
 }
 
 int try_save(SPGame* game){
@@ -79,5 +80,5 @@ int try_save(SPGame* game){
     }
     fprintf(fp, "\t</board>\n");
     fprintf(fp, "</game>\n");
-	fclose(fp);*/
+	fclose(fp);
 }

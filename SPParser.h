@@ -8,6 +8,10 @@
 //specify the maximum line length
 #define SP_MAX_LINE_LENGTH 1024
 
+#define IN_RANGE(i, min, max) (i > min) && (i < max)
+#define PRINT_INVALID_COMMAND printf("Error: invalid command\n")
+#define IS_VALID(cmd) if(!cmd.validArg) PRINT_INVALID_COMMAND
+
 //a type used to represent a command
 typedef enum {
 	SP_CHOOSE_GAME_MODE,
@@ -16,18 +20,36 @@ typedef enum {
 	SP_LOAD,
 	SP_DEFAULT,
 	SP_PRINT,
-	SP_QUIT,
+	SP_SQUIT,
 	SP_START,
-	SP_INVALID_LINE,
-} SP_COMMAND;
+	SP_SINVALID_LINE,
+} SP_SETTING_COMMAND;
 
 //a new type that is used to encapsulate a parsed line
-typedef struct command_t {
-	SP_COMMAND cmd;
+typedef struct {
+	SP_SETTING_COMMAND cmd;
 	bool validArg; //is set to true if the line contains a valid argument
 	char* pathArg;
 	int arg;
-} SPCommand;
+} SPSettingCommand;
+
+typedef enum {
+	SP_MOVE,
+	SP_GET_MOVES,
+	SP_SAVE,
+	SP_UNDO,
+	SP_RESET,
+	SP_GQUIT,
+	SP_GINVALID_LINE,
+} SP_GAME_COMMAND;
+
+//a new type that is used to encapsulate a parsed line
+typedef struct  {
+	SP_GAME_COMMAND cmd;
+	bool validArg; //is set to true if the line contains a valid argument
+	char* pathArg;
+	int arg;
+} SPGameCommand;
 
 /**
  * Checks if a specified string represents a valid integer. It is recommended
@@ -52,6 +74,11 @@ bool spParserIsInt(const char* str);
  *              is valid
  *   arg      - the integer argument in case validArg is set to true
  */
-SPCommand spSettingsParser(const char* str);
+
+bool spParserIsAtoH(const char* str);
+
+SPSettingCommand spSettingsParser(const char* str);
+
+SPGameCommand spGameParser(const char* str);
 
 #endif

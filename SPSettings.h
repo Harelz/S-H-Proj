@@ -31,13 +31,13 @@ typedef struct sp_game_sett_t {
 	SP_USER_COLOR p1_color;
 } SPSettings;
 
-int settingsHandler(SPSettings* game, SPCommand cmd);
+int settingsHandler(SPSettings* game, SPSettingCommand cmd);
 
 SPSettings* init_settings(SP_GAME_MODE mode, SP_GAME_DIFFICULTY diff, SP_USER_COLOR color);
 
-SPSettings* load(char* fpath);
+SPSettings* loadGame(char* fpath);
 
-SPSettings* settings_default_values(SPSettings* settings);
+SPSettings* defaultSettings(SPSettings* settings);
 
 void set_game_mode(SPSettings* settings, SP_GAME_MODE mode);
 

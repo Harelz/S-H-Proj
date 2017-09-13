@@ -21,7 +21,7 @@ int spMinimaxNodeCalc(SPGame* currentGame,
 		return spMinimaxScoring(currentGame);
 	}
 
-	if ((win = spCheckWinner(currentGame)) == SP_GAME_PLAYER_1_SYMBOL)
+	if (1)//(win = spCheckWinner(currentGame)) == SP_GAME_PLAYER_1_SYMBOL)
 	{
 		return INT_MAX;
 	}
@@ -30,11 +30,11 @@ int spMinimaxNodeCalc(SPGame* currentGame,
 		return INT_MIN;
 	}
 
-	for (int i = 0; i < SP_GAME_COLUMNS; i++)
+	for (int i = 0; i < SP_GAMEBOARD_SIZE; i++)
 	{
-		if (spGameIsValidMove(currentGame, i))
+		if (1)//spGameIsValidMove(currentGame, i))
 		{
-			spGameSetMove(currentGame, i);
+			//spGameSetMove(currentGame, i);
 			tempScore = spMinimaxNodeCalc(currentGame, nodeDepth - 1, !imax);
 			spGameUndoPrevMove(currentGame);
 			if (!madeMove)
