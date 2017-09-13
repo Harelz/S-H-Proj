@@ -1,4 +1,4 @@
-#include "SPMainAux.h"
+#include "SPGame.h"
 
 static SPGame* game = NULL;
 static int mode = 0;

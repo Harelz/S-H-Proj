@@ -1,11 +1,12 @@
 #include "SPGame.h"
+
 //#include "SPMiniMax.h"
 
 SPGame* spGameCreateDef(){
     SPGame* game = (SPGame *) malloc(sizeof(SPGame));
     if(game == NULL) return NULL;	//puts("Error: malloc has failed");
     game->currentPlayer = 1;
-    game->history = spCreateQueue(3);
+    game->history = spQueueCreate(3);
     game->settings = defaultSettings(NULL);
     spSetNewBoard(game);
 }
@@ -14,7 +15,7 @@ SPGame* spGameCreate (SPSettings* settings){
 	SPGame* game = (SPGame *) malloc(sizeof(SPGame));
 	if(game == NULL) return NULL;	//puts("Error: malloc has failed");
 	game->currentPlayer = 1;
-    game->history = spCreateQueue(3);
+    game->history = spQueueCreate(3);
     if(settings == NULL)    game->settings = defaultSettings(NULL);
     else game ->settings = settings;
     spSetNewBoard(game);
@@ -62,15 +63,17 @@ SP_GAME_MESSAGE spGamePrintBoard(SPGame* src){
 
 SP_GAME_MESSAGE spGameSetMove(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
     if (src == NULL || srcCol < 0 || srcCol >= SP_GAMEBOARD_SIZE || srcRow < 0 || srcRow >= SP_GAMEBOARD_SIZE || desCol < 0 || desCol >= SP_GAMEBOARD_SIZE || desRow < 0 || desRow >= SP_GAMEBOARD_SIZE)
-		return SP_ARRAY_LIST_INVALID_ARGUMENT;
+		return SP_GAME_INVALID_ARGUMENT;
     if(src ->gameBoard[srcRow][srcCol] == SP_GAME_EMPTY_ENTRY)
         return SP_GAME_EMPTY_ENTRY_MOVE;
 	if (!spGameIsValidMove(src,srcRow,srcCol,desRow,desCol))
 		return SP_GAME_INVALID_MOVE;
     src->gameBoard[desRow][desCol] = src->gameBoard[srcRow][srcCol];
-	if (src->history->actualSize == src->history->maxSize)
-		//spArrayListRemoveFirst(src->history);
-	//spArrayListAddLast(src->history, srcRow*1000+srcCol*100+desRow*10+desCol); // need to think of a new way for saving history!
+	if (src->history->actualSize == src->history->maxSize) {
+        spQueuePop(src->history);
+        spQueuePush(src->history, src->gameBoard);
+    }
+    else spQueuePush(src->history, src->gameBoard);
 	return SP_GAME_SUCCESS;
 }
 
@@ -115,6 +118,10 @@ bool checkValidStepForP(SPGame* src, int srcRow , int srcCol , int desRow, int d
     if(piece == 'p' && srcCol == desCol &&
        (desRow - srcRow == 1
         || (desRow - srcRow == 2 && srcRow == 1 && src->gameBoard[srcRow+1][srcCol] == SP_GAME_EMPTY_ENTRY))) return true;
+    if(piece == 'P' && desRow - srcRow == -1 && abs(desCol - srcCol) == 1
+       && src->gameBoard[desRow][desCol] >='a' && src->gameBoard[desRow][desCol] <='z') return true;
+    if(piece == 'p' && desRow - srcRow == 1 && abs(desCol - srcCol) == 1
+       && src->gameBoard[desRow][desCol] >='A' && src->gameBoard[desRow][desCol] <='Z') return true;
     return false;
 }
 bool checkValidStepForR(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
@@ -182,6 +189,18 @@ bool checkValidStepForK(int srcRow , int srcCol , int desRow, int desCol){
     int diffRow = abs(srcRow - desRow) , diffCol = abs(srcCol - desCol);
     if((diffRow == 1 && diffCol == 1) || (diffRow == 0 && diffCol == 1) || (diffRow == 1 && diffCol == 0)) return true;
     return false;
+}
+
+SPMovesList* spGameGetMoves(SPGame* src , int row , int col){
+    SPMovesList* moves = spMovesListCreate(65);
+    for(int r=0; r<SP_GAMEBOARD_SIZE;r++){
+        for(int c=0; c<SP_GAMEBOARD_SIZE;c++){
+            if(spGameIsValidMove(src,row,col,r,c)){
+                spMovesListAddLast(moves, spCreateMove(row,col,r,c));
+            }
+        }
+    }
+    return moves;
 }
 
 char spGameGetCurrentPlayer(SPGame* src){

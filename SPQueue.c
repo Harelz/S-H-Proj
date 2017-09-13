@@ -6,9 +6,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "string.h"
 
-
-Queue* spCreateQueue(int maxSize) {
+Queue* spQueueCreate(int maxSize) {
     Queue* queue = (Queue*) malloc(sizeof (Queue));
     if (queue == NULL) {
         return NULL;
@@ -24,18 +24,18 @@ Queue* spCreateQueue(int maxSize) {
     return queue;
 }
 
-void spDestroyQueue(Queue* queue) {
-    spNODE* trashNode;
-    while (!isEmpty(queue)) {
-        trashNode = popQueue(queue);
+void spQueueDestroy(Queue* queue) {
+    SPNode* trashNode;
+    while (!spQueueIsEmpty(queue)) {
+        trashNode = spQueuePop(queue);
         free(trashNode);
     }
     free(queue);
 }
 
-int pushQueue(Queue* myQ, spNODE* item) {
+int spQueuePush(Queue *myQ, char data[8][8]) {
     /* Bad parameter */
-    if ((myQ == NULL) || (item == NULL)) {
+    if ((myQ == NULL) || (data == NULL)) {
         return 0;
     }
     // if(myQ->maxSize != 0)
@@ -43,7 +43,9 @@ int pushQueue(Queue* myQ, spNODE* item) {
         return 0;
     }
     /*the queue is empty*/
+    SPNode* item = (SPNode*) malloc(sizeof(SPNode));
     item->prev = NULL;
+    memcpy(item->data , data , SP_GAMEBOARD_SIZE*SP_GAMEBOARD_SIZE*sizeof(char));
     if (myQ->actualSize == 0) {
         myQ->head = item;
         myQ->tail = item;
@@ -57,10 +59,10 @@ int pushQueue(Queue* myQ, spNODE* item) {
     return 1;
 }
 
-spNODE* popQueue(Queue* myQ) {
+SPNode* spQueuePop(Queue* myQ) {
     /*the queue is empty or bad param*/
-    spNODE* item;
-    if (isEmpty(myQ))
+    SPNode* item;
+    if (spQueueIsEmpty(myQ))
         return NULL;
     item = myQ->head;
     myQ->head = (myQ->head)->prev;
@@ -68,7 +70,7 @@ spNODE* popQueue(Queue* myQ) {
     return item;
 }
 
-int isEmpty(Queue* myQ) {
+int spQueueIsEmpty(Queue* myQ) {
     if (myQ == NULL) {
         return 0;
     }

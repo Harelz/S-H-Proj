@@ -15,8 +15,8 @@ int gameHandler(SPGame* game, SPGameCommand cmd) {
             printf("Exiting...\n");
             return 2; //indicates to terminate
         case SP_UNDO:
-            memcpy(game -> gameBoard, popQueue(game->history) -> data, sizeof(game->gameBoard));
-            if(0 == SP_MODE_2P){
+            memcpy(game -> gameBoard, spQueuePop(game->history) -> data, sizeof(game->gameBoard));
+            if(game->settings->game_mode == SP_MODE_2P){
                 printf("Error: set user color command is only vaild for 1-player mode\n");
                 return 0;
             }

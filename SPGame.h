@@ -2,10 +2,9 @@
 #define SPGAME_H_
 #include <stdbool.h>
 #include <math.h>
-#include "SPArrayList.h"
 #include "SPSettings.h"
 #include "SPQueue.h"
-
+#include "SPMoves.h"
 /**
  * SPGame Summary:
  *
@@ -28,7 +27,7 @@
 #define SP_GAME_PLAYER_1_SYMBOL 'X'
 #define SP_GAME_PLAYER_2_SYMBOL 'Y'
 #define SP_GAME_TIE_SYMBOL '-'
-#define SP_GAME_EMPTY_ENTRY ' '
+#define SP_GAME_EMPTY_ENTRY '_'
 
 //reference defines
 #define WHITE 'w'
@@ -63,7 +62,6 @@ typedef struct sp_game_t {
 	char gameBoard[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE];
 	int currentPlayer;
     Queue* history;
-	int* tops;
     SPSettings* settings;
 } SPGame;
 

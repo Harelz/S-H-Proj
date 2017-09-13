@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "SPParser.h" // include SPGame.h which includes SPArrayList
+#include "SPParser.h" // include SPGame.h which includes SPTileArrayList
 
 typedef enum sp_game_mode_t {
 	SP_MODE_1P = 1,
