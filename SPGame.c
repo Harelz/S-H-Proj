@@ -82,15 +82,15 @@ bool spGameIsValidMove(SPGame* src, int srcRow , int srcCol , int desRow, int de
         desCol >= SP_GAMEBOARD_SIZE || desRow < 0 || desRow >= SP_GAMEBOARD_SIZE)
         return false;
     if(srcCol == desCol && srcRow == desRow) return false;
-    if (src->gameBoard[srcRow][srcCol] >= 'A' && src->gameBoard[srcRow][srcCol] <= 'Z') {
-        if(src->gameBoard[desRow][desCol] >= 'A' && src->gameBoard[desRow][desCol] <= 'Z') return false;
+    if (getColor(src->gameBoard[srcRow][srcCol]) == BLACK) {
+        if(getColor(src->gameBoard[desRow][desCol]) == BLACK) return false;
         if ((src->settings->p1_color == SP_USER_COLOR_BLACK && src->currentPlayer == SP_GAME_PLAYER_1_SYMBOL)
             || (src->settings->p1_color == SP_USER_COLOR_WHITE && src->currentPlayer == SP_GAME_PLAYER_2_SYMBOL)) {
             return checkValidStep(src , srcRow , srcCol , desRow , desCol);
         }
     }
-    else if (src->gameBoard[srcRow][srcCol] >= 'a' && src->gameBoard[srcRow][srcCol] <= 'z'){
-        if(src->gameBoard[desRow][desCol] >= 'a' && src->gameBoard[desRow][desCol] <= 'z') return false;
+    else if (getColor(src->gameBoard[srcRow][srcCol]) == WHITE){
+        if(getColor(src->gameBoard[desRow][desCol]) == WHITE) return false;
         if( (src->settings->p1_color == SP_USER_COLOR_WHITE && src->currentPlayer == SP_GAME_PLAYER_1_SYMBOL)
             || (src->settings->p1_color == SP_USER_COLOR_BLACK && src->currentPlayer == SP_GAME_PLAYER_2_SYMBOL) ) {
             return checkValidStep(src , srcRow , srcCol , desRow , desCol);
@@ -119,9 +119,9 @@ bool checkValidStepForP(SPGame* src, int srcRow , int srcCol , int desRow, int d
        (desRow - srcRow == 1
         || (desRow - srcRow == 2 && srcRow == 1 && src->gameBoard[srcRow+1][srcCol] == SP_GAME_EMPTY_ENTRY))) return true;
     if(piece == 'P' && desRow - srcRow == -1 && abs(desCol - srcCol) == 1
-       && src->gameBoard[desRow][desCol] >='a' && src->gameBoard[desRow][desCol] <='z') return true;
+       && getColor(src->gameBoard[desRow][desCol]) == WHITE) return true;
     if(piece == 'p' && desRow - srcRow == 1 && abs(desCol - srcCol) == 1
-       && src->gameBoard[desRow][desCol] >='A' && src->gameBoard[desRow][desCol] <='Z') return true;
+       && getColor(src->gameBoard[desRow][desCol]) == BLACK) return true;
     return false;
 }
 bool checkValidStepForR(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
@@ -210,40 +210,10 @@ char spGameGetCurrentPlayer(SPGame* src){
 	return SP_GAME_EMPTY_ENTRY;
 }
 
-/*char spCheckWinner(SPGame* src) {
-	if (src != NULL) {
-		int score = spMinimaxScoring(src);
-		if (score == INT_MIN) //computer win
-			return SP_GAME_PLAYER_2_SYMBOL;
-		if (score == INT_MAX) //user win
-			return SP_GAME_PLAYER_1_SYMBOL;
-		if (fullBoard(src))
-			return SP_GAME_TIE_SYMBOL;
-	}
-	return '\0';
-}*/
-
-SPGame* spGameCopy(SPGame* src){
-	if(src == NULL) return NULL;
-	SPGame* cpy = (SPGame *) malloc(sizeof(SPGame));
-	if(cpy == NULL) return NULL;
-	//cpy->history = spArrayListCopy(src->history);
-	if(cpy->history == NULL){
-		free(cpy);
-		return NULL;
-	}
-	cpy->currentPlayer = src->currentPlayer;
-	for(int i = 0; i < SP_GAMEBOARD_SIZE; i++)
-		for(int j = 0; j < SP_GAMEBOARD_SIZE; j++)
-			cpy->gameBoard[i][j] = src->gameBoard[i][j];
-    // copy settings
-	return cpy;
-}
-
 void spGameDestroy(SPGame* src){
 	if(src != NULL){
 		if(src->history != NULL)
-			//spArrayListDestroy(src->history);
+			spQueueDestroy(src->history);
         if(src->settings != NULL)
             spSettingsDestroy(src->settings);
 		free(src);

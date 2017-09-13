@@ -5,6 +5,7 @@
 #include "SPSettings.h"
 #include "SPQueue.h"
 #include "SPMoves.h"
+#include <ctype.h>
 /**
  * SPGame Summary:
  *
