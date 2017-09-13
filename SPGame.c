@@ -1,7 +1,5 @@
 #include "SPGame.h"
 
-//#include "SPMiniMax.h"
-
 SPGame* spGameCreateDef(){
     SPGame* game = (SPGame *) malloc(sizeof(SPGame));
     if(game == NULL) return NULL;	//puts("Error: malloc has failed");
@@ -66,7 +64,7 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, int srcRow , int srcCol , int desRow,
 		return SP_GAME_INVALID_ARGUMENT;
     if(src ->gameBoard[srcRow][srcCol] == SP_GAME_EMPTY_ENTRY)
         return SP_GAME_EMPTY_ENTRY_MOVE;
-	if (!spGameIsValidMove(src,srcRow,srcCol,desRow,desCol))
+	if (!spGameIsValidMove(src,srcRow,srcCol,desRow,desCol)) // need to check if theres a check as well
 		return SP_GAME_INVALID_MOVE;
     src->gameBoard[desRow][desCol] = src->gameBoard[srcRow][srcCol];
 	if (src->history->actualSize == src->history->maxSize) {
@@ -193,6 +191,7 @@ bool checkValidStepForK(int srcRow , int srcCol , int desRow, int desCol){
 
 SPMovesList* spGameGetMoves(SPGame* src , int row , int col){
     SPMovesList* moves = spMovesListCreate(65);
+    if(src->gameBoard[row][col] == SP_GAME_EMPTY_ENTRY) return moves;
     for(int r=0; r<SP_GAMEBOARD_SIZE;r++){
         for(int c=0; c<SP_GAMEBOARD_SIZE;c++){
             if(spGameIsValidMove(src,row,col,r,c)){
@@ -201,6 +200,30 @@ SPMovesList* spGameGetMoves(SPGame* src , int row , int col){
         }
     }
     return moves;
+}
+
+SPMovesList* spGameGetAllMoves(SPGame* src) {
+    SPMovesList* moves = spMovesListCreate(2049);
+    for(int r=0; r<SP_GAMEBOARD_SIZE;r++) {
+        for (int c = 0; c < SP_GAMEBOARD_SIZE; c++) {
+            SPMovesList* temp = spGameGetMoves(src,r,c);
+            for(int i =0; i<temp->actualSize; i++){
+                spMovesListAddLast(moves,spMovesListGetAt(temp,i));
+            }
+        }
+    }
+    return moves;
+}
+
+char spGameIsCheck(SPGame* src){
+    SPMovesList* moves = spGameGetAllMoves(src);
+    for(int i = 0 ; i<moves->actualSize; i++){
+        SPTile* t = spMovesListGetAt(moves , i) -> dest;
+        char target = src->gameBoard[t->row][t->coloumn];
+        if(target == 'K')   return BLACK;
+        else if(target == 'k') return WHITE;
+    }
+    return NULL;
 }
 
 char spGameGetCurrentPlayer(SPGame* src){
