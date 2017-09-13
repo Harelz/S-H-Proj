@@ -1,6 +1,7 @@
 #ifndef SPGAME_H_
 #define SPGAME_H_
 #include <stdbool.h>
+#include <math.h>
 #include "SPArrayList.h"
 #include "SPSettings.h"
 
@@ -25,7 +26,7 @@
 #define SP_GAME_ROWS 8
 #define SP_GAME_COLUMNS 8
 #define SP_GAME_PLAYER_1_SYMBOL 'X'
-#define SP_GAME_PLAYER_2_SYMBOL 'O'
+#define SP_GAME_PLAYER_2_SYMBOL 'Y'
 #define SP_GAME_TIE_SYMBOL '-'
 #define SP_GAME_EMPTY_ENTRY ' '
 
@@ -33,7 +34,6 @@ typedef struct sp_game_t {
 	char gameBoard[SP_GAME_ROWS][SP_GAME_COLUMNS];
 	int currentPlayer;
     SPArrayList* history;
-	int* tops;
     SPSettings* settings;
 } SPGame;
 
@@ -42,25 +42,26 @@ typedef struct sp_game_t {
  */
 typedef enum sp_game_message_t {
 	SP_GAME_INVALID_MOVE,
+    SP_GAME_EMPTY_ENTRY_MOVE,
 	SP_GAME_INVALID_ARGUMENT,
-	SP_GAMEO_HISTORY,
+	SP_GAME_HISTORY,
 	SP_GAME_SUCCESS,
 //You may add any message you like
 } SP_GAME_MESSAGE;
 
+SP_GAME_MESSAGE spSetNewBoard(SPGame* src);
+SPGame* spGameCreateDef();
+
+
 /**
- * Creates a new game with a specified history size. The history size is a
- * parameter which specifies the number of previous moves to store. If the number
- * of moves played so far exceeds this parameter, then first moves stored will
- * be discarded in order for new moves to be stored.
- *
- * @historySize - The total number of moves to undo,
- *                a player can undo at most historySizeMoves turns.
+ * Creates a new game with a specified settings.
+ * @settings - The game seetings.
  * @return
- * NULL if either a memory allocation failure occurs or historySize <= 0.
+ * NULL if either a memory allocation failure occurs.
+ * default settings new game if settings == NULL.
  * Otherwise, a new game instant is returned.
  */
-SPGame* spGameCreate();
+SPGame* spGameCreate(SPSettings* settings);
 
 /**
  *	Creates a copy of a given game.
@@ -93,7 +94,7 @@ void spGameDestroy(SPGame* src);
  * SP_GAME_INVALID_MOVE - if the given column is full.
  * SP_GAME_SUCCESS - otherwise
  */
-SP_GAME_MESSAGE spGameSetMove(SPGame* src, int col);
+SP_GAME_MESSAGE spGameSetMove(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
 
 /**
  * Checks if a disk can be put in the specified column.
@@ -104,7 +105,7 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, int col);
  * true  - if the a disc can be put in the target column
  * false - otherwise.
  */
-bool spGameIsValidMove(SPGame* src, int col);
+bool spGameIsValidMove(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
 
 /**
  * Removes a disc that was put in the previous move and changes the current

@@ -28,7 +28,7 @@ typedef enum sp_user_color_t {
 typedef struct sp_game_sett_t {
 	SP_GAME_MODE game_mode;
 	SP_GAME_DIFFICULTY difficulty;
-	SP_USER_COLOR color;
+	SP_USER_COLOR p1_color;
 } SPSettings;
 
 int settingsHandler(SPSettings* game, SPCommand cmd);
@@ -37,7 +37,7 @@ SPSettings* init_settings(SP_GAME_MODE mode, SP_GAME_DIFFICULTY diff, SP_USER_CO
 
 SPSettings* load(char* fpath);
 
-SPSettings* settings_default_values();
+SPSettings* settings_default_values(SPSettings* settings);
 
 void set_game_mode(SPSettings* settings, SP_GAME_MODE mode);
 

@@ -37,13 +37,13 @@ int settingsHandler(SPSettings* settings, SPCommand cmd) {
             return 0;
         case SP_CHOOSE_USER_COLOR:
             if(settings->game_mode == SP_MODE_2P){
-                printf("Error: set user color command is only vaild for 1-player mode\n");
+                printf("Error: set user p1_color command is only vaild for 1-player mode\n");
                 return 0;
             }
             else if (IN_RANGE(cmd.arg, -1,2))
                 set_user_color(settings, cmd.arg);
             else if (cmd.arg == -1)
-                set_game_mode(settings, 1);
+                set_game_mode(settings, SP_MODE_1P);
             else
                 PRINT_INVALID_COMMAND;
             return 0;
@@ -76,7 +76,7 @@ void set_difficulty(SPSettings* settings, SP_GAME_DIFFICULTY difficulty)  {
 }
 
 void set_user_color(SPSettings* settings, SP_USER_COLOR color) {
-	settings -> color = color;
+	settings -> p1_color = color;
 }
 
 
@@ -96,7 +96,7 @@ void settings_print(SPSettings* settings){
     else{
         printf("2\nDIFFICULTY_LVL: %d\n", settings->difficulty);
         printf("USER_CLR: ");
-        if (settings->color == SP_USER_COLOR_WHITE)
+        if (settings->p1_color == SP_USER_COLOR_WHITE)
             printf("WHITE\n");
         else
             printf("BLACK\n");

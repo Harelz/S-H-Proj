@@ -3,7 +3,7 @@
 static SPGame* game = NULL;
 static int mode = 0;
 
-int main(void) {
+int main(void) {/*
 	char s[SP_MAX_LINE_LENGTH];
     game = spGameCreate();
 	try_save(game);
@@ -60,11 +60,11 @@ int try_save(SPGame* game){
 	fp = fopen("test.xml", "w+");
     fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     fprintf(fp, "<game>\n");
-    fprintf(fp, "\t<current_turn>%d</current_turn>\n", game->settings->color);
+    fprintf(fp, "\t<current_turn>%d</current_turn>\n", game->settings->p1_color);
     fprintf(fp, "\t<game_mode>%d</game_mode>\n", game->settings->game_mode);
     if (game->settings->game_mode == 1) {
         fprintf(fp, "\t<difficulty>%d</difficulty>\n", game->settings->difficulty);
-        fprintf(fp, "\t<current_turn>%d</current_turn>\n", game->settings->color);
+        fprintf(fp, "\t<current_turn>%d</current_turn>\n", game->settings->p1_color);
     }
     fprintf(fp, "\t<board>\n");
     for (i = 8; i > 0; i--){
@@ -79,5 +79,5 @@ int try_save(SPGame* game){
     }
     fprintf(fp, "\t</board>\n");
     fprintf(fp, "</game>\n");
-	fclose(fp);
+	fclose(fp);*/
 }
