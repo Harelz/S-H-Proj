@@ -30,6 +30,35 @@
 #define SP_GAME_TIE_SYMBOL '-'
 #define SP_GAME_EMPTY_ENTRY ' '
 
+//reference defines
+#define WHITE 'w'
+#define BLACK 's'
+#define invColor(C) ((C)==WHITE? BLACK:WHITE)
+#define getColor(P) (islower(P)? WHITE:BLACK)
+
+#define W_PAWN 'm'
+#define B_PAWN 'M'
+#define W_BISHOP 'b'
+#define B_BISHOP 'B'
+#define W_ROOK 'r'
+#define B_ROOK 'R'
+#define W_KNIGHT 'n'
+#define B_KNIGHT 'N'
+#define W_QUEEN 'q'
+#define B_QUEEN 'Q'
+#define W_KING 'k'
+#define B_KING 'K'
+/* other reference defs
+#define EMPTY ' '
+#define CASTLE 'z' /*special mark for castling move*/
+#define NORM '\0' /*mark for non-special moves*/
+
+#define CONTINUE 'c'
+#define TIE 't'
+#define CHECK 'C'
+
+#define inBoard(C,R) (0<=(C) && 0<=(R) && (C)<SP_GAMEBOARD_SIZE && (R)<SP_GAMEBOARD_SIZE)*/
+
 typedef struct sp_game_t {
 	char gameBoard[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE];
 	int currentPlayer;

@@ -24,14 +24,14 @@ SPGame* spGameCreate (SPSettings* settings){
 SPGame* spSetNewBoard(SPGame* game) {
     if (game == NULL)
         return game;
-    game->gameBoard[0][0] = game->gameBoard[7][0] = game->gameBoard[0][7] = game->gameBoard[7][7] = 'R';
-    game->gameBoard[0][1] = game->gameBoard[7][1] = game->gameBoard[0][6] = game->gameBoard[7][6] = 'N';
-    game->gameBoard[0][2] = game->gameBoard[7][2] = game->gameBoard[0][5] = game->gameBoard[7][5] = 'B';
-    game->gameBoard[0][4] = game->gameBoard[7][4] = 'K';
-    game->gameBoard[0][3] = game->gameBoard[7][3] = 'Q';
+    game->gameBoard[0][0] = game->gameBoard[7][0] = game->gameBoard[0][7] = game->gameBoard[7][7] = B_ROOK;
+    game->gameBoard[0][1] = game->gameBoard[7][1] = game->gameBoard[0][6] = game->gameBoard[7][6] = B_KNIGHT;
+    game->gameBoard[0][2] = game->gameBoard[7][2] = game->gameBoard[0][5] = game->gameBoard[7][5] = B_BISHOP;
+    game->gameBoard[0][4] = game->gameBoard[7][4] = B_KING;
+    game->gameBoard[0][3] = game->gameBoard[7][3] = B_QUEEN;
     for(int i = 0; i < SP_GAMEBOARD_SIZE; i++) {
-        game->gameBoard[6][i] = 'M';
-        game->gameBoard[1][i] = 'm';
+        game->gameBoard[6][i] = B_PAWN;
+        game->gameBoard[1][i] = W_PAWN;
         game->gameBoard[0][i] += 32;
         for(int j = 2; j < 6; j++){
             game->gameBoard[j][i] = SP_GAME_EMPTY_ENTRY;
@@ -99,12 +99,12 @@ bool spGameIsValidMove(SPGame* src, int srcRow , int srcCol , int desRow, int de
 bool checkValidStep(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
     char piece = src->gameBoard[srcRow][srcCol];
     if(piece == 'P' || piece == 'p') return checkValidStepForP(src , srcRow , srcCol , desRow , desCol);
-    if(piece == 'r' || piece == 'R') return checkValidStepForR(src , srcRow , srcCol , desRow , desCol);
-    if(piece == 'b' || piece == 'B') return checkValidStepForB(src , srcRow , srcCol , desRow , desCol);
-    if(piece == 'q' || piece == 'Q') return (checkValidStepForR(src , srcRow , srcCol , desRow , desCol)
+    if(piece == W_ROOK || piece == B_ROOK) return checkValidStepForR(src , srcRow , srcCol , desRow , desCol);
+    if(piece == W_BISHOP || piece == B_BISHOP) return checkValidStepForB(src , srcRow , srcCol , desRow , desCol);
+    if(piece == W_QUEEN || piece == B_QUEEN) return (checkValidStepForR(src , srcRow , srcCol , desRow , desCol)
                                              || checkValidStepForB(src , srcRow , srcCol , desRow , desCol));
-    if(piece == 'N' || piece == 'n') return checkValidStepForN(srcRow , srcCol , desRow , desCol);
-    if(piece == 'K' || piece == 'k') return checkValidStepForK(srcRow , srcCol , desRow , desCol);
+    if(piece == B_KNIGHT || piece == W_KNIGHT) return checkValidStepForN(srcRow , srcCol , desRow , desCol);
+    if(piece == B_KING || piece == W_KING) return checkValidStepForK(srcRow , srcCol , desRow , desCol);
     return false;
 }
 bool checkValidStepForP(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
