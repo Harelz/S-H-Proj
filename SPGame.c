@@ -73,7 +73,7 @@ int saveGame(SPGame* game, char* fpath){
     fprintf(fp, "\t<game_mode>%d</game_mode>\n", game->settings->game_mode);
     if (game->settings->game_mode == 1) {
         fprintf(fp, "\t<difficulty>%d</difficulty>\n", game->settings->difficulty);
-        fprintf(fp, "\t<current_turn>%d</current_turn>\n", game->settings->p1_color);
+        fprintf(fp, "\t<user_color>%d</user_color>\n", game->settings->p1_color);
     }
     fprintf(fp, "\t<board>\n");
     for (i = 8; i > 0; i--){
