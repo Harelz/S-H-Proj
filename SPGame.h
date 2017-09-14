@@ -4,7 +4,6 @@
 #include <math.h>
 #include "SPSettings.h"
 #include "SPQueue.h"
-#include "SPMoves.h"
 #include <ctype.h>
 /**
  * SPGame Summary:
@@ -31,8 +30,8 @@
 #define SP_GAME_EMPTY_ENTRY '_'
 
 //reference defines
-#define WHITE 'w'
-#define BLACK 's'
+#define WHITE SP_USER_COLOR_WHITE
+#define BLACK SP_USER_COLOR_BLACK
 #define invColor(C) ((C)==WHITE? BLACK:WHITE)
 #define getColor(P) (islower(P)? WHITE:BLACK)
 
@@ -59,6 +58,7 @@
 
 #define inBoard(C,R) (0<=(C) && 0<=(R) && (C)<SP_GAMEBOARD_SIZE && (R)<SP_GAMEBOARD_SIZE)*/
 
+
 typedef struct sp_game_t {
 	char gameBoard[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE];
 	int currentPlayer;
@@ -77,6 +77,10 @@ typedef enum sp_game_message_t {
 	SP_GAME_SUCCESS,
 //You may add any message you like
 } SP_GAME_MESSAGE;
+
+int gameHandler(SPGame* game, SPGameCommand cmd);
+int saveGame(SPGame* game, char* fpath);
+int loadGame(SPGame* game, char* fpath);
 
 SPGame* spSetNewBoard(SPGame* src);
 SPGame* spGameCreateDef();
@@ -123,7 +127,7 @@ void spGameDestroy(SPGame* src);
  * SP_GAME_INVALID_MOVE - if the given column is full.
  * SP_GAME_SUCCESS - otherwise
  */
-SP_GAME_MESSAGE spGameSetMove(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
+SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move);
 
 /**
  * Checks if a disk can be put in the specified column.

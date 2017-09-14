@@ -1,4 +1,124 @@
 #include "SPGame.h"
+#include "SPParser.h"
+
+
+int gameHandler(SPGame* game, SPGameCommand cmd) {
+    switch(cmd.cmd){
+        case SP_RESET:
+            printf("Restarting...\n");
+            spGameDestroy(game);
+            return 1; //indicates to run main all over again
+        case SP_GQUIT:
+            printf("Exiting...\n");
+            return 2; //indicates to terminate
+        case SP_UNDO:
+            if (game->settings->game_mode == 2)
+                printf("Empty history, move cannot be undone\n");
+            else if (spQueueIsEmpty(game->history))
+                printf("Can't Undo, no previous moves!\n");
+            else {
+                char** prevBoard = spStackPop(game->history)->data;
+                memcpy(game->gameBoard, prevBoard, sizeof(game->gameBoard));
+                printf("Undo move for player %s : <x,y> -> <w,z>\n", game->settings->p1_color == WHITE ? "white" : "black");
+                printf("Undo move for player %s : <x,y> -> <w,z>\n", game->settings->p1_color == BLACK ? "white" : "black");
+            }
+            return 0;
+        case SP_SAVE:
+            IS_VALID(cmd);
+            saveGame(game, cmd.pathArg);
+            return 0;
+        case SP_MOVE:
+            IS_VALID(cmd);
+            if (!IN_RANGE(cmd.move->src->coloumn, 0,8) || !IN_RANGE(cmd.move->dest->coloumn, 0,8)
+                    || !IN_RANGE(cmd.move->src->row, 0,8) || !IN_RANGE(cmd.move->dest->row, 0,8))
+                printf("Invalid position on the board\n");
+            else if (game->gameBoard[cmd.move->src->row][cmd.move->src->coloumn] == SP_GAME_EMPTY_ENTRY ||
+                    getColor(game->gameBoard[cmd.move->src->row][cmd.move->src->coloumn]) != game->settings->p1_color)
+                printf("The specified position does not contain your piece\n");
+            else if (spGameSetMove(game, cmd.move) == SP_GAME_INVALID_MOVE)
+                printf("Illegal move\n");
+            return 0;
+        case SP_GET_MOVES:
+            IS_VALID(cmd);
+            if (IN_RANGE(cmd.arg, 1,5))
+                set_difficulty(0, cmd.arg);
+            else if (cmd.arg == 5)
+                printf("Expert level not supported, please choose a value between 1 to 4:\n");
+            else if (cmd.arg == -1)
+                set_difficulty(0, 2);
+            else
+                printf("Wrong difficulty level. The value should be between 1 to 5\n");
+            return 0;
+        case SP_GINVALID_LINE:
+            PRINT_INVALID_COMMAND;
+            return 0;
+    }
+    return 0;
+}
+
+
+
+int saveGame(SPGame* game, char* fpath){
+    FILE *fp;
+    int i,j;
+    char tile;
+    fp = fopen(fpath, "w+");
+    if (fp == NULL) {
+        printf("File cannot be created or modified\n");
+        return 0;
+    }
+    fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    fprintf(fp, "<game>\n");
+    fprintf(fp, "\t<current_turn>%d</current_turn>\n", game->settings->curr_turn);
+    fprintf(fp, "\t<game_mode>%d</game_mode>\n", game->settings->game_mode);
+    if (game->settings->game_mode == 1) {
+        fprintf(fp, "\t<difficulty>%d</difficulty>\n", game->settings->difficulty);
+        fprintf(fp, "\t<current_turn>%d</current_turn>\n", game->settings->p1_color);
+    }
+    fprintf(fp, "\t<board>\n");
+    for (i = 8; i > 0; i--){
+        fprintf(fp, "\t\t<row_%d>",i);
+        for (j = 0; j < 8; j++){
+            fprintf(fp, "%c", tile);
+        }
+        fprintf(fp, "</row_%d>\n",i);
+    }
+    fprintf(fp, "\t</board>\n");
+    fprintf(fp, "</game>\n");
+    fclose(fp);
+    return 1;
+}
+
+int loadGame(SPGame* game, char* fpath){
+    FILE *fp;
+    int i, j;
+    char line[9999];
+    fp = fopen(fpath, "r");
+    if (fp == NULL) {
+        printf("Error: File doesn’t exist or cannot be opened\n");
+        return 0;
+    }
+    fgets(line, sizeof(line), fp);
+    fgets(line, sizeof(line), fp);
+    fgets(line, sizeof(line), fp);
+    game->settings->curr_turn = line[15]-'0';
+    fgets(line, sizeof(line), fp);
+    game->settings->game_mode = line[12]-'0';
+    if (game->settings->game_mode == 1) {
+        fgets(line, sizeof(line), fp);
+        game->settings->difficulty = line[13] - '0';
+        fgets(line, sizeof(line), fp);
+        game->settings->p1_color = line[13] - '0';
+    }
+    fgets(line, sizeof(line), fp);
+    for (i = 8; i > 0; i--){
+        fgets(line, sizeof(line), fp);
+        for (j = 0; j < 8; j++)
+            game->gameBoard[i-1][j] = line[9+j];
+    }
+    fclose(fp);
+    return 1;
+}
 
 SPGame* spGameCreateDef(){
     SPGame* game = (SPGame *) malloc(sizeof(SPGame));
@@ -44,7 +164,7 @@ SP_GAME_MESSAGE spGamePrintBoard(SPGame* src){
 		return SP_GAME_INVALID_ARGUMENT;
 	int i, j;
 	for (i = 7; i >= 0; i--){
-		printf("%d|",i);
+		printf("%d|",i+1);
 		for (j = 0; j < 8; j++){
 			printf(" %c", src->gameBoard[i][j]);
 		}
@@ -59,19 +179,18 @@ SP_GAME_MESSAGE spGamePrintBoard(SPGame* src){
 }
 
 
-SP_GAME_MESSAGE spGameSetMove(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
-    if (src == NULL || srcCol < 0 || srcCol >= SP_GAMEBOARD_SIZE || srcRow < 0 || srcRow >= SP_GAMEBOARD_SIZE || desCol < 0 || desCol >= SP_GAMEBOARD_SIZE || desRow < 0 || desRow >= SP_GAMEBOARD_SIZE)
-		return SP_GAME_INVALID_ARGUMENT;
-    if(src ->gameBoard[srcRow][srcCol] == SP_GAME_EMPTY_ENTRY)
-        return SP_GAME_EMPTY_ENTRY_MOVE;
-	if (!spGameIsValidMove(src,srcRow,srcCol,desRow,desCol)) // need to check if theres a check as well
-		return SP_GAME_INVALID_MOVE;
-    src->gameBoard[desRow][desCol] = src->gameBoard[srcRow][srcCol];
-	if (src->history->actualSize == src->history->maxSize) {
+SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){// int srcRow , int srcCol , int desRow, int desCol){
+	/*if (!spGameIsValidMove(src,move->src->row,move->src->coloumn,move->dest->row,move->dest->coloumn)) // need to check if theres a check as well
+		return SP_GAME_INVALID_MOVE;*/ //it doesn't work
+    if (src->history->actualSize == src->history->maxSize) {
         spQueuePop(src->history);
         spQueuePush(src->history, src->gameBoard);
     }
-    else spQueuePush(src->history, src->gameBoard);
+    else
+        spQueuePush(src->history, src->gameBoard);
+    src->gameBoard[move->dest->row][move->dest->coloumn] = src->gameBoard[move->src->row][move->src->coloumn];
+    //hoshri - you need to delete the prev one..
+    src->gameBoard[move->src->row][move->src->coloumn] = SP_GAME_EMPTY_ENTRY;
 	return SP_GAME_SUCCESS;
 }
 

@@ -1,5 +1,5 @@
 //
-// Created by סער אדוטלר on 13/09/2017.
+// Created by hoshri on 9/11/2017.
 //
 
 #ifndef UNTITLED1_SPMOVES_H
@@ -36,6 +36,7 @@ typedef enum sp_array_list_message_t {
 
 SPTile* spCreateTile(int row , int col);
 SPMove* spCreateMove(int srcRow , int srcCol ,int desRow , int desCol);
+SPMove* spCreateMoveFromTile(SPTile* srcTile, SPTile* destTile);
 SPMovesList* spMovesListCreate(int maxSize);
 SPMovesList* spMovesListCopy(SPMovesList* src);
 void spMovesListDestroy(SPMovesList* src);

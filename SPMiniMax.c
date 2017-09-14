@@ -122,7 +122,7 @@ int spMinimaxSuggestMove(SPGame* currentGame,
 	{
 		if (1)//spGameIsValidMove(currentGame, i))
 		{
-			if (!(game = spGameCopy(currentGame))) {
+			if (!0){//(game = spGameCopy(currentGame))) {
 				spGameDestroy(currentGame);
 				return -1;
 			}

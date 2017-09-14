@@ -14,6 +14,7 @@
 typedef struct sp_Node_t {
     char data[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE];
     struct sp_Node_t* prev;
+    struct sp_Node_t* next;
 } SPNode;
 
 /* the HEAD of the Queue, hold the amount of node's that are in the queue*/
@@ -28,4 +29,5 @@ Queue* spQueueCreate(int maxSize);
 void spQueueDestroy(Queue* queue);
 int spQueuePush(Queue *myQ, char data[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE]);
 SPNode* spQueuePop(Queue* myQ);
+SPNode* spStackPop(Queue* myQ);
 int spQueueIsEmpty(Queue* myQ);

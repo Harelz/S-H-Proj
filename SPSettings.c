@@ -17,7 +17,7 @@ int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
             return 2;
         case SP_CHOOSE_GAME_MODE:
             IS_VALID(cmd);
-            if (IN_RANGE(cmd.arg, 0,3))
+            if (IN_RANGE(cmd.arg, 1,3))
                 set_game_mode(settings, cmd.arg);
             else if (cmd.arg == -1)
                 set_game_mode(settings, 1);
@@ -26,7 +26,7 @@ int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
             return 0;
         case SP_DIFFICULTY:
             IS_VALID(cmd);
-            if (IN_RANGE(cmd.arg, 0,5))
+            if (IN_RANGE(cmd.arg, 1,5))
                 set_difficulty(settings, cmd.arg);
             else if (cmd.arg == 5)
                 printf("Expert level not supported, please choose a value between 1 to 4:\n");
@@ -41,7 +41,7 @@ int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
                 printf("Error: set user p1_color command is only vaild for 1-player mode\n");
                 return 0;
             }
-            else if (IN_RANGE(cmd.arg, -1,2))
+            else if (IN_RANGE(cmd.arg, 0,2))
                 set_user_color(settings, cmd.arg);
             else if (cmd.arg == -1)
                 set_game_mode(settings, SP_MODE_1P);
@@ -50,8 +50,7 @@ int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
             return 0;
         case SP_LOAD:
             IS_VALID(cmd);
-            loadGame(cmd.pathArg);
-            return 0;
+            return 1;
         case SP_DEFAULT:
             defaultSettings(settings);
             return 0;
@@ -81,10 +80,6 @@ void set_user_color(SPSettings* settings, SP_USER_COLOR color) {
 	settings -> p1_color = color;
 }
 
-
-SPSettings* loadGame(char* fpath) {
-
-}
 
 SPSettings* defaultSettings(SPSettings* settings) {
     spSettingsDestroy(settings);

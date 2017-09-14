@@ -3,12 +3,13 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "SPMoves.h"
+#include <ctype.h>
 
 //specify the maximum line length
 #define SP_MAX_LINE_LENGTH 1024
 
-#define IN_RANGE(i, min, max) (i > min) && (i < max)
+#define IN_RANGE(i, min, max) ((i >= min) && (i < max))
 #define PRINT_INVALID_COMMAND printf("Error: invalid command\n")
 #define IS_VALID(cmd) if(!cmd.validArg) PRINT_INVALID_COMMAND
 
@@ -41,13 +42,26 @@ typedef enum {
 	SP_RESET,
 	SP_GQUIT,
 	SP_GINVALID_LINE,
+	SP_CASTLE
 } SP_GAME_COMMAND;
+
+/*
+typedef struct{
+	int row;
+	int column;
+} SPTile;
+
+typedef struct {
+	SPTile from;
+	SPTile to;
+} SPMove;*/
 
 //a new type that is used to encapsulate a parsed line
 typedef struct  {
 	SP_GAME_COMMAND cmd;
 	bool validArg; //is set to true if the line contains a valid argument
 	char* pathArg;
+	SPMove* move;
 	int arg;
 } SPGameCommand;
 
@@ -80,5 +94,7 @@ bool spParserIsAtoH(const char* str);
 SPSettingCommand spSettingsParser(const char* str);
 
 SPGameCommand spGameParser(const char* str);
+
+SPTile* spParseTile(char* s);
 
 #endif

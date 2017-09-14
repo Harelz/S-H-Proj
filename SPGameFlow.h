@@ -6,10 +6,11 @@
 #define UNTITLED1_SPGAMEFLOW_H
 
 #endif //UNTITLED1_SPGAMEFLOW_H
+/*
 
 #include "SPParser.h"
 #include "SPGame.h"
 
 int gameHandler(SPGame* game, SPGameCommand cmd);
 
-int saveGame(SPGame* game, char* fpath);
+int saveGame(SPGame* game, char* fpath);*/

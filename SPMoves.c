@@ -1,3 +1,7 @@
+//
+// Created by hoshri on 9/11/2017.
+//
+
 #include "SPMoves.h"
 
 SPTile* spCreateTile(int row , int col){
@@ -15,6 +19,15 @@ SPMove* spCreateMove(int srcRow , int srcCol ,int desRow , int desCol){
         return NULL;
     instance -> src = spCreateTile(srcRow,srcCol);
     instance -> dest = spCreateTile(desRow,desCol);
+    return instance;
+}
+
+SPMove* spCreateMoveFromTile(SPTile* srcTile, SPTile* destTile){
+    SPMove* instance = (SPMove *) malloc(sizeof(SPMove));
+    if(instance == NULL)
+        return NULL;
+    instance -> src = srcTile;
+    instance -> dest = destTile;
     return instance;
 }
 

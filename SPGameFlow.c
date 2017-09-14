@@ -4,6 +4,7 @@
 
 #include "SPGameFlow.h"
 
+/*
 
 int gameHandler(SPGame* game, SPGameCommand cmd) {
     switch(cmd.cmd){
@@ -90,4 +91,4 @@ int saveGame(SPGame* game, char* fpath){
     fprintf(fp, "</game>\n");
     fclose(fp);
     return 1;
-}
+}*/
