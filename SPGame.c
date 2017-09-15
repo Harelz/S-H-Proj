@@ -7,10 +7,10 @@ int gameHandler(SPGame* game, SPGameCommand cmd) {
         case SP_RESET:
             printf("Restarting...\n");
             spGameDestroy(game);
-            return 1; //indicates to run main all over again
+            return 0; //indicates to run main all over again
         case SP_GQUIT:
             printf("Exiting...\n");
-            return 2; //indicates to terminate
+            return -1; //indicates to terminate
         case SP_UNDO:
             if (game->settings->game_mode == 2)
                 printf("Empty history, move cannot be undone\n");
@@ -22,11 +22,11 @@ int gameHandler(SPGame* game, SPGameCommand cmd) {
                 printf("Undo move for player %s : <x,y> -> <w,z>\n", game->settings->p1_color == WHITE ? "white" : "black");
                 printf("Undo move for player %s : <x,y> -> <w,z>\n", game->settings->p1_color == BLACK ? "white" : "black");
             }
-            return 0;
+            return 1;
         case SP_SAVE:
             IS_VALID(cmd);
             saveGame(game, cmd.pathArg);
-            return 0;
+            return 1;
         case SP_MOVE:
             IS_VALID(cmd);
             if (!IN_RANGE(cmd.move->src->coloumn, 0,8) || !IN_RANGE(cmd.move->dest->coloumn, 0,8)
@@ -37,7 +37,7 @@ int gameHandler(SPGame* game, SPGameCommand cmd) {
                 printf("The specified position does not contain your piece\n");
             else if (spGameSetMove(game, cmd.move) == SP_GAME_INVALID_MOVE)
                 printf("Illegal move\n");
-            return 0;
+            return 1;
         case SP_GET_MOVES:
             IS_VALID(cmd);
             if (IN_RANGE(cmd.arg, 1,5))
@@ -48,12 +48,12 @@ int gameHandler(SPGame* game, SPGameCommand cmd) {
                 set_difficulty(0, 2);
             else
                 printf("Wrong difficulty level. The value should be between 1 to 5\n");
-            return 0;
+            return 1;
         case SP_GINVALID_LINE:
             PRINT_INVALID_COMMAND;
-            return 0;
+            return 1;
     }
-    return 0;
+    return -1;
 }
 
 
@@ -79,7 +79,7 @@ int saveGame(SPGame* game, char* fpath){
     for (i = 8; i > 0; i--){
         fprintf(fp, "\t\t<row_%d>",i);
         for (j = 0; j < 8; j++){
-            fprintf(fp, "%c", tile);
+            fprintf(fp, "%c", game->gameBoard[i-1][j]);
         }
         fprintf(fp, "</row_%d>\n",i);
     }

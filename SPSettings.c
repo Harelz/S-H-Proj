@@ -14,7 +14,7 @@ int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
             return 1;
         case SP_SQUIT:
             printf("Exiting...\n");
-            return 2;
+            return -1;
         case SP_CHOOSE_GAME_MODE:
             IS_VALID(cmd);
             if (IN_RANGE(cmd.arg, 1,3))
@@ -50,7 +50,7 @@ int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
             return 0;
         case SP_LOAD:
             IS_VALID(cmd);
-            return 1;
+            return 2;
         case SP_DEFAULT:
             defaultSettings(settings);
             return 0;
