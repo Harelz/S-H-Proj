@@ -66,32 +66,56 @@ void setCounter(SPGame* game, int count[8], int row, int col) {
 * On success the function returns a number between [0,SP_GAMEBOARD_SIZE -1]
 * which is the best move for the current player.
 */
-int spMinimaxScoring(SPGame* currentGame) {
-	if (currentGame == NULL)
-	{
-		return -1;
-	}
-	int weight[WEIGHT_VECTOR_SIZE] = { INT_MIN, -5, -2, -1, 1, 2, 5, INT_MAX };
-	int count[WEIGHT_VECTOR_SIZE] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-	int score = 0, i = 0;
-	for (i = 0; i < SP_GAMEBOARD_SIZE; i++) {
-		for (int j = 0; j < SP_GAMEBOARD_SIZE; j++) {
-			setCounter(currentGame, count, i, j);
+int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_COLOR color) {
+	char c;
+	int i,j, whiteScore, blackScore, boardScore;
+	//pawn = 1 , knight = 3 , bishop = 3 , rook = 5, queen = 9, king=100
+	for (i = 0; i < SP_GAMEBOARD_SIZE; i++){
+		for (j = 0; j < SP_GAMEBOARD_SIZE; j++){
+			c = board[i][j];
+			switch (c) {
+				case W_PAWN:
+					whiteScore+=1;
+					break;
+				case W_KNIGHT:
+					whiteScore+=3;
+					break;
+				case W_BISHOP:
+					whiteScore+=3;
+					break;
+				case W_ROOK:
+					whiteScore+=5;
+					break;
+				case W_QUEEN:
+					whiteScore+=9;
+					break;
+				case W_KING:
+					whiteScore+=100;
+					break;
+				case B_PAWN:
+					blackScore+=1;
+					break;
+				case B_KNIGHT:
+					blackScore+=3;
+					break;
+				case B_BISHOP:
+					blackScore+=3;
+					break;
+				case B_ROOK:
+					blackScore+=5;
+					break;
+				case B_QUEEN:
+					blackScore+=9;
+					break;
+				case B_KING:
+					blackScore+=100;
+					break;
+
+			}
 		}
 	}
-	if (count[0] > 0)
-	{
-		return weight[0];
-	}
-	if (count[WEIGHT_VECTOR_SIZE - 1] > 0)
-	{
-		return weight[WEIGHT_VECTOR_SIZE - 1];
-	}
-	for (i = 1; i < WEIGHT_VECTOR_SIZE - 1; i++)
-	{
-		score += count[i] * weight[i];
-	}
-	return score;
+	boardScore = (color==WHITE) ? whiteScore-blackScore : blackScore-whiteScore;
+	return boardScore;
 }
 
 /**
