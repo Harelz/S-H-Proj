@@ -187,10 +187,13 @@ char spCheckWinner(SPGame* src);
  */
 bool fullBoard(SPGame* src);
 
+SPMovesList* spGameGetMoves(SPGame* src , int row , int col);
+SPMovesList* spGameGetAllMoves(SPGame* src);
 bool checkValidStepForM(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
 bool checkValidStepForR(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
 bool checkValidStepForB(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
 bool checkValidStepForN(int srcRow , int srcCol , int desRow, int desCol);
 bool checkValidStepForK(int srcRow , int srcCol , int desRow, int desCol);
+bool spGameTileIsThreatened(SPGame* game , SPTile* tile , int targetColor);
 
 #endif

@@ -62,6 +62,7 @@ typedef struct  {
 	bool validArg; //is set to true if the line contains a valid argument
 	char* pathArg;
 	SPMove* move;
+	SPTile* tile;
 	int arg;
 } SPGameCommand;
 
