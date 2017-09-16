@@ -10,17 +10,17 @@
 * @param imax - boolean set to true if need to maximize children score, false to minimize
 * @return
 * score of node in the Minmax Tree
-*/
+*//*
 int spMinimaxNodeCalc(SPGame* currentGame,
 	unsigned int nodeDepth, bool imax) {
 	int tempScore, finalScore;
 	bool madeMove = false;
 	char win;
-	if (nodeDepth == 0)
+	/*if (nodeDepth == 0)
 	{
 		return spMinimaxScoring(currentGame);
 	}
-
+*/ /*
 	if (1)//(win = spCheckWinner(currentGame)) == SP_GAME_PLAYER_1_SYMBOL)
 	{
 		return INT_MAX;
@@ -53,3 +53,4 @@ int spMinimaxNodeCalc(SPGame* currentGame,
 	}
 	return finalScore;
 }
+*/

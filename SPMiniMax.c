@@ -7,7 +7,7 @@
 * @param cell - cell content
 * @return
 * the value of the cell to the Scoring Function as described above
-*/
+*/ /*
 int checkCell(char cell) {
 	if (cell == SP_GAME_PLAYER_1_SYMBOL) {
 		return 1;
@@ -28,7 +28,7 @@ int checkCell(char cell) {
 * @param col current collumn to check 4's from
 * @return
 * void
-*/
+*/ /*
 void setCounter(SPGame* game, int count[8], int row, int col) {
 	int dirCount[4] = { 0,0,0,0 };
 	for (int i = 0; i < 4; i++) {
@@ -65,7 +65,7 @@ void setCounter(SPGame* game, int count[8], int row, int col) {
 * -1 if either currentGame is NULL
 * On success the function returns a number between [0,SP_GAMEBOARD_SIZE -1]
 * which is the best move for the current player.
-*/
+*//*
 int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_COLOR color) {
 	char c;
 	int i,j, whiteScore, blackScore, boardScore;
@@ -130,7 +130,7 @@ int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_C
 * -1 if either currentGame is NULL or maxDepth <= 0.
 * On success the function returns a number between [0,SP_GAMEBOARD_SIZE -1]
 * which is the best move for the current player.
-*/
+*/ /*
 int spMinimaxSuggestMove(SPGame* currentGame,
 	unsigned int maxDepth) {
 	SPGame* game;
@@ -173,6 +173,7 @@ int spMinimaxSuggestMove(SPGame* currentGame,
 		for (int i = 0; i < SP_GAMEBOARD_SIZE; i++)
 			if (currentGame->tops[i] != SP_GAMEBOARD_SIZE)
 				return i;
-	}*/
+	}*/ /*
 	return col;
 }
+*/

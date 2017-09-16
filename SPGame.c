@@ -123,7 +123,7 @@ int loadGame(SPGame* game, char* fpath){
 SPGame* spGameCreateDef(){
     SPGame* game = (SPGame *) malloc(sizeof(SPGame));
     if(game == NULL) return NULL;	//puts("Error: malloc has failed");
-    game->currentPlayer = 1;
+    game->currentPlayer = SP_USER_COLOR_WHITE;
     game->history = spQueueCreate(3);
     game->settings = defaultSettings(NULL);
     spSetNewBoard(game);
@@ -132,7 +132,7 @@ SPGame* spGameCreateDef(){
 SPGame* spGameCreate (SPSettings* settings){
 	SPGame* game = (SPGame *) malloc(sizeof(SPGame));
 	if(game == NULL) return NULL;	//puts("Error: malloc has failed");
-	game->currentPlayer = 1;
+	game->currentPlayer = SP_USER_COLOR_WHITE;
     game->history = spQueueCreate(3);
     if(settings == NULL)    game->settings = defaultSettings(NULL);
     else game ->settings = settings;
@@ -179,9 +179,9 @@ SP_GAME_MESSAGE spGamePrintBoard(SPGame* src){
 }
 
 
-SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){// int srcRow , int srcCol , int desRow, int desCol){
-	/*if (!spGameIsValidMove(src,move->src->row,move->src->coloumn,move->dest->row,move->dest->coloumn)) // need to check if theres a check as well
-		return SP_GAME_INVALID_MOVE;*/ //it doesn't work
+SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
+	if (!spGameIsValidMove(src, move->src->row, move->src->coloumn, move->dest->row, move->dest->coloumn))
+		return SP_GAME_INVALID_MOVE;
     if (src->history->actualSize == src->history->maxSize) {
         spQueuePop(src->history);
         spQueuePush(src->history, src->gameBoard);
@@ -189,36 +189,15 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){// int srcRow , int src
     else
         spQueuePush(src->history, src->gameBoard);
     src->gameBoard[move->dest->row][move->dest->coloumn] = src->gameBoard[move->src->row][move->src->coloumn];
-    //hoshri - you need to delete the prev one..
     src->gameBoard[move->src->row][move->src->coloumn] = SP_GAME_EMPTY_ENTRY;
 	return SP_GAME_SUCCESS;
 }
 
-bool spGameIsValidMove(SPGame* src, int srcRow , int srcCol , int desRow, int desCol) {
-    if (src == NULL || srcCol < 0 || srcCol >= SP_GAMEBOARD_SIZE || srcRow < 0 || srcRow >= SP_GAMEBOARD_SIZE || desCol < 0 ||
-        desCol >= SP_GAMEBOARD_SIZE || desRow < 0 || desRow >= SP_GAMEBOARD_SIZE)
-        return false;
-    if(srcCol == desCol && srcRow == desRow) return false;
-    if (getColor(src->gameBoard[srcRow][srcCol]) == BLACK) {
-        if(getColor(src->gameBoard[desRow][desCol]) == BLACK) return false;
-        if ((src->settings->p1_color == SP_USER_COLOR_BLACK && src->currentPlayer == SP_GAME_PLAYER_1_SYMBOL)
-            || (src->settings->p1_color == SP_USER_COLOR_WHITE && src->currentPlayer == SP_GAME_PLAYER_2_SYMBOL)) {
-            return checkValidStep(src , srcRow , srcCol , desRow , desCol);
-        }
-    }
-    else if (getColor(src->gameBoard[srcRow][srcCol]) == WHITE){
-        if(getColor(src->gameBoard[desRow][desCol]) == WHITE) return false;
-        if( (src->settings->p1_color == SP_USER_COLOR_WHITE && src->currentPlayer == SP_GAME_PLAYER_1_SYMBOL)
-            || (src->settings->p1_color == SP_USER_COLOR_BLACK && src->currentPlayer == SP_GAME_PLAYER_2_SYMBOL) ) {
-            return checkValidStep(src , srcRow , srcCol , desRow , desCol);
-        }
-    }
-    return false;
-}
-
-bool checkValidStep(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
+bool spGameIsValidMove(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
     char piece = src->gameBoard[srcRow][srcCol];
-    if(piece == 'P' || piece == 'p') return checkValidStepForP(src , srcRow , srcCol , desRow , desCol);
+    if(srcCol == desCol && srcRow == desRow) return false;
+    if(getColor(src->gameBoard[desRow][desCol]) == getColor(src->gameBoard[srcRow][srcCol])) return false;
+    if(piece == W_PAWN || piece == B_PAWN) return checkValidStepForM(src , srcRow , srcCol , desRow , desCol);
     if(piece == W_ROOK || piece == B_ROOK) return checkValidStepForR(src , srcRow , srcCol , desRow , desCol);
     if(piece == W_BISHOP || piece == B_BISHOP) return checkValidStepForB(src , srcRow , srcCol , desRow , desCol);
     if(piece == W_QUEEN || piece == B_QUEEN) return (checkValidStepForR(src , srcRow , srcCol , desRow , desCol)
@@ -227,20 +206,34 @@ bool checkValidStep(SPGame* src, int srcRow , int srcCol , int desRow, int desCo
     if(piece == B_KING || piece == W_KING) return checkValidStepForK(srcRow , srcCol , desRow , desCol);
     return false;
 }
-bool checkValidStepForP(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
+
+bool checkValidStepForM(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
     char piece = src->gameBoard[srcRow][srcCol];
-    if(piece == 'P' && srcCol == desCol &&
-       (desRow - srcRow == -1
-        || (desRow - srcRow == -2 && srcRow == 6 && src->gameBoard[srcRow-1][srcCol] == SP_GAME_EMPTY_ENTRY))) return true;
-    if(piece == 'p' && srcCol == desCol &&
-       (desRow - srcRow == 1
-        || (desRow - srcRow == 2 && srcRow == 1 && src->gameBoard[srcRow+1][srcCol] == SP_GAME_EMPTY_ENTRY))) return true;
-    if(piece == 'P' && desRow - srcRow == -1 && abs(desCol - srcCol) == 1
-       && getColor(src->gameBoard[desRow][desCol]) == WHITE) return true;
-    if(piece == 'p' && desRow - srcRow == 1 && abs(desCol - srcCol) == 1
-       && getColor(src->gameBoard[desRow][desCol]) == BLACK) return true;
+    if(piece == B_PAWN && srcCol == desCol) { // go straight no killing
+        if (desRow - srcRow == -1 ||
+            (desRow - srcRow == -2 && srcRow == 6 && src->gameBoard[srcRow - 1][srcCol] == SP_GAME_EMPTY_ENTRY)) {
+            return true;
+        }
+    }
+    else if(piece == B_PAWN && abs(desCol - srcCol) == 1) { // go right or left with killing
+        if (desRow - srcRow == -1 && getColor(src->gameBoard[desRow][desCol]) == WHITE) {
+            return true;
+        }
+    }
+    else if(piece == W_PAWN && srcCol == desCol) { // go straight no killing
+        if (desRow - srcRow == 1 ||
+            (desRow - srcRow == 2 && srcRow == 1 && src->gameBoard[srcRow + 1][srcCol] == SP_GAME_EMPTY_ENTRY)) {
+            return true;
+        }
+    }
+    else if(piece == W_PAWN && abs(desCol - srcCol) == 1) { // go right or left with killing
+        if (desRow - srcRow == 1 && getColor(src->gameBoard[desRow][desCol]) == WHITE) {
+            return true;
+        }
+    }
     return false;
 }
+
 bool checkValidStepForR(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
     if (desRow == srcRow) { // going left or right
         if (srcCol > desCol) { //going left
@@ -347,7 +340,7 @@ char spGameIsCheck(SPGame* src){
 
 char spGameGetCurrentPlayer(SPGame* src){
 	if(src == NULL) return SP_GAME_EMPTY_ENTRY;
-	if(src->currentPlayer == SP_GAME_PLAYER_1_SYMBOL || src->currentPlayer == SP_GAME_PLAYER_2_SYMBOL)
+	if(src->currentPlayer == SP_USER_COLOR_WHITE || src->currentPlayer == SP_USER_COLOR_BLACK)
 		return src->currentPlayer;
 	return SP_GAME_EMPTY_ENTRY;
 }

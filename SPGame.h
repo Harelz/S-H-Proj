@@ -24,8 +24,6 @@
 
 //Definitions
 #define SP_GAMEBOARD_SIZE 8
-#define SP_GAME_PLAYER_1_SYMBOL 'X'
-#define SP_GAME_PLAYER_2_SYMBOL 'Y'
 #define SP_GAME_TIE_SYMBOL '-'
 #define SP_GAME_EMPTY_ENTRY '_'
 
@@ -47,17 +45,6 @@
 #define B_QUEEN 'Q'
 #define W_KING 'k'
 #define B_KING 'K'
-/* other reference defs
-#define EMPTY ' '
-#define CASTLE 'z' /*special mark for castling move*/
-#define NORM '\0' /*mark for non-special moves*/
-
-#define CONTINUE 'c'
-#define TIE 't'
-#define CHECK 'C'
-
-#define inBoard(C,R) (0<=(C) && 0<=(R) && (C)<SP_GAMEBOARD_SIZE && (R)<SP_GAMEBOARD_SIZE)*/
-
 
 typedef struct sp_game_t {
 	char gameBoard[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE];
@@ -81,10 +68,8 @@ typedef enum sp_game_message_t {
 int gameHandler(SPGame* game, SPGameCommand cmd);
 int saveGame(SPGame* game, char* fpath);
 int loadGame(SPGame* game, char* fpath);
-
 SPGame* spSetNewBoard(SPGame* src);
 SPGame* spGameCreateDef();
-
 
 /**
  * Creates a new game with a specified settings.
@@ -202,11 +187,10 @@ char spCheckWinner(SPGame* src);
  */
 bool fullBoard(SPGame* src);
 
-bool checkValidStepForP(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
+bool checkValidStepForM(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
 bool checkValidStepForR(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
 bool checkValidStepForB(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
 bool checkValidStepForN(int srcRow , int srcCol , int desRow, int desCol);
 bool checkValidStepForK(int srcRow , int srcCol , int desRow, int desCol);
-bool checkValidStep(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
 
 #endif
