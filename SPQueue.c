@@ -26,8 +26,7 @@ Queue* spQueueCreate(int maxSize) {
 
 void spQueueDestroy(Queue* queue) {
     SPNode* trashNode;
-    while (!spQueueIsEmpty(queue)) {
-        trashNode = spQueuePop(queue);
+    while ((trashNode = spQueuePop(queue)) != NULL) {
         free(trashNode);
     }
     free(queue);
@@ -91,4 +90,16 @@ int spQueueIsEmpty(Queue* myQ) {
     } else {
         return 0;
     }
+}
+
+Queue* spQueueCopy(Queue* myQ){
+    Queue* queue = (Queue*) malloc(sizeof (Queue));
+    if (queue == NULL) {
+        return NULL;
+    }
+    queue->maxSize = myQ->maxSize;
+    queue->actualSize = myQ->actualSize;
+    queue->head = myQ->head;
+    queue->tail = myQ->tail;
+    return queue;
 }

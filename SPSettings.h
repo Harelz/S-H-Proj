@@ -48,4 +48,6 @@ void settings_print(SPSettings* settings);
 
 void spSettingsDestroy(SPSettings* settings);
 
+SPSettings* spSettingsCopy(SPSettings* src);
+
 #endif

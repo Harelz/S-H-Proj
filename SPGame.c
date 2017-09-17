@@ -17,7 +17,7 @@ int gameHandler(SPGame* game, SPGameCommand cmd) {
             else if (spQueueIsEmpty(game->history))
                 printf("Can't Undo, no previous moves!\n");
             else {
-                char** prevBoard = spStackPop(game->history)->data;
+                char** prevBoard = (char**)spStackPop(game->history)->data;
                 memcpy(game->gameBoard, prevBoard, sizeof(game->gameBoard));
                 printf("Undo move for player %s : <x,y> -> <w,z>\n", game->settings->p1_color == WHITE ? "white" : "black");
                 printf("Undo move for player %s : <x,y> -> <w,z>\n", game->settings->p1_color == BLACK ? "white" : "black");
@@ -40,7 +40,7 @@ int gameHandler(SPGame* game, SPGameCommand cmd) {
             return 1;
         case SP_GET_MOVES:
             IS_VALID(cmd);
-            if (!IN_RANGE(cmd.tile->coloumn, 0,8) || !IN_RANGE(cmd.tile->coloumn, 0,8))
+            if (!(IN_RANGE(cmd.tile->row, 0,8) && IN_RANGE(cmd.tile->coloumn, 0,8)))
                 printf("Invalid position on the board\n");
             else if (game->gameBoard[cmd.tile->row][cmd.tile->coloumn] == SP_GAME_EMPTY_ENTRY ||
                      getColor(game->gameBoard[cmd.tile->row][cmd.tile->coloumn]) != game->settings->p1_color)
@@ -48,14 +48,14 @@ int gameHandler(SPGame* game, SPGameCommand cmd) {
             else {
                 SPMovesList* mlst = spGameGetMoves(game, cmd.tile->row, cmd.tile->coloumn);
                 for (int i = 0; i < mlst->actualSize; i++) {
-                    SPTile *t = spMovesListGetAt(mlst, i)->dest;
+                    SPMove *m = spMovesListGetAt(mlst, i);
                     if (game->settings->difficulty == SP_DIFF_EASY || game->settings->difficulty == SP_DIFF_NOOB)
-                        printf("<%d,%c>%s%s\n", t->row + 1, t->coloumn + 'A',
-                               spGameTileIsThreatened(game,t,getColor(game->gameBoard[cmd.tile->row][cmd.tile->coloumn])) ? "*" : "",
-                               (game->gameBoard[t->row][t->coloumn] != SP_GAME_EMPTY_ENTRY
-                                && getColor(game->gameBoard[t->row][t->coloumn]) != getColor(game->gameBoard[cmd.tile->row][cmd.tile->coloumn])) ? "^" : ""); // check thretened and eaten
+                        printf("<%d,%c>%s%s\n", m->dest->row + 1, m->dest->coloumn + 'A',
+                               spGameTileIsThreatened(game,m) ? "*" : "",
+                               (game->gameBoard[m->dest->row][m->dest->coloumn] != SP_GAME_EMPTY_ENTRY
+                                && getColor(game->gameBoard[m->dest->row][m->dest->coloumn]) != getColor(game->gameBoard[cmd.tile->row][cmd.tile->coloumn])) ? "^" : ""); // check thretened and eaten
                     else
-                        printf("<%d,%c>\n", t->row + 1, t->coloumn + 'A');
+                        printf("<%d,%c>\n", m->dest->row + 1, m->dest->coloumn + 'A');
                 }
             }
             return 1;
@@ -66,15 +66,17 @@ int gameHandler(SPGame* game, SPGameCommand cmd) {
     return -1;
 }
 
-bool spGameTileIsThreatened(SPGame* game , SPTile* tile , int targetColor){
-    SPMovesList* mlst = spGameGetAllMoves(game);
+bool spGameTileIsThreatened(SPGame* game , SPMove* move){
+    SPGame* movedGame = spGameCopy(game);
+    spGameSetMove(movedGame,move);
+    SPMovesList* mlst = spGameGetAllMoves(movedGame);
     for(int i = 0; i<mlst->actualSize; i++){
         SPMove* atk = spMovesListGetAt(mlst,i);
-        if(getColor(game->gameBoard[atk->src->row][atk->src->coloumn]) != targetColor
-           && atk->dest->row == tile->row && atk->dest->coloumn == tile->coloumn){
-            return true;
-        }
+        if(getColor(movedGame->gameBoard[atk->src->row][atk->src->coloumn])
+           != getColor(movedGame->gameBoard[move->dest->row][move->dest->coloumn])
+           && atk->dest->row == move->dest->row && atk->dest->coloumn == move->dest->coloumn)   return true;
     }
+    //spGameDestroy(movedGame);
     return false;
 
 }
@@ -123,14 +125,14 @@ int loadGame(SPGame* game, char* fpath){
     fgets(line, sizeof(line), fp);
     fgets(line, sizeof(line), fp);
     fgets(line, sizeof(line), fp);
-    game->settings->curr_turn = line[15]-'0';
+    game->settings->curr_turn = (SP_USER_COLOR)line[15]-'0';
     fgets(line, sizeof(line), fp);
-    game->settings->game_mode = line[12]-'0';
+    game->settings->game_mode = (SP_GAME_MODE)line[12]-'0';
     if (game->settings->game_mode == 1) {
         fgets(line, sizeof(line), fp);
-        game->settings->difficulty = line[13] - '0';
+        game->settings->difficulty = (SP_GAME_DIFFICULTY)line[13] - '0';
         fgets(line, sizeof(line), fp);
-        game->settings->p1_color = line[13] - '0';
+        game->settings->p1_color = (SP_USER_COLOR)line[13] - '0';
     }
     fgets(line, sizeof(line), fp);
     for (i = 8; i > 0; i--){
@@ -234,7 +236,8 @@ bool checkValidStepForM(SPGame* src, int srcRow , int srcCol , int desRow, int d
     char piece = src->gameBoard[srcRow][srcCol];
     if(piece == B_PAWN && srcCol == desCol) { // go straight no killing
         if (src->gameBoard[srcRow - 1][srcCol] == SP_GAME_EMPTY_ENTRY &&
-            (desRow - srcRow == -1 || (desRow - srcRow == -2 && srcRow == 6 && src->gameBoard[srcRow - 2][srcCol] == SP_GAME_EMPTY_ENTRY))) {
+            (desRow - srcRow == -1 ||
+                    (desRow - srcRow == -2 && srcRow == 6 && src->gameBoard[srcRow - 2][srcCol] == SP_GAME_EMPTY_ENTRY))) {
             return true;
         }
     }
@@ -368,6 +371,16 @@ char spGameGetCurrentPlayer(SPGame* src){
 	if(src->currentPlayer == SP_USER_COLOR_WHITE || src->currentPlayer == SP_USER_COLOR_BLACK)
 		return src->currentPlayer;
 	return SP_GAME_EMPTY_ENTRY;
+}
+
+SPGame* spGameCopy(SPGame* src){
+    SPGame* cGame = (SPGame *) malloc(sizeof(SPGame));
+    if(cGame == NULL) return NULL;	//puts("Error: malloc has failed");
+    cGame->currentPlayer = src->currentPlayer;
+    cGame->history = spQueueCopy(src->history);
+    cGame->settings = spSettingsCopy(src->settings);
+    strcpy(cGame->gameBoard , src->gameBoard);
+    return cGame;
 }
 
 void spGameDestroy(SPGame* src){

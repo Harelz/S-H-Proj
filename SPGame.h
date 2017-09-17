@@ -194,6 +194,6 @@ bool checkValidStepForR(SPGame* src, int srcRow , int srcCol , int desRow, int d
 bool checkValidStepForB(SPGame* src, int srcRow , int srcCol , int desRow, int desCol);
 bool checkValidStepForN(int srcRow , int srcCol , int desRow, int desCol);
 bool checkValidStepForK(int srcRow , int srcCol , int desRow, int desCol);
-bool spGameTileIsThreatened(SPGame* game , SPTile* tile , int targetColor);
+bool spGameTileIsThreatened(SPGame* game , SPMove* move);
 
 #endif

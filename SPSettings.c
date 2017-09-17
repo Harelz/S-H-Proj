@@ -2,6 +2,7 @@
 
 SPSettings* init_settings(SP_GAME_MODE mode, SP_GAME_DIFFICULTY diff, SP_USER_COLOR color) {
     SPSettings* settings = (SPSettings*)calloc(1, sizeof(SPSettings));
+    if(settings == NULL) return NULL;
 	set_game_mode(settings, mode);
 	set_difficulty(settings, diff);
 	set_user_color(settings, color);
@@ -99,6 +100,16 @@ void settings_print(SPSettings* settings){
             printf("BLACK\n");
     }
 }
+
+SPSettings* spSettingsCopy(SPSettings* src){
+    SPSettings* settings = (SPSettings*)calloc(1, sizeof(SPSettings));
+    if(settings == NULL) return NULL;
+    settings->game_mode = src->game_mode;
+    settings->difficulty = src->difficulty;
+    settings->p1_color = src->p1_color;
+    return settings;
+}
+
 void spSettingsDestroy(SPSettings* settings){
     if(settings != NULL){
         free(settings);

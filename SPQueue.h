@@ -31,3 +31,4 @@ int spQueuePush(Queue *myQ, char data[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE]);
 SPNode* spQueuePop(Queue* myQ);
 SPNode* spStackPop(Queue* myQ);
 int spQueueIsEmpty(Queue* myQ);
+Queue* spQueueCopy(Queue* myQ);
