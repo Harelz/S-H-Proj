@@ -68,12 +68,6 @@ int gameHandler(SPGame* game, SPGameCommand cmd) {
 
 bool spGameTileIsThreatened(SPGame* game , SPTile* tile , int targetColor){
     SPMovesList* mlst = spGameGetAllMoves(game);
-    //debug
-    for(int i = 0; i<mlst->actualSize; i++) {
-        SPMove* move = spMovesListGetAt(mlst,i);
-        printf("<%d,%c> to <%d,%c>\n", move->src->row + 1, move->src->coloumn + 'A', move->dest->row + 1, move->dest->coloumn + 'A');
-    }
-    //debug
     for(int i = 0; i<mlst->actualSize; i++){
         SPMove* atk = spMovesListGetAt(mlst,i);
         if(getColor(game->gameBoard[atk->src->row][atk->src->coloumn]) != targetColor
@@ -224,7 +218,8 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
 bool spGameIsValidMove(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
     char piece = src->gameBoard[srcRow][srcCol];
     if(srcCol == desCol && srcRow == desRow) return false;
-    if(getColor(src->gameBoard[desRow][desCol]) == getColor(src->gameBoard[srcRow][srcCol])) return false;
+    if(src->gameBoard[desRow][desCol] != SP_GAME_EMPTY_ENTRY
+       && getColor(src->gameBoard[desRow][desCol]) == getColor(src->gameBoard[srcRow][srcCol])) return false;
     if(piece == W_PAWN || piece == B_PAWN) return checkValidStepForM(src , srcRow , srcCol , desRow , desCol);
     if(piece == W_ROOK || piece == B_ROOK) return checkValidStepForR(src , srcRow , srcCol , desRow , desCol);
     if(piece == W_BISHOP || piece == B_BISHOP) return checkValidStepForB(src , srcRow , srcCol , desRow , desCol);
@@ -244,7 +239,8 @@ bool checkValidStepForM(SPGame* src, int srcRow , int srcCol , int desRow, int d
         }
     }
     else if(piece == B_PAWN && abs(desCol - srcCol) == 1) { // go right or left with killing
-        if (desRow - srcRow == -1 && getColor(src->gameBoard[desRow][desCol]) == WHITE) {
+        if (desRow - srcRow == -1 && src->gameBoard[desRow][desCol] != SP_GAME_EMPTY_ENTRY
+            && getColor(src->gameBoard[desRow][desCol]) == WHITE) {
             return true;
         }
     }
@@ -255,7 +251,8 @@ bool checkValidStepForM(SPGame* src, int srcRow , int srcCol , int desRow, int d
         }
     }
     else if(piece == W_PAWN && abs(desCol - srcCol) == 1) { // go right or left with killing
-        if (desRow - srcRow == 1 && getColor(src->gameBoard[desRow][desCol]) == WHITE) {
+        if (desRow - srcRow == 1 && src->gameBoard[desRow][desCol] != SP_GAME_EMPTY_ENTRY
+            && getColor(src->gameBoard[desRow][desCol]) == BLACK) {
             return true;
         }
     }
@@ -296,7 +293,7 @@ bool checkValidStepForB(SPGame* src, int srcRow , int srcCol , int desRow, int d
         }
         else{ // going positive slope down
             for(int i = 1; i< srcRow-desRow; i++){
-                if(src->gameBoard[desRow+i][desCol+i] != SP_GAME_EMPTY_ENTRY) return false;
+                if(src->gameBoard[srcRow-i][srcCol-i] != SP_GAME_EMPTY_ENTRY) return false;
             }
         }
     }
@@ -306,9 +303,9 @@ bool checkValidStepForB(SPGame* src, int srcRow , int srcCol , int desRow, int d
                 if(src->gameBoard[srcRow+i][srcCol-i] != SP_GAME_EMPTY_ENTRY) return false;
             }
         }
-        else{ // going positive slope down
+        else{ // going negative slope down
             for(int i = 1; i< srcRow-desRow; i++){
-                if(src->gameBoard[desRow-i][desCol+i] != SP_GAME_EMPTY_ENTRY) return false;
+                if(src->gameBoard[srcRow-i][srcCol+i] != SP_GAME_EMPTY_ENTRY) return false;
             }
         }
     }
