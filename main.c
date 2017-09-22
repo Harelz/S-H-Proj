@@ -32,7 +32,7 @@ int main() {
             }
             s[strcspn(s, "\r\n")] = 0;
             SPGameCommand cmd = spGameParser(s);
-            spStatus = gameHandler(game, cmd);
+            spStatus = spGameHandler(game, cmd);
         }
 	}while(spStatus != -1);
     spGameDestroy(game);

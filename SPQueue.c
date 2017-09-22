@@ -3,9 +3,7 @@
 //
 
 #include "SPQueue.h"
-
 #include <stdlib.h>
-#include <stdio.h>
 #include "string.h"
 
 Queue* spQueueCreate(int maxSize) {

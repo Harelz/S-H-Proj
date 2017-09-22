@@ -26,6 +26,7 @@
 #define SP_GAMEBOARD_SIZE 8
 #define SP_GAME_TIE_SYMBOL '-'
 #define SP_GAME_EMPTY_ENTRY '_'
+#define SP_GAME_COLOR_BOTH '&'
 
 //reference defines
 #define WHITE SP_USER_COLOR_WHITE
@@ -58,18 +59,28 @@ typedef struct sp_game_t {
  */
 typedef enum sp_game_message_t {
 	SP_GAME_INVALID_MOVE,
+    SP_GAME_INVALID_MOVE_TIE,
     SP_GAME_EMPTY_ENTRY_MOVE,
 	SP_GAME_INVALID_ARGUMENT,
 	SP_GAME_HISTORY,
 	SP_GAME_SUCCESS,
+    SP_GAME_SUCCESS_TIE,
+    SP_GAME_SUCCESS_CHECKED,
+    SP_GAME_SUCCESS_MATED,
 //You may add any message you like
 } SP_GAME_MESSAGE;
 
-int gameHandler(SPGame* game, SPGameCommand cmd);
-int saveGame(SPGame* game, char* fpath);
+int spGameHandler(SPGame *game, SPGameCommand cmd);
+int spGameSaveHandler(SPGame *game, char *fpath);
 int loadGame(SPGame* game, char* fpath);
 SPGame* spSetNewBoard(SPGame* src);
 SPGame* spGameCreateDef();
+SPGame* spGameStimulateMove(SPGame* game , SPMove* move);
+void spGameUndoHandler(SPGame* game);
+int spGameMoveHandler(SPGame* game , SPMove* move);
+void spGameGetMovesHandler(SPGame* game , SPTile* tile);
+bool spGameIsMate(SPGame *src);
+
 
 /**
  * Creates a new game with a specified settings.

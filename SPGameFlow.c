@@ -6,7 +6,7 @@
 
 /*
 
-int gameHandler(SPGame* game, SPGameCommand cmd) {
+int spGameHandler(SPGame* game, SPGameCommand cmd) {
     switch(cmd.cmd){
         case SP_RESET:
             printf("Restarting...\n");
@@ -59,7 +59,7 @@ int gameHandler(SPGame* game, SPGameCommand cmd) {
     return 0;
 }
 
-int saveGame(SPGame* game, char* fpath){
+int spGameSaveHandler(SPGame* game, char* fpath){
     FILE *fp;
     int i,j;
     char tile;

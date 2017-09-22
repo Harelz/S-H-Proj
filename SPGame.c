@@ -2,7 +2,7 @@
 #include "SPParser.h"
 
 
-int gameHandler(SPGame* game, SPGameCommand cmd) {
+int spGameHandler(SPGame *game, SPGameCommand cmd) {
     switch(cmd.cmd){
         case SP_RESET:
             printf("Restarting...\n");
@@ -12,52 +12,18 @@ int gameHandler(SPGame* game, SPGameCommand cmd) {
             printf("Exiting...\n");
             return -1; //indicates to terminate
         case SP_UNDO:
-            if (game->settings->game_mode == 2)
-                printf("Empty history, move cannot be undone\n");
-            else if (spQueueIsEmpty(game->history))
-                printf("Can't Undo, no previous moves!\n");
-            else {
-                char** prevBoard = (char**)spStackPop(game->history)->data;
-                memcpy(game->gameBoard, prevBoard, sizeof(game->gameBoard));
-                printf("Undo move for player %s : <x,y> -> <w,z>\n", game->settings->p1_color == WHITE ? "white" : "black");
-                printf("Undo move for player %s : <x,y> -> <w,z>\n", game->settings->p1_color == BLACK ? "white" : "black");
-            }
+            spGameUndoHandler(game);
             return 1;
         case SP_SAVE:
             IS_VALID(cmd);
-            saveGame(game, cmd.pathArg);
+            spGameSaveHandler(game, cmd.pathArg);
             return 1;
         case SP_MOVE:
             IS_VALID(cmd);
-            if (!IN_RANGE(cmd.move->src->coloumn, 0,8) || !IN_RANGE(cmd.move->dest->coloumn, 0,8)
-                    || !IN_RANGE(cmd.move->src->row, 0,8) || !IN_RANGE(cmd.move->dest->row, 0,8))
-                printf("Invalid position on the board\n");
-            else if (game->gameBoard[cmd.move->src->row][cmd.move->src->coloumn] == SP_GAME_EMPTY_ENTRY ||
-                    getColor(game->gameBoard[cmd.move->src->row][cmd.move->src->coloumn]) != game->settings->p1_color)
-                printf("The specified position does not contain your piece\n");
-            else if (spGameSetMove(game, cmd.move) == SP_GAME_INVALID_MOVE)
-                printf("Illegal move\n");
-            return 1;
+            return spGameMoveHandler(game,cmd.move);
         case SP_GET_MOVES:
             IS_VALID(cmd);
-            if (!(IN_RANGE(cmd.tile->row, 0,8) && IN_RANGE(cmd.tile->coloumn, 0,8)))
-                printf("Invalid position on the board\n");
-            else if (game->gameBoard[cmd.tile->row][cmd.tile->coloumn] == SP_GAME_EMPTY_ENTRY ||
-                     getColor(game->gameBoard[cmd.tile->row][cmd.tile->coloumn]) != game->settings->p1_color)
-                printf("The specified position does not contain your piece\n");
-            else {
-                SPMovesList* mlst = spGameGetMoves(game, cmd.tile->row, cmd.tile->coloumn);
-                for (int i = 0; i < mlst->actualSize; i++) {
-                    SPMove *m = spMovesListGetAt(mlst, i);
-                    if (game->settings->difficulty == SP_DIFF_EASY || game->settings->difficulty == SP_DIFF_NOOB)
-                        printf("<%d,%c>%s%s\n", m->dest->row + 1, m->dest->coloumn + 'A',
-                               spGameTileIsThreatened(game,m) ? "*" : "",
-                               (game->gameBoard[m->dest->row][m->dest->coloumn] != SP_GAME_EMPTY_ENTRY
-                                && getColor(game->gameBoard[m->dest->row][m->dest->coloumn]) != getColor(game->gameBoard[cmd.tile->row][cmd.tile->coloumn])) ? "^" : ""); // check thretened and eaten
-                    else
-                        printf("<%d,%c>\n", m->dest->row + 1, m->dest->coloumn + 'A');
-                }
-            }
+            spGameGetMovesHandler(game,cmd.tile);
             return 1;
         case SP_GINVALID_LINE:
             PRINT_INVALID_COMMAND;
@@ -66,9 +32,83 @@ int gameHandler(SPGame* game, SPGameCommand cmd) {
     return -1;
 }
 
-bool spGameTileIsThreatened(SPGame* game , SPMove* move){
+void spGameUndoHandler(SPGame* game){
+    if (game->settings->game_mode == 2)
+        printf("Empty history, move cannot be undone\n");
+    else if (spQueueIsEmpty(game->history))
+        printf("Can't Undo, no previous moves!\n");
+    else {
+        char** prevBoard = (char**)spStackPop(game->history)->data;
+        memcpy(game->gameBoard, prevBoard, sizeof(game->gameBoard));
+        printf("Undo move for player %s : <x,y> -> <w,z>\n", game->settings->p1_color == WHITE ? "white" : "black");
+        printf("Undo move for player %s : <x,y> -> <w,z>\n", game->settings->p1_color == BLACK ? "white" : "black");
+    }
+}
+
+void spGameGetMovesHandler(SPGame* game , SPTile* tile) {
+    if (!(IN_RANGE(tile->row, 0,8) && IN_RANGE(tile->coloumn, 0,8)))
+        printf("Invalid position on the board\n");
+    else if (game->gameBoard[tile->row][tile->coloumn] == SP_GAME_EMPTY_ENTRY ||
+             getColor(game->gameBoard[tile->row][tile->coloumn]) != game->settings->p1_color)
+        printf("The specified position does not contain your piece\n");
+    else {
+        SPMovesList* mlst = spGameGetMoves(game, tile->row, tile->coloumn);
+        for (int i = 0; i < mlst->actualSize; i++) {
+            SPMove *m = spMovesListGetAt(mlst, i);
+            if (game->settings->difficulty == SP_DIFF_EASY || game->settings->difficulty == SP_DIFF_NOOB)
+                printf("<%d,%c>%s%s\n", m->dest->row + 1, m->dest->coloumn + 'A',
+                       spGameTileIsThreatened(game,m) ? "*" : "",
+                       (game->gameBoard[m->dest->row][m->dest->coloumn] != SP_GAME_EMPTY_ENTRY
+                        && getColor(game->gameBoard[m->dest->row][m->dest->coloumn]) != getColor(game->gameBoard[tile->row][tile->coloumn])) ? "^" : ""); // check thretened and eaten
+            else
+                printf("<%d,%c>\n", m->dest->row + 1, m->dest->coloumn + 'A');
+        }
+    }
+}
+
+int spGameMoveHandler(SPGame* game , SPMove* move){
+    if (!IN_RANGE(move->src->coloumn, 0,8) || !IN_RANGE(move->dest->coloumn, 0,8)
+        || !IN_RANGE(move->src->row, 0,8) || !IN_RANGE(move->dest->row, 0,8))
+        printf("Invalid position on the board\n");
+    else if (game->gameBoard[move->src->row][move->src->coloumn] == SP_GAME_EMPTY_ENTRY ||
+             getColor(game->gameBoard[move->src->row][move->src->coloumn]) != game->settings->p1_color)
+        printf("The specified position does not contain your piece\n");
+    else{
+        SP_GAME_MESSAGE msg = spGameSetMove(game, move);
+        if (msg == SP_GAME_INVALID_MOVE) printf("Illegal move\n");
+        else if (msg == SP_GAME_SUCCESS_TIE){
+            printf("The game is Tied\n");
+            spGameDestroy(game);
+            return 0;
+        }
+        else if(msg == SP_GAME_SUCCESS_MATED){
+            printf("Checkmate! %s player wins the game\n", game->currentPlayer == WHITE ? "white" : "black" );
+            spGameDestroy(game);
+            return 0;
+        }
+        else if(msg == SP_GAME_SUCCESS_CHECKED){
+            printf("Check: %s King is threatened!\n", game->currentPlayer == BLACK ? "white" : "black" );
+            game->currentPlayer = invColor(game->currentPlayer);
+            return 1;
+        }
+        else if(msg == SP_GAME_SUCCESS){
+            game->currentPlayer = invColor(game->currentPlayer);
+            return 1;
+        }
+    }
+    return 1;
+
+
+}
+
+SPGame* spGameStimulateMove()(SPGame* game , SPMove* move) {
     SPGame* movedGame = spGameCopy(game);
     spGameSetMove(movedGame,move);
+    return movedGame;
+}
+
+bool spGameTileIsThreatened(SPGame* game , SPMove* move){
+    SPGame* movedGame = spGameStimulateMove(game,move);
     SPMovesList* mlst = spGameGetAllMoves(movedGame);
     for(int i = 0; i<mlst->actualSize; i++){
         SPMove* atk = spMovesListGetAt(mlst,i);
@@ -82,7 +122,7 @@ bool spGameTileIsThreatened(SPGame* game , SPMove* move){
 }
 
 
-int saveGame(SPGame* game, char* fpath){
+int spGameSaveHandler(SPGame *game, char *fpath){
     FILE *fp;
     int i,j;
     char tile;
@@ -206,6 +246,8 @@ SP_GAME_MESSAGE spGamePrintBoard(SPGame* src){
 SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
 	if (!spGameIsValidMove(src, move->src->row, move->src->coloumn, move->dest->row, move->dest->coloumn))
 		return SP_GAME_INVALID_MOVE;
+    char statusAfter = spGameIsCheck(spGameStimulateMove(src, move));
+    if(statusAfter == SP_GAME_COLOR_BOTH || statusAfter == src->currentPlayer)  return SP_GAME_INVALID_MOVE;
     if (src->history->actualSize == src->history->maxSize) {
         spQueuePop(src->history);
         spQueuePush(src->history, src->gameBoard);
@@ -214,6 +256,12 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
         spQueuePush(src->history, src->gameBoard);
     src->gameBoard[move->dest->row][move->dest->coloumn] = src->gameBoard[move->src->row][move->src->coloumn];
     src->gameBoard[move->src->row][move->src->coloumn] = SP_GAME_EMPTY_ENTRY;
+    char isTie = spGameIsTie(src);
+    if(isTie == src->currentPlayer || isTie == SP_GAME_COLOR_BOTH) return SP_GAME_SUCCESS_TIE;
+    if(statusAfter == invColor(src->currentPlayer)) {
+        if(spGameIsMate(src)) return SP_GAME_SUCCESS_MATED;
+        return SP_GAME_SUCCESS_CHECKED;
+    }
 	return SP_GAME_SUCCESS;
 }
 
@@ -355,22 +403,52 @@ SPMovesList* spGameGetAllMoves(SPGame* src) {
     return moves;
 }
 
-char spGameIsCheck(SPGame* src){
+char spGameIsTie(SPGame* src) {
+    bool flagB = false, flagW = false;
+    SPMovesList *moves = spGameGetAllMoves(src);
+    if (moves->actualSize == 0) return SP_GAME_TIE_SYMBOL;
+    for (int i = 0; i < moves->actualSize; i++) {
+        SPTile *t = spMovesListGetAt(moves, i)->src;
+        if (getColor(src->gameBoard[t->row][t->coloumn] == BLACK))
+            flagB = true;
+        else if (getColor(src->gameBoard[t->row][t->coloumn] == WHITE))
+            flagW = true;
+        if (flagB && flagW) return SP_GAME_COLOR_BOTH;
+    }
+    if(flagB) return BLACK;
+    if(flagW) return WHITE;
+    return NULL;
+}
+
+char spGameIsCheck(SPGame *src){
+    bool flagB = false , flagW = false;
     SPMovesList* moves = spGameGetAllMoves(src);
     for(int i = 0 ; i<moves->actualSize; i++){
         SPTile* t = spMovesListGetAt(moves , i) -> dest;
         char target = src->gameBoard[t->row][t->coloumn];
-        if(target == 'K')   return BLACK;
-        else if(target == 'k') return WHITE;
+        if(target == 'K')   flagB = true;
+        else if(target == 'k') flagW = true;
     }
-    return NULL;
+    if(flagW && flagB) return SP_GAME_COLOR_BOTH;
+    if(flagB) return BLACK;
+    if(flagW) return WHITE;
+    return SP_GAME_EMPTY_ENTRY;
 }
 
-char spGameGetCurrentPlayer(SPGame* src){
-	if(src == NULL) return SP_GAME_EMPTY_ENTRY;
-	if(src->currentPlayer == SP_USER_COLOR_WHITE || src->currentPlayer == SP_USER_COLOR_BLACK)
-		return src->currentPlayer;
-	return SP_GAME_EMPTY_ENTRY;
+bool spGameIsMate(SPGame *src){
+    SPMovesList* moves = spGameGetAllMoves(src);
+    SPGame* newGame;
+    char status;
+    for(int i = 0 ; i<moves->actualSize; i++) {
+        SPMove *move = spMovesListGetAt(moves, i);
+        if (src->gameBoard[move->dest->row][move->dest->coloumn] != 'K' &&
+            src->gameBoard[move->dest->row][move->dest->coloumn] != 'k') {
+            newGame = spGameStimulateMove(src, move);
+            status = spGameIsCheck(newGame);
+            if (status != invColor(src->currentPlayer) && status != SP_GAME_COLOR_BOTH) return false;
+        }
+    }
+    return true;
 }
 
 SPGame* spGameCopy(SPGame* src){
@@ -393,14 +471,3 @@ void spGameDestroy(SPGame* src){
 	}
 }
 
-
-
-SP_GAME_MESSAGE spGameUndoPrevMove(SPGame* src) {
-	/*if (src == NULL)
-		return SP_GAME_INVALID_ARGUMENT;
-	if (spArrayListIsEmpty(src->history))
-		return SP_GAME_HISTORY;
-	int history = spArrayListGetLast(src->history);
-	spArrayListRemoveLast(src->history);*/
-	return SP_GAME_SUCCESS;
-}

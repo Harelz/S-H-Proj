@@ -11,6 +11,6 @@
 #include "SPParser.h"
 #include "SPGame.h"
 
-int gameHandler(SPGame* game, SPGameCommand cmd);
+int spGameHandler(SPGame* game, SPGameCommand cmd);
 
-int saveGame(SPGame* game, char* fpath);*/
+int spGameSaveHandler(SPGame* game, char* fpath);*/
