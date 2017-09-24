@@ -22,6 +22,17 @@ SPMove* spCreateMove(int srcRow , int srcCol ,int desRow , int desCol){
     return instance;
 }
 
+int spDestroyMove(SPMove* move){
+    if (move != NULL){
+        if (move->dest != NULL)
+            free(move->dest);
+        if (move->src != NULL)
+            free(move->src);
+    }
+    free(move);
+    return 1;
+}
+
 SPMove* spCreateMoveFromTile(SPTile* srcTile, SPTile* destTile){
     SPMove* instance = (SPMove *) malloc(sizeof(SPMove));
     if(instance == NULL)

@@ -82,17 +82,17 @@ int spGameMoveHandler(SPGame* game , SPMove* move){
             return 0;
         }
         else if(msg == SP_GAME_SUCCESS_MATED){
-            printf("Checkmate! %s player wins the game\n", game->currentPlayer == WHITE ? "white" : "black" );
+            printf("Checkmate! %s player wins the game\n", game->settings->curr_turn == WHITE ? "white" : "black" );
             spGameDestroy(game);
             return 0;
         }
         else if(msg == SP_GAME_SUCCESS_CHECKED){
-            printf("Check: %s King is threatened!\n", game->currentPlayer == BLACK ? "white" : "black" );
-            game->currentPlayer = invColor(game->currentPlayer);
+            printf("Check: %s King is threatened!\n", game->settings->curr_turn == BLACK ? "white" : "black" );
+            game->settings->curr_turn = invColor(game->settings->curr_turn);
             return 1;
         }
         else if(msg == SP_GAME_SUCCESS){
-            game->currentPlayer = invColor(game->currentPlayer);
+            game->settings->curr_turn = invColor(game->settings->curr_turn);
             return 1;
         }
     }
@@ -187,16 +187,16 @@ int loadGame(SPGame* game, char* fpath){
 SPGame* spGameCreateDef(){
     SPGame* game = (SPGame *) malloc(sizeof(SPGame));
     if(game == NULL) return NULL;	//puts("Error: malloc has failed");
-    game->currentPlayer = SP_USER_COLOR_WHITE;
     game->history = spQueueCreate(3);
     game->settings = defaultSettings(NULL);
+    game->settings->curr_turn = SP_USER_COLOR_WHITE;
     spSetNewBoard(game);
 }
 
 SPGame* spGameCreate (SPSettings* settings){
 	SPGame* game = (SPGame *) malloc(sizeof(SPGame));
 	if(game == NULL) return NULL;	//puts("Error: malloc has failed");
-	game->currentPlayer = SP_USER_COLOR_WHITE;
+    game->settings->curr_turn = SP_USER_COLOR_WHITE;
     game->history = spQueueCreate(3);
     if(settings == NULL)    game->settings = defaultSettings(NULL);
     else game ->settings = settings;
@@ -445,7 +445,7 @@ bool spGameIsMate(SPGame *src){
             src->gameBoard[move->dest->row][move->dest->coloumn] != 'k') {
             newGame = spGameStimulateMove(src, move);
             status = spGameIsCheck(newGame);
-            if (status != invColor(src->currentPlayer) && status != SP_GAME_COLOR_BOTH) return false;
+            if (status != invColor(src->settings->curr_turn) && status != SP_GAME_COLOR_BOTH) return false;
         }
     }
     return true;
@@ -454,9 +454,9 @@ bool spGameIsMate(SPGame *src){
 SPGame* spGameCopy(SPGame* src){
     SPGame* cGame = (SPGame *) malloc(sizeof(SPGame));
     if(cGame == NULL) return NULL;	//puts("Error: malloc has failed");
-    cGame->currentPlayer = src->currentPlayer;
     cGame->history = spQueueCopy(src->history);
     cGame->settings = spSettingsCopy(src->settings);
+    cGame->settings->curr_turn = src->settings->curr_turn;
     strcpy(cGame->gameBoard , src->gameBoard);
     return cGame;
 }

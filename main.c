@@ -24,7 +24,7 @@ int main() {
 		}
         while (spStatus == 1) {
             spGamePrintBoard(game);
-            printf("Wawawa\n");
+            printf("%s player - enter your move:\n", game->settings->curr_turn == SP_USER_COLOR_WHITE ? "white" : "black");
             fgets(s, SP_MAX_LINE_LENGTH, stdin);
             if(s == NULL){
                 printf("Error: fgets has failed\n");
