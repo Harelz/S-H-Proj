@@ -36,6 +36,7 @@ typedef enum sp_array_list_message_t {
 
 SPTile* spCreateTile(int row , int col);
 SPMove* spCreateMove(int srcRow , int srcCol ,int desRow , int desCol);
+int spDestroyMove(SPMove* move);
 SPMove* spCreateMoveFromTile(SPTile* srcTile, SPTile* destTile);
 SPMovesList* spMovesListCreate(int maxSize);
 SPMovesList* spMovesListCopy(SPMovesList* src);

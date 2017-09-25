@@ -33,6 +33,8 @@
 #define BLACK SP_USER_COLOR_BLACK
 #define invColor(C) ((C)==WHITE? BLACK:WHITE)
 #define getColor(P) (islower(P)? WHITE:BLACK)
+#define MAX(a,b) (((a)>(b)) ? a : b)
+#define MIN(a,b) (((a)<(b)) ? a : b)
 
 #define W_PAWN 'm'
 #define B_PAWN 'M'
@@ -49,7 +51,6 @@
 
 typedef struct sp_game_t {
 	char gameBoard[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE];
-	int currentPlayer;
     Queue* history;
     SPSettings* settings;
 } SPGame;
