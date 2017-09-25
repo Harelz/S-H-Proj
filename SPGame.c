@@ -38,10 +38,10 @@ int spGameHandler(SPGame *game, SPGameCommand cmd) {
 }
 
 void spGameUndoHandler(SPGame* game){
-    if (game->settings->game_mode == 2)
-        printf("Empty history, move cannot be undone\n");
+    if (game->settings->game_mode == SP_MODE_2P)
+        printf("Undo command not available in 2 players mode\n");
     else if (spQueueIsEmpty(game->history))
-        printf("Can't Undo, no previous moves!\n");
+        printf("Empty history, move cannot be undone\n");
     else {
         char** prevBoard = (char**)spStackPop(game->history)->data;
         memcpy(game->gameBoard, prevBoard, sizeof(game->gameBoard));
