@@ -1,7 +1,7 @@
 #include "SPSettings.h"
 
 SPSettings* init_settings(SP_GAME_MODE mode, SP_GAME_DIFFICULTY diff, SP_USER_COLOR color) {
-    SPSettings* settings = (SPSettings*)calloc(1, sizeof(SPSettings));
+    SPSettings* settings = (SPSettings*)malloc(sizeof(SPSettings));
     if(settings == NULL) return NULL;
 	set_game_mode(settings, mode);
 	set_difficulty(settings, diff);
@@ -102,7 +102,7 @@ void settings_print(SPSettings* settings){
 }
 
 SPSettings* spSettingsCopy(SPSettings* src){
-    SPSettings* settings = (SPSettings*)calloc(1, sizeof(SPSettings));
+    SPSettings* settings = (SPSettings*)malloc(sizeof(SPSettings));
     if(settings == NULL) return NULL;
     settings->game_mode = src->game_mode;
     settings->difficulty = src->difficulty;

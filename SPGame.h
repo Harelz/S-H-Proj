@@ -80,6 +80,8 @@ void spGameUndoHandler(SPGame* game);
 int spGameMoveHandler(SPGame* game , SPMove* move);
 void spGameGetMovesHandler(SPGame* game , SPTile* tile);
 bool spGameIsMate(SPGame *src);
+char spGameIsTie(SPGame* src);
+char spGameIsCheck(SPGame *src);
 
 
 /**
@@ -206,5 +208,6 @@ bool checkValidStepForB(SPGame* src, int srcRow , int srcCol , int desRow, int d
 bool checkValidStepForN(int srcRow , int srcCol , int desRow, int desCol);
 bool checkValidStepForK(int srcRow , int srcCol , int desRow, int desCol);
 bool spGameTileIsThreatened(SPGame* game , SPMove* move);
+SPMove* spGameGetCpuMove(SPGame* game);
 
 #endif
