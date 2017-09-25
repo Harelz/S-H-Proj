@@ -57,6 +57,34 @@ int spQueuePush(Queue *myQ, char data[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE]) {
     return 1;
 }
 
+int spQueueFullPush(Queue *myQ, char data[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], char* pushMsg) {
+    /* Bad parameter */
+    if ((myQ == NULL) || (data == NULL)) {
+        return 0;
+    }
+    // if(myQ->maxSize != 0)
+    if (myQ->actualSize >= myQ->maxSize) {
+        return 0;
+    }
+    /*the queue is empty*/
+    SPNode* item = (SPNode*) malloc(sizeof(SPNode));
+    item->prev = NULL;
+    memcpy(item->data, data, sizeof(char[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE]));
+    strcpy(item->msg, pushMsg);
+    if (myQ->actualSize == 0) {
+        myQ->head = item;
+        myQ->tail = item;
+
+    } else {
+        /*adding item to the end of the queue*/
+        myQ->tail->prev = item;
+        myQ->tail->prev->next = myQ->tail; // to impliment stack like pop
+        myQ->tail = item;
+    }
+    myQ->actualSize++;
+    return 1;
+}
+
 SPNode* spQueuePop(Queue* myQ) {
     /*the queue is empty or bad param*/
     SPNode* item;
@@ -96,8 +124,16 @@ Queue* spQueueCopy(Queue* myQ){
         return NULL;
     }
     queue->maxSize = myQ->maxSize;
-    queue->actualSize = myQ->actualSize;
-    queue->head = myQ->head;
-    queue->tail = myQ->tail;
+    queue->actualSize = 0;
+    SPNode* tempNode;
+    tempNode = myQ->head;
+    if (tempNode == NULL){
+        queue->head = NULL, queue->tail=NULL;
+        return queue;
+    }
+    spQueueFullPush(queue, tempNode->data, tempNode->msg);
+    while ((tempNode = tempNode->next) != NULL) {
+        spQueueFullPush(queue, tempNode->data, tempNode->msg);
+    }
     return queue;
 }

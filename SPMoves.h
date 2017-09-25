@@ -55,5 +55,6 @@ int spMovesListMaxCapacity(SPMovesList* src);
 int spMovesListSize(SPMovesList* src);
 bool spMovesListIsFull(SPMovesList* src);
 bool spMovesListIsEmpty(SPMovesList* src);
+int spMoveToMove(SPMove* toMove, SPMove* fromMove);
 
 

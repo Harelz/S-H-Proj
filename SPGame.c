@@ -1,5 +1,6 @@
 #include "SPGame.h"
-
+#include "SPParser.h"
+#include "SPMiniMax.h"
 
 int spGameHandler(SPGame *game, SPGameCommand cmd) {
     switch(cmd.cmd){
@@ -11,21 +12,15 @@ int spGameHandler(SPGame *game, SPGameCommand cmd) {
             printf("Exiting...\n");
             return -1; //indicates to terminate
         case SP_UNDO:
-            spGameUndoHandler(game);
-            return 1;
+            printf(spGameUndoHandler(game));
+            return 3;
         case SP_SAVE:
             IS_VALID(cmd);
             spGameSaveHandler(game, cmd.pathArg);
             return 1;
         case SP_MOVE:
             IS_VALID(cmd);
-            int status = spGameMoveHandler(game,cmd.move);
-            if(game->settings->game_mode == SP_MODE_1P && game->currentPlayer != game->settings->p1_color){
-                SPMove* move = spGameGetCpuMove(game);
-                // check if move is valid
-                return spGameMoveHandler(game,move);
-            }
-            return status;
+            return spGameMoveHandler(game,cmd.move);
         case SP_GET_MOVES:
             IS_VALID(cmd);
             spGameGetMovesHandler(game,cmd.tile);
@@ -37,17 +32,17 @@ int spGameHandler(SPGame *game, SPGameCommand cmd) {
     return -1;
 }
 
-void spGameUndoHandler(SPGame* game){
-    if (game->settings->game_mode == SP_MODE_2P)
-        printf("Undo command not available in 2 players mode\n");
+char* spGameUndoHandler(SPGame* game){
+    if (game->settings->game_mode == 2)
+        return "Undo command not available in 2 players mode\n";
     else if (spQueueIsEmpty(game->history))
-        printf("Empty history, move cannot be undone\n");
+        return "Empty history, move cannot be undone\n";
     else {
-        char** prevBoard = (char**)spStackPop(game->history)->data;
-        memcpy(game->gameBoard, prevBoard, sizeof(game->gameBoard));
-        printf("Undo move for player %s : <x,y> -> <w,z>\n", game->settings->p1_color == WHITE ? "white" : "black");
-        printf("Undo move for player %s : <x,y> -> <w,z>\n", game->settings->p1_color == BLACK ? "white" : "black");
+        SPNode* prevBoard = spStackPop(game->history);
+        memcpy(game->gameBoard, prevBoard->data, sizeof(game->gameBoard));
+        return prevBoard->msg;
     }
+    return NULL;
 }
 
 void spGameGetMovesHandler(SPGame* game , SPTile* tile) {
@@ -76,50 +71,58 @@ int spGameMoveHandler(SPGame* game , SPMove* move){
         || !IN_RANGE(move->src->row, 0,8) || !IN_RANGE(move->dest->row, 0,8))
         printf("Invalid position on the board\n");
     else if (game->gameBoard[move->src->row][move->src->coloumn] == SP_GAME_EMPTY_ENTRY ||
-             getColor(game->gameBoard[move->src->row][move->src->coloumn]) != game->currentPlayer)
+             getColor(game->gameBoard[move->src->row][move->src->coloumn]) != game->settings->p1_color)
         printf("The specified position does not contain your piece\n");
     else{
         SP_GAME_MESSAGE msg = spGameSetMove(game, move);
-        if (msg == SP_GAME_INVALID_MOVE){
-            printf("Illegal move\n");
+        if (msg == SP_GAME_INVALID_MOVE) printf("Illegal move\n");
+        else if (msg == SP_GAME_SUCCESS_TIE){
+            printf("The game is Tied\n");
+            return -1;
+        }
+        else if(msg == SP_GAME_SUCCESS_MATED){
+            printf("Checkmate! %s player wins the game\n", game->settings->curr_turn == WHITE ? "white" : "black" );
+            spGameDestroy(game);
+            return -1;
+        }
+        else if(msg == SP_GAME_SUCCESS_CHECKED){
+            printf("Check: %s King is threatened!\n", game->settings->curr_turn == BLACK ? "white" : "black" );
+            game->settings->curr_turn = invColor(game->settings->curr_turn);
             return 1;
         }
         else if(msg == SP_GAME_SUCCESS){
-            game->currentPlayer = invColor(game->currentPlayer);
-            return 1;
+            game->settings->curr_turn = invColor(game->settings->curr_turn);
+            return spSetCPUMove(game, move);
         }
-        else if(msg == SP_GAME_SUCCESS_CHECKED){
-            printf("Check: %s King is threatened!\n", game->currentPlayer == BLACK ? "white" : "black" );
-            game->currentPlayer = invColor(game->currentPlayer);
-            return 1;
-        }
-        else if (msg == SP_GAME_SUCCESS_TIE){
-            printf("The game is Tied\n");
-            spGameDestroy(game);
-            return 0;
-        }
-        else if(msg == SP_GAME_SUCCESS_MATED){
-            printf("Checkmate! %s player wins the game\n", game->currentPlayer == WHITE ? "white" : "black" );
-            spGameDestroy(game);
-            return 0;
-        }
-
     }
-    return 0;
-    // it should not get here. if so, game will restart
+    return 1;
 
+
+}
+
+int spSetCPUMove (SPGame* game,SPMove* move){
+    SPNode* lastBoard = spStackPop(game->history);
+    SPMove* a = spCreateMove(0,0,0,0);
+    SPGame* minmaxGame = spGameCopy(game);
+    if (a==NULL || minmaxGame == NULL || lastBoard == NULL)
+        return 0;
+    spMinimaxSuggestMove(minmaxGame, a);
+    spGameDestroy(minmaxGame);
+    spGameSetMove(game, a);
+    spStackPop(game->history);
+    char msg[sizeof("Undo move for player black : <x,y> -> <w,z>\nUndo move for player black : <x,y> -> <w,z>\n")];
+    sprintf(msg, "Undo move for player %s : <%c,%c> -> <%c,%c>\nUndo move for player %s : <%c,%c> -> <%c,%c>\n",
+            game->settings->p1_color == WHITE ? "white" : "black", move->src->row+'1', move->src->coloumn+'A',move->dest->row+'1', move->dest->coloumn+'A',
+            game->settings->p1_color == BLACK ? "white" : "black", a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
+    spQueueFullPush(game->history, lastBoard->data, msg);
+    spDestroyMove(a);
+    game->settings->curr_turn = invColor(game->settings->curr_turn);
+    return 1;
 }
 
 SPGame* spGameStimulateMove(SPGame* game , SPMove* move) {
     SPGame* movedGame = spGameCopy(game);
-    if (movedGame->history->actualSize == movedGame->history->maxSize) {
-        spQueuePop(movedGame->history);
-        spQueuePush(movedGame->history, movedGame->gameBoard);
-    }
-    else
-        spQueuePush(movedGame->history, movedGame->gameBoard);
-    movedGame->gameBoard[move->dest->row][move->dest->coloumn] = movedGame->gameBoard[move->src->row][move->src->coloumn];
-    movedGame->gameBoard[move->src->row][move->src->coloumn] = SP_GAME_EMPTY_ENTRY;
+    spGameSetNaiveMove(movedGame,move);
     return movedGame;
 }
 
@@ -132,7 +135,7 @@ bool spGameTileIsThreatened(SPGame* game , SPMove* move){
            != getColor(movedGame->gameBoard[move->dest->row][move->dest->coloumn])
            && atk->dest->row == move->dest->row && atk->dest->coloumn == move->dest->coloumn)   return true;
     }
-    //spGameDestroy(movedGame);
+    spGameDestroy(movedGame);
     return false;
 
 }
@@ -203,19 +206,19 @@ int loadGame(SPGame* game, char* fpath){
 SPGame* spGameCreateDef(){
     SPGame* game = (SPGame *) malloc(sizeof(SPGame));
     if(game == NULL) return NULL;	//puts("Error: malloc has failed");
-    game->currentPlayer = SP_USER_COLOR_WHITE;
     game->history = spQueueCreate(3);
     game->settings = defaultSettings(NULL);
+    game->settings->curr_turn = SP_USER_COLOR_WHITE;
     spSetNewBoard(game);
 }
 
 SPGame* spGameCreate (SPSettings* settings){
-	SPGame* game = (SPGame *) malloc(sizeof(SPGame));
-	if(game == NULL) return NULL;	//puts("Error: malloc has failed");
-	game->currentPlayer = SP_USER_COLOR_WHITE;
+    SPGame* game = (SPGame *) malloc(sizeof(SPGame));
+    if(game == NULL) return NULL;	//puts("Error: malloc has failed");
     game->history = spQueueCreate(3);
     if(settings == NULL)    game->settings = defaultSettings(NULL);
     else game ->settings = settings;
+    game->settings->curr_turn = WHITE;
     spSetNewBoard(game);
     return game;
 }
@@ -240,30 +243,35 @@ SPGame* spSetNewBoard(SPGame* game) {
 }
 
 SP_GAME_MESSAGE spGamePrintBoard(SPGame* src){
-	if (src==NULL)
-		return SP_GAME_INVALID_ARGUMENT;
-	int i, j;
-	for (i = 7; i >= 0; i--){
-		printf("%d|",i+1);
-		for (j = 0; j < 8; j++){
-			printf(" %c", src->gameBoard[i][j]);
-		}
-		printf(" |\n");
-	}
-	printf("  -----------------\n  ");
-	for (i = 65; i < 73; i++){
-		printf(" %c", i);
-	}
-	printf("\n");
-	return SP_GAME_SUCCESS;
+    if (src==NULL)
+        return SP_GAME_INVALID_ARGUMENT;
+    int i, j;
+    for (i = 7; i >= 0; i--){
+        printf("%d|",i+1);
+        for (j = 0; j < 8; j++){
+            printf(" %c", src->gameBoard[i][j]);
+        }
+        printf(" |\n");
+    }
+    printf("  -----------------\n  ");
+    for (i = 65; i < 73; i++){
+        printf(" %c", i);
+    }
+    printf("\n");
+    return SP_GAME_SUCCESS;
 }
 
-
+SP_GAME_MESSAGE spGameSetNaiveMove(SPGame* src, SPMove* move){
+    src->gameBoard[move->dest->row][move->dest->coloumn] = src->gameBoard[move->src->row][move->src->coloumn];
+    src->gameBoard[move->src->row][move->src->coloumn] = SP_GAME_EMPTY_ENTRY;
+}
 SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
-	if (!spGameIsValidMove(src, move->src->row, move->src->coloumn, move->dest->row, move->dest->coloumn))
-		return SP_GAME_INVALID_MOVE;
-    char statusAfter = spGameIsCheck(spGameStimulateMove(src, move));
-    if(statusAfter == SP_GAME_COLOR_BOTH || statusAfter == src->currentPlayer)  return SP_GAME_INVALID_MOVE;
+    if (!spGameIsValidMove(src, move->src->row, move->src->coloumn, move->dest->row, move->dest->coloumn))
+        return SP_GAME_INVALID_MOVE;
+    SPGame* statusGame = spGameStimulateMove(src, move);
+    char statusAfter = spGameIsCheck(statusGame);
+    spGameDestroy(statusGame);
+    if(statusAfter == SP_GAME_COLOR_BOTH || statusAfter == src->settings->curr_turn)  return SP_GAME_INVALID_MOVE;
     if (src->history->actualSize == src->history->maxSize) {
         spQueuePop(src->history);
         spQueuePush(src->history, src->gameBoard);
@@ -273,12 +281,12 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
     src->gameBoard[move->dest->row][move->dest->coloumn] = src->gameBoard[move->src->row][move->src->coloumn];
     src->gameBoard[move->src->row][move->src->coloumn] = SP_GAME_EMPTY_ENTRY;
     char isTie = spGameIsTie(src);
-    if(isTie == src->currentPlayer || isTie == SP_GAME_COLOR_BOTH) return SP_GAME_SUCCESS_TIE;
-    if(statusAfter == invColor(src->currentPlayer)) {
+    if(isTie == src->settings->curr_turn || isTie == SP_GAME_COLOR_BOTH) return SP_GAME_SUCCESS_TIE;
+    if(statusAfter == invColor(src->settings->curr_turn)) {
         if(spGameIsMate(src)) return SP_GAME_SUCCESS_MATED;
         return SP_GAME_SUCCESS_CHECKED;
     }
-	return SP_GAME_SUCCESS;
+    return SP_GAME_SUCCESS;
 }
 
 bool spGameIsValidMove(SPGame* src, int srcRow , int srcCol , int desRow, int desCol){
@@ -290,7 +298,7 @@ bool spGameIsValidMove(SPGame* src, int srcRow , int srcCol , int desRow, int de
     if(piece == W_ROOK || piece == B_ROOK) return checkValidStepForR(src , srcRow , srcCol , desRow , desCol);
     if(piece == W_BISHOP || piece == B_BISHOP) return checkValidStepForB(src , srcRow , srcCol , desRow , desCol);
     if(piece == W_QUEEN || piece == B_QUEEN) return (checkValidStepForR(src , srcRow , srcCol , desRow , desCol)
-                                             || checkValidStepForB(src , srcRow , srcCol , desRow , desCol));
+                                                     || checkValidStepForB(src , srcRow , srcCol , desRow , desCol));
     if(piece == B_KNIGHT || piece == W_KNIGHT) return checkValidStepForN(srcRow , srcCol , desRow , desCol);
     if(piece == B_KING || piece == W_KING) return checkValidStepForK(srcRow , srcCol , desRow , desCol);
     return false;
@@ -301,7 +309,7 @@ bool checkValidStepForM(SPGame* src, int srcRow , int srcCol , int desRow, int d
     if(piece == B_PAWN && srcCol == desCol) { // go straight no killing
         if (src->gameBoard[srcRow - 1][srcCol] == SP_GAME_EMPTY_ENTRY &&
             (desRow - srcRow == -1 ||
-                    (desRow - srcRow == -2 && srcRow == 6 && src->gameBoard[srcRow - 2][srcCol] == SP_GAME_EMPTY_ENTRY))) {
+             (desRow - srcRow == -2 && srcRow == 6 && src->gameBoard[srcRow - 2][srcCol] == SP_GAME_EMPTY_ENTRY))) {
             return true;
         }
     }
@@ -461,34 +469,29 @@ bool spGameIsMate(SPGame *src){
             src->gameBoard[move->dest->row][move->dest->coloumn] != 'k') {
             newGame = spGameStimulateMove(src, move);
             status = spGameIsCheck(newGame);
-            if (status != invColor(src->currentPlayer) && status != SP_GAME_COLOR_BOTH) return false;
+            if (status != invColor(src->settings->curr_turn) && status != SP_GAME_COLOR_BOTH) return false;
         }
     }
     return true;
 }
 
-SPMove* spGameGetCpuMove(SPGame* game){
-    SPMove* move; // == MiniMax function
-    return move;
-}
-
 SPGame* spGameCopy(SPGame* src){
     SPGame* cGame = (SPGame *) malloc(sizeof(SPGame));
     if(cGame == NULL) return NULL;	//puts("Error: malloc has failed");
-    cGame->currentPlayer = src->currentPlayer;
     cGame->history = spQueueCopy(src->history);
     cGame->settings = spSettingsCopy(src->settings);
-    strcpy(cGame->gameBoard , src->gameBoard);
+    cGame->settings->curr_turn = src->settings->curr_turn;
+    memcpy(cGame->gameBoard , src->gameBoard, sizeof(char[8][8]));
     return cGame;
 }
 
 void spGameDestroy(SPGame* src){
-	if(src != NULL){
-		if(src->history != NULL)
-			spQueueDestroy(src->history);
+    if(src != NULL){
+        if(src->history != NULL)
+            spQueueDestroy(src->history);
         if(src->settings != NULL)
             spSettingsDestroy(src->settings);
-		free(src);
-	}
+        free(src);
+    }
 }
 

@@ -13,6 +13,7 @@
 
 typedef struct sp_Node_t {
     char data[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE];
+    char msg[sizeof("Undo move for player black : <x,y> -> <w,z>\nUndo move for player black : <x,y> -> <w,z>\n")];
     struct sp_Node_t* prev;
     struct sp_Node_t* next;
 } SPNode;
@@ -28,6 +29,7 @@ typedef struct Queue {
 Queue* spQueueCreate(int maxSize);
 void spQueueDestroy(Queue* queue);
 int spQueuePush(Queue *myQ, char data[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE]);
+int spQueueFullPush(Queue *myQ, char data[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], char* msg);
 SPNode* spQueuePop(Queue* myQ);
 SPNode* spStackPop(Queue* myQ);
 int spQueueIsEmpty(Queue* myQ);

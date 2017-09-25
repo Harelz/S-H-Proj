@@ -51,8 +51,8 @@
 
 typedef struct sp_game_t {
 	char gameBoard[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE];
-    Queue* history;
-    SPSettings* settings;
+	Queue* history;
+	SPSettings* settings;
 } SPGame;
 
 /**
@@ -60,14 +60,14 @@ typedef struct sp_game_t {
  */
 typedef enum sp_game_message_t {
 	SP_GAME_INVALID_MOVE,
-    SP_GAME_INVALID_MOVE_TIE,
-    SP_GAME_EMPTY_ENTRY_MOVE,
+	SP_GAME_INVALID_MOVE_TIE,
+	SP_GAME_EMPTY_ENTRY_MOVE,
 	SP_GAME_INVALID_ARGUMENT,
 	SP_GAME_HISTORY,
 	SP_GAME_SUCCESS,
-    SP_GAME_SUCCESS_TIE,
-    SP_GAME_SUCCESS_CHECKED,
-    SP_GAME_SUCCESS_MATED,
+	SP_GAME_SUCCESS_TIE,
+	SP_GAME_SUCCESS_CHECKED,
+	SP_GAME_SUCCESS_MATED,
 //You may add any message you like
 } SP_GAME_MESSAGE;
 
@@ -77,12 +77,11 @@ int loadGame(SPGame* game, char* fpath);
 SPGame* spSetNewBoard(SPGame* src);
 SPGame* spGameCreateDef();
 SPGame* spGameStimulateMove(SPGame* game , SPMove* move);
-void spGameUndoHandler(SPGame* game);
+char* spGameUndoHandler(SPGame* game);
 int spGameMoveHandler(SPGame* game , SPMove* move);
 void spGameGetMovesHandler(SPGame* game , SPTile* tile);
 bool spGameIsMate(SPGame *src);
-char spGameIsTie(SPGame* src);
-char spGameIsCheck(SPGame *src);
+int spSetCPUMove (SPGame* game,SPMove* move);
 
 
 /**
@@ -152,7 +151,7 @@ bool spGameIsValidMove(SPGame* src, int srcRow , int srcCol , int desRow, int de
  * SP_GAME_SUCCESS          - on success. The last disc that was put on the
  *                                 board is removed and the current player is changed
  */
-SP_GAME_MESSAGE spGameUndoPrevMove(SPGame* src);
+//SP_GAME_MESSAGE spGameUndoHandler(SPGame *src);
 
 /**
  * On success, the function prints the board game. If an error occurs, then the
@@ -209,6 +208,7 @@ bool checkValidStepForB(SPGame* src, int srcRow , int srcCol , int desRow, int d
 bool checkValidStepForN(int srcRow , int srcCol , int desRow, int desCol);
 bool checkValidStepForK(int srcRow , int srcCol , int desRow, int desCol);
 bool spGameTileIsThreatened(SPGame* game , SPMove* move);
-SPMove* spGameGetCpuMove(SPGame* game);
-
+char spGameIsTie(SPGame* src);
+char spGameIsCheck(SPGame* src);
+SP_GAME_MESSAGE spGameSetNaiveMove(SPGame* src, SPMove* move);
 #endif

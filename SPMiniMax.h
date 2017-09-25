@@ -1,64 +1,44 @@
-#ifndef SPMINIMAX_H_
-#define SPMINIMAX_H_
+//
+// Created by hoshri on 9/19/2017.
+//
+
+#ifndef CHESSPROG_MINIMAX_H
+#define CHESSPROG_MINIMAX_H
+
 #include "SPGame.h"
 #include <limits.h>
-#include "SPMiniMaxNode.h"
-#include <stdio.h>
-#define WEIGHT_VECTOR_SIZE 8
-#define MIN(a,b)(((a)<(b))?(a):(b)) //returns Minimum of 2
-#define MAX(a,b)(((a)>(b))?(a):(b)) //returns Maximum of 2
+
+#define isMax(a,b) (isMaxi ? (a) : (b))
+
+int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_COLOR color);
 
 /**
-* Given a game state, this function evaluates the best move according to
-* the current player. The function initiates a MiniMax algorithm up to a
-* specified length given by maxDepth. The current game state doesn't change
-* by this function including the history of previous moves.
-*
-* @param currentGame - The current game state
-* @param maxDepth - The maximum depth of the miniMax algorithm
-* @return
-* -1 if either currentGame is NULL or maxDepth <= 0.
-* On success the function returns a number between [0,SP_GAMEBOARD_SIZE -1]
-* which is the best move for the current player.
-*/
-int spMinimaxSuggestMove(SPGame* currentGame,
-	unsigned int maxDepth);
+ * Given a game state, this function evaluates the best move according to
+ * the current player. The function initiates a MiniMax algorithm up to a
+ * specified length given by maxDepth. The current game state doesn't change
+ * The function maintains two values which are alpha and beta, and they symbolize the score
+ * that maximize(for max player) and that minimize(for min player).
+ * @param game - The current game
+ * @param alphaScore - The value of the alpha, initially alpha is set to negative infinity
+ * @param betaScore - The value of the beta, initially alpha is set to positive infinity
+ * @param isMaxi - The number represent if we want to maximize the score or minimize the score
+ * @param diff - The current depth of the recursion
+ * @param bestMove - This struct will save the best move for the current player to make
+ * @return - The function returns a score that symbolize the game state after the move will
+ * be made, and update the param bestMove to the move the current plyaer need to make in his
+ * next turn.
+ */
+int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, int diff, SPMove *bestMove);
 
 /**
-* Given a cell, this function evaluates its value:
-* 1 if it contains player 1 disc, -1 if it contains player 2 disc, 0 if empty.
-*
-* @param cell - cell content
-* @return
-* the value of the cell to the Scoring Function as described above
-*/
-int checkCell(char cell);
+ * The function calls the miniMaxRec function with the right values. That means in case of white player the
+ * isMaxPlayer gets 0 cause we want to minimize score for the next player, and in the opposite case it's 1 because
+ * we want to maximize the score. The scoreAlpha is set to INT_MIN, and scoreBeta is set to INT_MAX. We also pass
+ * the depth - difficulty level which gets lower by 1 at each call of the miniMaxRec.
+ * @param game - The source game
+ * @param bestMove - The best move list
+ * @return - The function calls the miniMaxRec function and the value is returned from there.
+ */
+int spMinimaxSuggestMove(SPGame *game, SPMove *bestMove);
 
-/**
-* Given a game state, this function evaluates the score of the state
-* using the scoring function described on the PDF.
-*
-* @param game - The game state
-* @param count - count array as described on PDF
-* @param row - current row to check 4's from
-* @param col current collumn to check 4's from
-* @return
-* void
-*/
-void updateCounter(SPGame* game, int count[8], int row, int col);
-
-
-/**
-* Given a game state, this function evaluates the score of the state
-* using the scoring function described on the PDF.
-*
-* @param currentGame - The current game state
-* @return
-* -1 if either currentGame is NULL
-* On success the function returns a number between [0,SP_GAMEBOARD_SIZE -1]
-* which is the best move for the current player.
-*/
-int spMinimaxScoring(SPGame* currentGame);
-
-
-#endif
+#endif //CHESSPROG_MINIMAX_H

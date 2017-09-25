@@ -167,3 +167,11 @@ bool spMovesListIsEmpty(SPMovesList* src) {
     return !(src == NULL || src->actualSize != 0);
 }
 
+int spMoveToMove(SPMove* toMove, SPMove* fromMove){
+    toMove->src->coloumn = fromMove->src->coloumn;
+    toMove->src->row = fromMove->src->row;
+    toMove->dest->coloumn = fromMove->dest->coloumn;
+    toMove->dest->row = fromMove->dest->row;
+    return 1;
+}
+

@@ -1,12 +1,12 @@
 #include "SPSettings.h"
 
 SPSettings* init_settings(SP_GAME_MODE mode, SP_GAME_DIFFICULTY diff, SP_USER_COLOR color) {
-    SPSettings* settings = (SPSettings*)malloc(sizeof(SPSettings));
+    SPSettings* settings = (SPSettings*)calloc(1, sizeof(SPSettings));
     if(settings == NULL) return NULL;
-	set_game_mode(settings, mode);
-	set_difficulty(settings, diff);
-	set_user_color(settings, color);
-	return settings;
+    set_game_mode(settings, mode);
+    set_difficulty(settings, diff);
+    set_user_color(settings, color);
+    return settings;
 }
 
 int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
@@ -74,17 +74,17 @@ void set_game_mode(SPSettings* settings, SP_GAME_MODE mode) {
 }
 
 void set_difficulty(SPSettings* settings, SP_GAME_DIFFICULTY difficulty)  {
-	settings -> difficulty = difficulty;
+    settings -> difficulty = difficulty;
 }
 
 void set_user_color(SPSettings* settings, SP_USER_COLOR color) {
-	settings -> p1_color = color;
+    settings -> p1_color = color;
 }
 
 
 SPSettings* defaultSettings(SPSettings* settings) {
     spSettingsDestroy(settings);
-	return init_settings(SP_MODE_1P, SP_DIFF_EASY, SP_USER_COLOR_WHITE);
+    return init_settings(SP_MODE_1P, SP_DIFF_EASY, SP_USER_COLOR_WHITE);
 }
 
 void settings_print(SPSettings* settings){
@@ -104,6 +104,7 @@ void settings_print(SPSettings* settings){
 SPSettings* spSettingsCopy(SPSettings* src){
     SPSettings* settings = (SPSettings*)malloc(sizeof(SPSettings));
     if(settings == NULL) return NULL;
+    settings->curr_turn = src->curr_turn;
     settings->game_mode = src->game_mode;
     settings->difficulty = src->difficulty;
     settings->p1_color = src->p1_color;

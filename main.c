@@ -6,8 +6,7 @@ int main() {
 	char s[SP_MAX_LINE_LENGTH];
     SPGame *game;
     int spStatus = 0;
-	int isRestart = 0;
-	do{ // mode : 0 - settings, 1 - game, 2 - load, -1 - exit.
+	do{ // mode : 0 - settings, 1 - game, 2 - load, -1 - exit, 3 - game without print.
         game = spGameCreateDef();
 		while(spStatus == 0){
             printf("Specify game setting or type 'start' to begin a game with the current setting:\n");
@@ -22,8 +21,9 @@ int main() {
             if (spStatus == 2)
                 spStatus = loadGame(game, cmd.pathArg);
 		}
-        while (spStatus == 1) {
-            spGamePrintBoard(game);
+        while (spStatus == 1 || spStatus == 3) {
+            if (spStatus != 3)
+                spGamePrintBoard(game);
             printf("%s player - enter your move:\n", game->settings->curr_turn == SP_USER_COLOR_WHITE ? "white" : "black");
             fgets(s, SP_MAX_LINE_LENGTH, stdin);
             if(s == NULL){
