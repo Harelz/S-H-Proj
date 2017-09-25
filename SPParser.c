@@ -34,8 +34,6 @@ SPGameCommand spGameParser(const char* str){
 	}
 	else if (strcmp(token,"move") == 0)
 		spcmd.cmd = SP_MOVE;
-	else if (strcmp(token,"castle") == 0)
-		spcmd.cmd = SP_CASTLE;
 	else if (strcmp(token,"get_moves") == 0)
 		spcmd.cmd = SP_GET_MOVES;
 	else if (strcmp(token,"save") == 0)
@@ -56,7 +54,7 @@ SPGameCommand spGameParser(const char* str){
 	else if(spcmd.cmd == SP_SAVE) {
 		spcmd.pathArg = token;
 	}
-	else if (spcmd.cmd == SP_GET_MOVES || spcmd.cmd == SP_CASTLE){
+	else if (spcmd.cmd == SP_GET_MOVES){
 		SPTile* fromTile = spParseTile(token);
 		if (fromTile == NULL)
 			spcmd.cmd = SP_GINVALID_LINE;

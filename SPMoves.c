@@ -147,14 +147,14 @@ SPMove* spMovesListGetLast(SPMovesList* src) {
 
 int spMovesListMaxCapacity(SPMovesList* src) {
     if (src == NULL) {
-        return NULL;
+        return 0;
     }
     return src->maxSize;
 }
 
 int spMovesListSize(SPMovesList* src) {
     if (src == NULL) {
-        return NULL;
+        return 0;
     }
     return src->actualSize;
 }
