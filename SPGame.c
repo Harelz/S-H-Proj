@@ -49,7 +49,7 @@ void spGameGetMovesHandler(SPGame* game , SPTile* tile) {
     if (!(IN_RANGE(tile->row, 0,8) && IN_RANGE(tile->coloumn, 0,8)))
         printf("Invalid position on the board\n");
     else if (game->gameBoard[tile->row][tile->coloumn] == SP_GAME_EMPTY_ENTRY ||
-             getColor(game->gameBoard[tile->row][tile->coloumn]) != game->settings->p1_color)
+             getColor(game->gameBoard[tile->row][tile->coloumn]) != game->settings->curr_turn)
         printf("The specified position does not contain your piece\n");
     else {
         SPMovesList* mlst = spGameGetMoves(game, tile->row, tile->coloumn);
@@ -71,7 +71,7 @@ int spGameMoveHandler(SPGame* game , SPMove* move){
         || !IN_RANGE(move->src->row, 0,8) || !IN_RANGE(move->dest->row, 0,8))
         printf("Invalid position on the board\n");
     else if (game->gameBoard[move->src->row][move->src->coloumn] == SP_GAME_EMPTY_ENTRY ||
-             getColor(game->gameBoard[move->src->row][move->src->coloumn]) != game->settings->p1_color)
+             getColor(game->gameBoard[move->src->row][move->src->coloumn]) != game->settings->curr_turn)
         printf("The specified position does not contain your piece\n");
     else{
         SP_GAME_MESSAGE msg = spGameSetMove(game, move);
@@ -92,7 +92,10 @@ int spGameMoveHandler(SPGame* game , SPMove* move){
         }
         else if(msg == SP_GAME_SUCCESS){
             game->settings->curr_turn = invColor(game->settings->curr_turn);
-            return spSetCPUMove(game, move);
+            if (game->settings->game_mode == SP_MODE_1P)
+                return spSetCPUMove(game, move);
+            else
+                return 1;
         }
     }
     return 1;
