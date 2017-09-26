@@ -8,7 +8,7 @@
 #include "SPGame.h"
 #include <limits.h>
 
-#define UPDATE_SCORE() bestScore = nodeScore; if (diff == (signed int)game->settings->difficulty) spMoveToMove(bestMove, spMovesListGetAt(moveLst,z))
+#define UPDATE_SCORE() bestScore = nodeScore; if (diff == (signed int)game->settings->difficulty) spMoveToMove(bestMove, spMovesListGetAt(moveLst,k))
 #define isMax(a,b) (isMaxi ? (a) : (b))
 
 int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_COLOR color);
@@ -41,5 +41,4 @@ int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, in
  * @return - The function calls the miniMaxRec function and the value is returned from there.
  */
 int spMinimaxSuggestMove(SPGame *game, SPMove *bestMove);
-
 #endif //CHESSPROG_MINIMAX_H

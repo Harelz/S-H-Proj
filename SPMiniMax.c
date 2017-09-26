@@ -11,7 +11,7 @@
 **/
 int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_COLOR color) {
     char c;
-    int i,j, whiteScore, blackScore, boardScore;
+    int i,j, whiteScore = 0, blackScore = 0, boardScore = 0;
     //pawn = 1 , knight = 3 , bishop = 3 , rook = 5, queen = 9, king=100
     for (i = 0; i < SP_GAMEBOARD_SIZE; i++){
         for (j = 0; j < SP_GAMEBOARD_SIZE; j++){
@@ -62,19 +62,20 @@ int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_C
 }
 
 int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, int diff, SPMove *bestMove) {
-    int bestScore, nodeScore,i,j,z;
+    int bestScore, nodeScore,i,j,k;
     SPMovesList* moveLst;
     bestScore = isMaxi ? alphaScore : betaScore;
     bool cutFlag = false;
     if (diff == 0) /*stop condition*/
         return spMinimaxScoring(game->gameBoard, game->settings->curr_turn);
-    for ( i = 0; i < SP_GAMEBOARD_SIZE && !cutFlag; i++) { /*move over board*/
-        for ( j = 0; j < SP_GAMEBOARD_SIZE && !cutFlag; j++) {
+    for (i = 0; i < SP_GAMEBOARD_SIZE && !cutFlag; i++) { /*move over board*/
+        for (j = 0; j < SP_GAMEBOARD_SIZE && !cutFlag; j++) {
             if (getColor(game->gameBoard[i][j])==isMax(BLACK,WHITE) && game->gameBoard[i][j] != SP_GAME_EMPTY_ENTRY) {
                 moveLst = spGameGetMoves(game, i, j);
-                for ( z = 0; z < moveLst->actualSize && !cutFlag; z++) {
-                    spGameSetMove(game, spMovesListGetAt(moveLst,z));
-                    if (!spGameIsMate(game)) //swap if else
+                for (k = 0; k < moveLst->actualSize && !cutFlag; k++) {
+                    if (spGameSetMove(game, spMovesListGetAt(moveLst,k)) == SP_GAME_INVALID_MOVE)
+                        continue;
+                    if (!spGameIsCheck(game)) //swap if else
                         nodeScore = spMinimaxRecCalc(game, isMax(bestScore, alphaScore), isMax(betaScore, bestScore),
                                                      true, diff - 1, bestMove);
                     else{
@@ -101,3 +102,4 @@ int spMinimaxSuggestMove(SPGame *game, SPMove *bestMove) {
     else
         return spMinimaxRecCalc(game, INT_MIN, INT_MAX, WHITE, game->settings->difficulty, bestMove);
 }
+

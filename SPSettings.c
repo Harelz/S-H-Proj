@@ -6,11 +6,12 @@ SPSettings* init_settings(SP_GAME_MODE mode, SP_GAME_DIFFICULTY diff, SP_USER_CO
     set_game_mode(settings, mode);
     set_difficulty(settings, diff);
     set_user_color(settings, color);
+    settings->curr_turn = SP_USER_COLOR_WHITE;
     return settings;
 }
 
 int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
-    switch(cmd.cmd){
+    switch(cmd.cmd) {
         case SP_START:
             return 1;
         case SP_SQUIT:
@@ -18,17 +19,15 @@ int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
             return -1;
         case SP_CHOOSE_GAME_MODE:
             IS_VALID(cmd);
-            if (IN_RANGE(cmd.arg, 1,3))
+            if (IN_RANGE(cmd.arg, 1, 3)) {
                 set_game_mode(settings, cmd.arg);
-            else if (cmd.arg == -1){
+                printf("Game mode is set to %s\n", settings->game_mode == SP_MODE_1P ? "1 player" : "2 players");
+            }
+            else if (cmd.arg == -1)
                 set_game_mode(settings, 1);
-                if (settings->game_mode == SP_MODE_1P)
-                    printf("Game mode is set to 1 player\n");
-                else
-                    printf("Game mode is set to 2 players\n");}
             else
                 printf("Wrong game mode\n");
-            return 0;
+            return 4;
         case SP_DIFFICULTY:
             IS_VALID(cmd);
             if (IN_RANGE(cmd.arg, 1,5))
@@ -39,7 +38,7 @@ int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
                 set_difficulty(settings, 2);
             else
                 printf("Wrong difficulty level. The value should be between 1 to 5\n");
-            return 0;
+            return 4;
         case SP_CHOOSE_USER_COLOR:
             IS_VALID(cmd);
             if(settings->game_mode == SP_MODE_2P){
@@ -52,19 +51,19 @@ int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
                 set_game_mode(settings, SP_MODE_1P);
             else
                 PRINT_INVALID_COMMAND;
-            return 0;
+            return 4;
         case SP_LOAD:
             IS_VALID(cmd);
             return 2;
         case SP_DEFAULT:
             defaultSettings(settings);
-            return 0;
+            return 4;
         case SP_PRINT:
             settings_print(settings);
-            return 0;
+            return 4;
         case SP_SINVALID_LINE:
             PRINT_INVALID_COMMAND;
-            return 0;
+            return 4;
     }
     return 0;
 }
@@ -89,10 +88,10 @@ SPSettings* defaultSettings(SPSettings* settings) {
 
 void settings_print(SPSettings* settings){
     printf("SETTINGS:\nGAME_MODE: ");
-    if (settings->game_mode == SP_MODE_1P)
-        printf("1\n");
+    if (settings->game_mode == SP_MODE_2P)
+        printf("2\n");
     else{
-        printf("2\nDIFFICULTY_LVL: %d\n", settings->difficulty);
+        printf("1\nDIFFICULTY_LVL: %d\n", settings->difficulty);
         printf("USER_CLR: ");
         if (settings->p1_color == SP_USER_COLOR_WHITE)
             printf("WHITE\n");

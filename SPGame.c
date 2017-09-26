@@ -17,7 +17,7 @@ int spGameHandler(SPGame *game, SPGameCommand cmd) {
         case SP_SAVE:
             IS_VALID(cmd);
             spGameSaveHandler(game, cmd.pathArg);
-            return 1;
+            return 3;
         case SP_MOVE:
             IS_VALID(cmd);
             return spGameMoveHandler(game,cmd.move);
@@ -140,7 +140,7 @@ int spSetNaiveCPUMove(SPGame* game){
         return 0;
     spMinimaxSuggestMove(minmaxGame, a);
     spGameDestroy(minmaxGame);
-    spGameSetMove(game, a);
+    spGameSetNaiveMove(game, a);
     printf("Computer: move %s at <%c,%c> to <%c,%c>\n",
            spGetTilePiece(game->gameBoard[a->dest->row][a->dest->coloumn]),
            a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
@@ -233,7 +233,7 @@ int loadGame(SPGame* game, char* fpath){
     fp = fopen(fpath, "r");
     if (fp == NULL) {
         printf("Error: File doesn’t exist or cannot be opened\n");
-        return 2;
+        return 4;
     }
     fgets(line, sizeof(line), fp);
     fgets(line, sizeof(line), fp);
@@ -254,7 +254,7 @@ int loadGame(SPGame* game, char* fpath){
             game->gameBoard[i-1][j] = line[9+j];
     }
     fclose(fp);
-    return 2;
+    return 4;
 }
 
 SPGame* spGameCreateDef(){
