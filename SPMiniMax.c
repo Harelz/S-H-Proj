@@ -64,9 +64,7 @@ int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_C
 int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, int diff, SPMove *bestMove) {
     int bestScore, nodeScore,i,j,z;
     SPMovesList* moveLst;
-    /*initialize value according to minimize/maximize player status*/
-    if(isMaxi) bestScore=alphaScore;
-    else bestScore=betaScore;
+    bestScore = isMaxi ? alphaScore : betaScore;
     bool cutFlag = false;
     if (diff == 0) /*stop condition*/
         return spMinimaxScoring(game->gameBoard, game->settings->curr_turn);
@@ -79,10 +77,10 @@ int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, in
                     if (!spGameIsMate(game)) //swap if else
                         nodeScore = spMinimaxRecCalc(game, isMax(bestScore, alphaScore), isMax(betaScore, bestScore),
                                                      true, diff - 1, bestMove);
-                    else{/*game reached mate, minimize player won*/
+                    else{
                         cutFlag = true; nodeScore = isMax(INT_MAX, INT_MIN); }
                     spGameUndoHandler(game);
-                    if (!isMaxi &&((bestScore==INT_MAX && nodeScore == INT_MAX) || bestScore > nodeScore)) { /*check if need to update score- in case the score is lower than saved*/
+                    if (!isMaxi &&((bestScore==INT_MAX && nodeScore == INT_MAX) || bestScore > nodeScore)) {
                         UPDATE_SCORE();
                     }
                     if (isMaxi && ((bestScore==INT_MIN && nodeScore == INT_MIN) || bestScore < nodeScore)) {
