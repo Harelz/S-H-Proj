@@ -523,20 +523,22 @@ char spGameIsCheck(SPGame *src){
 
 bool spGameIsMate(SPGame *src){
     SPMovesList* moves = spGameGetAllMoves(src);
-    SPGame* newGame;
-    char status;
     for(int i = 0 ; i<moves->actualSize; i++) {
         SPMove *move = spMovesListGetAt(moves, i);
-        if (src->gameBoard[move->dest->row][move->dest->coloumn] != 'K' &&
-            src->gameBoard[move->dest->row][move->dest->coloumn] != 'k') {
-            newGame = spGameStimulateMove(src, move);
-            status = spGameIsCheck(newGame);
-            if (status != invColor(src->settings->curr_turn) && status != SP_GAME_COLOR_BOTH) return false;
-        }
+        if (!spGameIsValidMove(src, move->src->row, move->src->coloumn, move->dest->row, move->dest->coloumn))
+            return SP_GAME_INVALID_MOVE;
+        SPGame* statusGame = spGameStimulateMove(src, move);
+        char statusAfter = spGameIsCheck(statusGame);
+        spGameDestroy(statusGame);
+        if(!(statusAfter == SP_GAME_COLOR_BOTH || statusAfter == (signed int)src->settings->curr_turn))
+            return false;
+        /*if (spGameSetMove(src, move) != SP_GAME_INVALID_MOVE) {
+            spGameUndoHandler(src);
+            return false;
+        }*/
         free(move);
     }
     spMovesListDestroy(moves);
-    spGameDestroy(newGame);
     return true;
 }
 

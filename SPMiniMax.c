@@ -75,12 +75,14 @@ int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, in
                 for (k = 0; k < moveLst->actualSize && !cutFlag; k++) {
                     if (spGameSetMove(game, spMovesListGetAt(moveLst,k)) == SP_GAME_INVALID_MOVE)
                         continue;
-                    if (!spGameIsCheck(game)) //swap if else
+                    if (!spGameIsMate(game)) //swap if else
                         nodeScore = spMinimaxRecCalc(game, isMax(bestScore, alphaScore), isMax(betaScore, bestScore),
                                                      true, diff - 1, bestMove);
                     else{
                         cutFlag = true; nodeScore = isMax(INT_MAX, INT_MIN); }
                     spGameUndoHandler(game);
+                    if (game->settings->difficulty % 2 == 0)
+                        game->settings->curr_turn = invColor(game->settings->curr_turn);
                     if (!isMaxi &&((bestScore==INT_MAX && nodeScore == INT_MAX) || bestScore > nodeScore)) {
                         UPDATE_SCORE();
                     }
@@ -102,4 +104,3 @@ int spMinimaxSuggestMove(SPGame *game, SPMove *bestMove) {
     else
         return spMinimaxRecCalc(game, INT_MIN, INT_MAX, WHITE, game->settings->difficulty, bestMove);
 }
-
