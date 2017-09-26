@@ -211,4 +211,6 @@ bool spGameTileIsThreatened(SPGame* game , SPMove* move);
 char spGameIsTie(SPGame* src);
 char spGameIsCheck(SPGame* src);
 SP_GAME_MESSAGE spGameSetNaiveMove(SPGame* src, SPMove* move);
+char* spGetTilePiece (char piece);
+int spSetNaiveCPUMove(SPGame* game);
 #endif

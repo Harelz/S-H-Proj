@@ -8,6 +8,7 @@
 #include "SPGame.h"
 #include <limits.h>
 
+#define UPDATE_SCORE() bestScore = nodeScore; if (diff == (signed int)game->settings->difficulty) spMoveToMove(bestMove, spMovesListGetAt(moveLst,z))
 #define isMax(a,b) (isMaxi ? (a) : (b))
 
 int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_COLOR color);

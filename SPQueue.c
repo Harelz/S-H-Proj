@@ -59,7 +59,7 @@ int spQueuePush(Queue *myQ, char data[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE]) {
 
 int spQueueFullPush(Queue *myQ, char data[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], char* pushMsg) {
     /* Bad parameter */
-    if ((myQ == NULL) || (data == NULL)) {
+    if ((myQ == NULL) || (data == NULL) || (pushMsg == NULL)) {
         return 0;
     }
     // if(myQ->maxSize != 0)
@@ -126,13 +126,13 @@ Queue* spQueueCopy(Queue* myQ){
     queue->maxSize = myQ->maxSize;
     queue->actualSize = 0;
     SPNode* tempNode;
-    tempNode = myQ->head;
-    if (tempNode == NULL){
+    tempNode = myQ->tail;
+    if (tempNode == NULL || myQ->actualSize==0){
         queue->head = NULL, queue->tail=NULL;
         return queue;
     }
     spQueueFullPush(queue, tempNode->data, tempNode->msg);
-    while ((tempNode = tempNode->next) != NULL) {
+    while ((tempNode = tempNode->prev) != NULL) {
         spQueueFullPush(queue, tempNode->data, tempNode->msg);
     }
     return queue;

@@ -1,6 +1,6 @@
 CC = gcc
 OBJS = main.o SPGame.o SPParser.o SPSettings.o SPQueue.o SPMoves.o SPMiniMax.o
-EXEC = SP
+EXEC = chessprog
 COMP_FLAG = -std=c99 -Wall -Wextra \
 -Werror -pedantic-errors
 
@@ -20,5 +20,3 @@ SPMiniMax.o: SPMiniMax.c SPMiniMax.h SPGame.h
 	$(CC) $(COMP_FLAG) -c $*.c
 main.o: main.c SPGame.h SPParser.h
 	$(CC) $(COMP_FLAG) -c $*.c
-clean:
-	rm -f *.o $(EXEC) $(UNIT_TESTS)

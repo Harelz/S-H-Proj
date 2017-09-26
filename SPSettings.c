@@ -20,8 +20,12 @@ int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
             IS_VALID(cmd);
             if (IN_RANGE(cmd.arg, 1,3))
                 set_game_mode(settings, cmd.arg);
-            else if (cmd.arg == -1)
+            else if (cmd.arg == -1){
                 set_game_mode(settings, 1);
+                if (settings->game_mode == SP_MODE_1P)
+                    printf("Game mode is set to 1 player\n");
+                else
+                    printf("Game mode is set to 2 players\n");}
             else
                 printf("Wrong game mode\n");
             return 0;
@@ -67,10 +71,6 @@ int settingsHandler(SPSettings* settings, SPSettingCommand cmd) {
 
 void set_game_mode(SPSettings* settings, SP_GAME_MODE mode) {
     settings -> game_mode = mode;
-    if (mode == SP_MODE_1P)
-        printf("Game mode is set to 1 player\n");
-    else
-        printf("Game mode is set to 2 players\n");
 }
 
 void set_difficulty(SPSettings* settings, SP_GAME_DIFFICULTY difficulty)  {

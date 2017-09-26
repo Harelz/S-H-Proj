@@ -68,14 +68,21 @@ void spGameGetMovesHandler(SPGame* game , SPTile* tile) {
 
 int spGameMoveHandler(SPGame* game , SPMove* move){
     if (!IN_RANGE(move->src->coloumn, 0,8) || !IN_RANGE(move->dest->coloumn, 0,8)
-        || !IN_RANGE(move->src->row, 0,8) || !IN_RANGE(move->dest->row, 0,8))
+        || !IN_RANGE(move->src->row, 0,8) || !IN_RANGE(move->dest->row, 0,8)) {
         printf("Invalid position on the board\n");
+        return 3;
+    }
     else if (game->gameBoard[move->src->row][move->src->coloumn] == SP_GAME_EMPTY_ENTRY ||
-             getColor(game->gameBoard[move->src->row][move->src->coloumn]) != game->settings->curr_turn)
+             getColor(game->gameBoard[move->src->row][move->src->coloumn]) != game->settings->curr_turn) {
         printf("The specified position does not contain your piece\n");
+        return 3;
+    }
     else{
         SP_GAME_MESSAGE msg = spGameSetMove(game, move);
-        if (msg == SP_GAME_INVALID_MOVE) printf("Illegal move\n");
+        if (msg == SP_GAME_INVALID_MOVE){
+            printf("Illegal move\n");
+            return 3;
+        }
         else if (msg == SP_GAME_SUCCESS_TIE){
             printf("The game is Tied\n");
             return -1;
@@ -103,6 +110,46 @@ int spGameMoveHandler(SPGame* game , SPMove* move){
 
 }
 
+char* spGetTilePiece (char piece){
+    switch (piece){
+        case W_PAWN:
+        case B_PAWN:
+            return "pawn";
+        case W_BISHOP:
+        case B_BISHOP:
+            return "bishop";
+        case W_KNIGHT:
+        case B_KNIGHT:
+            return "knight";
+        case W_ROOK:
+        case B_ROOK:
+            return "rook";
+        case W_QUEEN:
+        case B_QUEEN:
+            return "queen";
+        case W_KING:
+        case B_KING:
+            return "king";
+    }
+    return NULL;
+}
+int spSetNaiveCPUMove(SPGame* game){
+    SPMove* a = spCreateMove(0,0,0,0);
+    SPGame* minmaxGame = spGameCopy(game);
+    if (a==NULL || minmaxGame == NULL)
+        return 0;
+    spMinimaxSuggestMove(minmaxGame, a);
+    spGameDestroy(minmaxGame);
+    spGameSetMove(game, a);
+    printf("Computer: move %s at <%c,%c> to <%c,%c>\n",
+           spGetTilePiece(game->gameBoard[a->dest->row][a->dest->coloumn]),
+           a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
+    if(spGameIsCheck(game) == (signed int)game->settings->p1_color)
+        printf("Check!\n");
+    game->settings->curr_turn = invColor(game->settings->curr_turn);
+    spDestroyMove(a);
+    return 1;
+}
 int spSetCPUMove (SPGame* game,SPMove* move){
     SPNode* lastBoard = spStackPop(game->history);
     SPMove* a = spCreateMove(0,0,0,0);
@@ -119,6 +166,11 @@ int spSetCPUMove (SPGame* game,SPMove* move){
             game->settings->p1_color == BLACK ? "white" : "black", a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
     spQueueFullPush(game->history, lastBoard->data, msg);
     spDestroyMove(a);
+    printf("Computer: move %s at <%c,%c> to <%c,%c>\n",
+           spGetTilePiece(game->gameBoard[a->dest->row][a->dest->coloumn]),
+           a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
+    if(spGameIsCheck(game) == (signed int)(game->settings->p1_color))
+        printf("Check!\n");
     game->settings->curr_turn = invColor(game->settings->curr_turn);
     return 1;
 }
@@ -181,7 +233,7 @@ int loadGame(SPGame* game, char* fpath){
     fp = fopen(fpath, "r");
     if (fp == NULL) {
         printf("Error: File doesn’t exist or cannot be opened\n");
-        return 0;
+        return 2;
     }
     fgets(line, sizeof(line), fp);
     fgets(line, sizeof(line), fp);
@@ -202,7 +254,7 @@ int loadGame(SPGame* game, char* fpath){
             game->gameBoard[i-1][j] = line[9+j];
     }
     fclose(fp);
-    return 1;
+    return 2;
 }
 
 SPGame* spGameCreateDef(){
@@ -426,6 +478,7 @@ SPMovesList* spGameGetAllMoves(SPGame* src) {
             for(int i =0; i<temp->actualSize; i++){
                 spMovesListAddLast(moves,spMovesListGetAt(temp,i));
             }
+            spMovesListDestroy(temp);
         }
     }
     return moves;
@@ -441,8 +494,10 @@ char spGameIsTie(SPGame* src) {
             flagB = true;
         else if (getColor(src->gameBoard[t->row][t->coloumn]) == WHITE)
             flagW = true;
+        free(t);
         if (flagB && flagW) return SP_GAME_EMPTY_ENTRY;
     }
+    free(moves);
     if (!flagB && !flagW) return SP_GAME_COLOR_BOTH;
     if(!flagB) return BLACK;
     if(!flagW) return WHITE;
@@ -457,7 +512,9 @@ char spGameIsCheck(SPGame *src){
         char target = src->gameBoard[t->row][t->coloumn];
         if(target == 'K')   flagB = true;
         else if(target == 'k') flagW = true;
+        free(t);
     }
+    spMovesListDestroy(moves);
     if(flagW && flagB) return SP_GAME_COLOR_BOTH;
     if(flagB) return BLACK;
     if(flagW) return WHITE;
@@ -476,7 +533,10 @@ bool spGameIsMate(SPGame *src){
             status = spGameIsCheck(newGame);
             if (status != invColor(src->settings->curr_turn) && status != SP_GAME_COLOR_BOTH) return false;
         }
+        free(move);
     }
+    spMovesListDestroy(moves);
+    spGameDestroy(newGame);
     return true;
 }
 

@@ -8,8 +8,9 @@ int main() {
     int spStatus = 0;
 	do{ // mode : 0 - settings, 1 - game, 2 - load, -1 - exit, 3 - game without print.
         game = spGameCreateDef();
-		while(spStatus == 0){
-            printf("Specify game setting or type 'start' to begin a game with the current setting:\n");
+		while(spStatus == 0 || spStatus == 2){
+            if (spStatus != 2)
+                printf("Specify game setting or type 'start' to begin a game with the current setting:\n");
 			fgets(s,SP_MAX_LINE_LENGTH,stdin);
 			if(s == NULL){
 				printf("Error: fgets has failed\n");
@@ -22,6 +23,9 @@ int main() {
                 spStatus = loadGame(game, cmd.pathArg);
 		}
         while (spStatus == 1 || spStatus == 3) {
+            if (game->settings->curr_turn != game->settings->p1_color) {
+                spSetNaiveCPUMove(game);
+            }
             if (spStatus != 3)
                 spGamePrintBoard(game);
             printf("%s player - enter your move:\n", game->settings->curr_turn == SP_USER_COLOR_WHITE ? "white" : "black");

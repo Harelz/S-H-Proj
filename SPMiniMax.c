@@ -83,14 +83,10 @@ int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, in
                         cutFlag = true; nodeScore = isMax(INT_MAX, INT_MIN); }
                     spGameUndoHandler(game);
                     if (!isMaxi &&((bestScore==INT_MAX && nodeScore == INT_MAX) || bestScore > nodeScore)) { /*check if need to update score- in case the score is lower than saved*/
-                        bestScore = nodeScore;
-                        if (diff == (signed int)game->settings->difficulty)
-                            spMoveToMove(bestMove, spMovesListGetAt(moveLst,z));/*found move for plyaer, update the param! */
+                        UPDATE_SCORE();
                     }
                     if (isMaxi && ((bestScore==INT_MIN && nodeScore == INT_MIN) || bestScore < nodeScore)) {
-                        bestScore = nodeScore;
-                        if (diff == (signed int)game->settings->difficulty)
-                            spMoveToMove(bestMove, spMovesListGetAt(moveLst,z));
+                        UPDATE_SCORE();
                     }
                 }
                 spMovesListDestroy(moveLst);
