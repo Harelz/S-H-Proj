@@ -24,10 +24,10 @@ int spGameHandler(SPGame *game, SPGameCommand cmd) {
         case SP_GET_MOVES:
             IS_VALID(cmd);
             spGameGetMovesHandler(game,cmd.tile);
-            return 1;
+            return 3;
         case SP_GINVALID_LINE:
             PRINT_INVALID_COMMAND;
-            return 1;
+            return 3;
     }
     return -1;
 }
