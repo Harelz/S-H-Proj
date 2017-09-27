@@ -22,7 +22,6 @@ set(SDL2_LIBRARIES "-L${SDL2_LIBDIR} -lmingw32")
 string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 
 
-
 configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\back.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\back.bmp COPYONLY)
 configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_bishop.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_bishop.bmp COPYONLY)
 configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_king.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_king.bmp COPYONLY)
@@ -30,7 +29,14 @@ configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\
 configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_pawn.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_pawn.bmp COPYONLY)
 configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_player.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_player.bmp COPYONLY)
 configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_queen.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_queen.bmp COPYONLY)
-configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_rook.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_rook .bmp COPYONLY)
+configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_rook.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\black_rook.bmp COPYONLY)
+configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_bishop.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_bishop.bmp COPYONLY)
+configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_king.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_king.bmp COPYONLY)
+configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_knight.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_knight.bmp COPYONLY)
+configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_pawn.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_pawn.bmp COPYONLY)
+configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_player.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_player.bmp COPYONLY)
+configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_queen.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_queen.bmp COPYONLY)
+configure_file(C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_rook.bmp C:\\Users\\hoshri\\Documents\\Harelz\\S-H-Proj\\Graphics\\images\\white_rook.bmp COPYONLY)
 
 set(CMAKE_C_STANDARD 99)
 set(gcc Wall Werror Wextra pedantic-errors)
