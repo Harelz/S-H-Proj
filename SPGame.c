@@ -339,7 +339,9 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
     char isTie = spGameIsTie(src);
     if(isTie == (signed int)src->settings->curr_turn || isTie == SP_GAME_COLOR_BOTH) return SP_GAME_SUCCESS_TIE;
     if(statusAfter == invColor(src->settings->curr_turn)) {
+        src->settings->curr_turn = invColor(src->settings->curr_turn);
         if(spGameIsMate(src)) return SP_GAME_SUCCESS_MATED;
+        src->settings->curr_turn = invColor(src->settings->curr_turn);
         return SP_GAME_SUCCESS_CHECKED;
     }
     return SP_GAME_SUCCESS;
@@ -525,18 +527,13 @@ bool spGameIsMate(SPGame *src){
     SPMovesList* moves = spGameGetAllMoves(src);
     for(int i = 0 ; i<moves->actualSize; i++) {
         SPMove *move = spMovesListGetAt(moves, i);
-        if (!spGameIsValidMove(src, move->src->row, move->src->coloumn, move->dest->row, move->dest->coloumn))
-            return SP_GAME_INVALID_MOVE;
-        SPGame* statusGame = spGameStimulateMove(src, move);
-        char statusAfter = spGameIsCheck(statusGame);
-        spGameDestroy(statusGame);
-        if(!(statusAfter == SP_GAME_COLOR_BOTH || statusAfter == (signed int)src->settings->curr_turn))
-            return false;
-        /*if (spGameSetMove(src, move) != SP_GAME_INVALID_MOVE) {
-            spGameUndoHandler(src);
-            return false;
-        }*/
-        free(move);
+        if (getColor(src->gameBoard[move->src->row][move->src->coloumn]) == src->settings->curr_turn){
+            SPGame* statusGame = spGameStimulateMove(src, move);
+            char statusAfter = spGameIsCheck(statusGame);
+            spGameDestroy(statusGame);
+            if(!(statusAfter == SP_GAME_COLOR_BOTH || statusAfter == (signed int)src->settings->curr_turn))
+                return false;}
+        spDestroyMove(move);
     }
     spMovesListDestroy(moves);
     return true;
