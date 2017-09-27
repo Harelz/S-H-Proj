@@ -89,7 +89,6 @@ int spGameMoveHandler(SPGame* game , SPMove* move){
         }
         else if(msg == SP_GAME_SUCCESS_MATED){
             printf("Checkmate! %s player wins the game\n", game->settings->curr_turn == WHITE ? "white" : "black" );
-            spGameDestroy(game);
             return -1;
         }
         else if(msg == SP_GAME_SUCCESS_CHECKED){
