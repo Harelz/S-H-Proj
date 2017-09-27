@@ -1,10 +1,10 @@
-#include "C:\clone\S-H-Proj\SPGame.h"
 
 #ifndef GRAPHICS_SPCHESSGUIGAMEWIN_H_
 #define GRAPHICS_SPCHESSGUIGAMEWIN_H_
 
 #include "SPCHESSGUICommon.h"
 #include "../SPMiniMax.h"
+#include "../SPGame.h"
 #define NUM_OF_GAME_BUTTONS 6
 #define NUM_OF_DIFF_PIECES 6
 #define PANEL_OFFSET 200

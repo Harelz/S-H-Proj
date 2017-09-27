@@ -285,14 +285,14 @@ SPCHESS_GAME_EVENT spGameWindowHandleEvent(SPGameWin* src,
 				//check if legal move, change chosePiece check undo checkcheck, not saved = true
 				int to[2] = { event->button.x, event->button.y };
 				computeLocFromGui(to);
-				if (!0)//SPGameIsKingRisker(src->game, src->chosenPiece, to) //TODO: look here.
-						//&& spGameSetMove(src->game, src->chosenPiece, to)
-								//== SP_GAME_SUCCESS) {
+				SPMove* myMove = spCreateMove(src->chosenPiece[0],src->chosenPiece[1],to[0],to[1]);
+				if (spGameSetMove(src->game, myMove) == SP_GAME_SUCCESS) {
 					src->isSaved = false;
 					src->chosenPiece[0] = -1;
 					src->chosenPiece[1] = -1;
 					SPCHESS_GAME_EVENT msg = checkStatusForUserGui(src);
 					if (spStatusAfterMove(msg, src, event) != SPCHESS_GAME_NONE) {
+						spDestroyMove(myMove);
 						return msg;
 					}
 					//computer turn (if computer is black)
@@ -304,15 +304,18 @@ SPCHESS_GAME_EVENT spGameWindowHandleEvent(SPGameWin* src,
 						spGameSetMove(src->game, compMove);
 						spDestroyMove(compMove);
 						SPCHESS_GAME_EVENT msg = checkStatusForUserGui(src);
-						if (spStatusAfterMove(msg, src, event) != SPCHESS_GAME_NONE)
-							return msg;
+						if (spStatusAfterMove(msg, src, event) != SPCHESS_GAME_NONE){
+							spDestroyMove(myMove);
+							return msg;}
 					}
+					spDestroyMove(myMove);
 					return SPCHESS_GAME_MOVE;
 				}
 				src->chosenPiece[0] = -1;
 				src->chosenPiece[1] = -1;
+				spDestroyMove(myMove);
 				return SPCHESS_GAME_NONE;
-			}
+			}}
 		} else if (event->type == SDL_MOUSEBUTTONUP) {
 			return spPanelHandleEvent(src, event);
 		}
@@ -328,26 +331,22 @@ SPCHESS_GAME_EVENT spGameWindowHandleEvent(SPGameWin* src,
 }
 
 SPCHESS_GAME_EVENT checkStatusForUserGui(SPGameWin* src) { // edited
-	/*char winner = spGameIsMate(src->game);
-	if (winner != '\0') {
-		if (winner == WHITE)
+	if (spGameIsMate(src->game)) {
+		if (src->game->settings->curr_turn == WHITE)
 			return SPCHESS_GAME_PLAYER_1_CHECKMATE;
 		else { //winner == BLACK
 			return SPCHESS_GAME_PLAYER_2_CHECKMATE;
 		}
 	}
-
-	char whoisincheck = spChessIfMate(src->game);
-	if (whoisincheck != '\0') {
-		if (whoisincheck == WHITE)
+	char playerCheck = spGameIsCheck(src->game);
+	if (playerCheck != SP_GAME_EMPTY_ENTRY) {
+		if (src->game->settings->curr_turn == WHITE && (playerCheck == WHITE || playerCheck == SP_GAME_COLOR_BOTH))
 			return SPCHESS_GAME_PLAYER_1_CHECK;
-		else
-			// whoisincheck == BLACK
+		else if (src->game->settings->curr_turn == BLACK && (playerCheck == BLACK || playerCheck == SP_GAME_COLOR_BOTH))
 			return SPCHESS_GAME_PLAYER_2_CHECK;
 	}
 	if (spGameIsTie(src->game))
 		return SPCHESS_GAME_TIE;
-*/
 	return SPCHESS_GAME_MOVE;
 
 }
