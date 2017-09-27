@@ -1,8 +1,8 @@
 #include "SPGame.h"
 #include "SPParser.h"
-
-
-int main() {
+#include "Graphics/guimode.h"
+int main(int argc, char* argv[]) {
+    activegui();
 	char s[SP_MAX_LINE_LENGTH];
     SPGame *game;
     int spStatus = 0;
