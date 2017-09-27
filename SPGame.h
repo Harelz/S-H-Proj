@@ -33,6 +33,7 @@
 #define BLACK SP_USER_COLOR_BLACK
 #define invColor(C) ((C)==WHITE? BLACK:WHITE)
 #define getColor(P) (islower(P)? WHITE:BLACK)
+#define changeColor(GAME) (GAME->settings->curr_turn = invColor(GAME->settings->curr_turn))
 #define MAX(a,b) (((a)>(b)) ? a : b)
 #define MIN(a,b) (((a)<(b)) ? a : b)
 

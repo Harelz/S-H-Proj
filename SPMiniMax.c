@@ -70,17 +70,20 @@ int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, in
         return spMinimaxScoring(game->gameBoard, BLACK);// game->settings->difficulty % 2 == 0 ? BLACK : WHITE);
     for (i = 0; i < SP_GAMEBOARD_SIZE && !cutFlag; i++) { /*move over board*/
         for (j = 0; j < SP_GAMEBOARD_SIZE && !cutFlag; j++) {
-            if (getColor(game->gameBoard[i][j])==isMax(BLACK,WHITE) && game->gameBoard[i][j] != SP_GAME_EMPTY_ENTRY) {
+            if (getColor(game->gameBoard[i][j])==game->settings->curr_turn && game->gameBoard[i][j] != SP_GAME_EMPTY_ENTRY) {
                 moveLst = spGameGetMoves(game, i, j);
                 for (k = 0; k < moveLst->actualSize && !cutFlag; k++) {
-                    if (spGameSetMove(game, spMovesListGetAt(moveLst,k)) == SP_GAME_INVALID_MOVE)
+                    SP_GAME_MESSAGE msg = spGameSetMove(game, spMovesListGetAt(moveLst,k));
+                    if (msg == SP_GAME_INVALID_MOVE)
                         continue;
-                    if (!spGameIsMate(game)) //swap if else
+                    changeColor(game);
+                    if (!(msg == SP_GAME_SUCCESS_MATED)) //swap if else
                         nodeScore = spMinimaxRecCalc(game, isMax(bestScore, alphaScore), isMax(betaScore, bestScore),
                                                      isMax(BLACK, WHITE), diff - 1, bestMove);
                     else{
                         cutFlag = true; nodeScore = isMax(INT_MAX, INT_MIN); }
                     spGameUndoHandler(game);
+                    changeColor(game);
                     if (!isMaxi &&((bestScore==INT_MAX && nodeScore == INT_MAX) || bestScore > nodeScore)) {
                         UPDATE_SCORE();
                     }

@@ -94,11 +94,11 @@ int spGameMoveHandler(SPGame* game , SPMove* move){
         }
         else if(msg == SP_GAME_SUCCESS_CHECKED){
             printf("Check: %s King is threatened!\n", game->settings->curr_turn == BLACK ? "white" : "black" );
-            game->settings->curr_turn = invColor(game->settings->curr_turn);
+            changeColor(game);
             return 1;
         }
         else if(msg == SP_GAME_SUCCESS){
-            game->settings->curr_turn = invColor(game->settings->curr_turn);
+            changeColor(game);
             if (game->settings->game_mode == SP_MODE_1P)
                 return spSetCPUMove(game, move);
             else
@@ -146,7 +146,7 @@ int spSetNaiveCPUMove(SPGame* game){
            a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
     if(spGameIsCheck(game) == (signed int)game->settings->p1_color)
         printf("Check!\n");
-    game->settings->curr_turn = invColor(game->settings->curr_turn);
+    changeColor(game);
     spDestroyMove(a);
     return 1;
 }
@@ -171,7 +171,7 @@ int spSetCPUMove (SPGame* game,SPMove* move){
            a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
     if(spGameIsCheck(game) == (signed int)(game->settings->p1_color))
         printf("Check!\n");
-    game->settings->curr_turn = invColor(game->settings->curr_turn);
+    changeColor(game);
     return 1;
 }
 
@@ -336,13 +336,17 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
         spQueuePush(src->history, src->gameBoard);
     src->gameBoard[move->dest->row][move->dest->coloumn] = src->gameBoard[move->src->row][move->src->coloumn];
     src->gameBoard[move->src->row][move->src->coloumn] = SP_GAME_EMPTY_ENTRY;
-    src->settings->curr_turn = invColor(src->settings->curr_turn);
+    changeColor(src);
     if(spGameIsTie(src)) return SP_GAME_SUCCESS_TIE;
-    if(statusAfter == src->settings->curr_turn) {
-        if(spGameIsMate(src)) return SP_GAME_SUCCESS_MATED;
+    if(statusAfter == (signed int)src->settings->curr_turn) {
+        if(spGameIsMate(src)){
+            changeColor(src);
+            return SP_GAME_SUCCESS_MATED;
+        }
+        changeColor(src);
         return SP_GAME_SUCCESS_CHECKED;
     }
-    src->settings->curr_turn = invColor(src->settings->curr_turn);
+    changeColor(src);
     return SP_GAME_SUCCESS;
 }
 
