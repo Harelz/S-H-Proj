@@ -10,6 +10,7 @@
 
 #define UPDATE_SCORE() bestScore = nodeScore; if (diff == (signed int)game->settings->difficulty) spMoveToMove(bestMove, spMovesListGetAt(moveLst,k))
 #define isMax(a,b) (isMaxi ? (a) : (b))
+#define defMove() (isMax((bestScore==INT_MIN && nodeScore == INT_MIN), (bestScore==INT_MAX && nodeScore == INT_MAX)))
 
 int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_COLOR color);
 

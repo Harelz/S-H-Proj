@@ -507,8 +507,8 @@ char spGameIsCheck(SPGame *src){
     for(int i = 0 ; i<moves->actualSize; i++){
         SPTile* t = spMovesListGetAt(moves , i) -> dest;
         char target = src->gameBoard[t->row][t->coloumn];
-        if(target == 'K')   flagB = true;
-        else if(target == 'k') flagW = true;
+        if(target == B_KING)   flagB = true;
+        else if(target == W_KING) flagW = true;
         free(t);
     }
     spMovesListDestroy(moves);
