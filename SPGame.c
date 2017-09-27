@@ -337,7 +337,6 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
     src->gameBoard[move->dest->row][move->dest->coloumn] = src->gameBoard[move->src->row][move->src->coloumn];
     src->gameBoard[move->src->row][move->src->coloumn] = SP_GAME_EMPTY_ENTRY;
     changeColor(src);
-    if(spGameIsTie(src)) return SP_GAME_SUCCESS_TIE;
     if(statusAfter == (signed int)src->settings->curr_turn) {
         if(spGameIsMate(src)){
             changeColor(src);
@@ -346,6 +345,7 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
         changeColor(src);
         return SP_GAME_SUCCESS_CHECKED;
     }
+    if(spGameIsTie(src)) return SP_GAME_SUCCESS_TIE;
     changeColor(src);
     return SP_GAME_SUCCESS;
 }
