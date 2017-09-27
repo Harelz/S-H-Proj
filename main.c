@@ -1,5 +1,4 @@
 #include "SPGame.h"
-#include "SPParser.h"
 #include "Graphics/guimode.h"
 int main(int argc, char* argv[]) {
     activegui();

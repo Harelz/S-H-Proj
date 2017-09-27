@@ -65,7 +65,7 @@ SPCHESSSetWin* spSetWindowCreate() {
 		free(res);
 	}
 
-	res->game = spGameCreate(3);
+	res->game = spGameCreateDef();
 	return res;
 }
 

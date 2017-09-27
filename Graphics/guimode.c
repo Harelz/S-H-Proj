@@ -15,8 +15,6 @@ int activegui() {
 		SDL_WaitEvent(&event);
 		if (spManagerHandleEvent(manager, &event) == SPCHESS_MANAGER_QUIT)
 			break;
-
-		//spManagerDraw(manager, &event);
 	}
 	spManagerDestroy(manager);
 	SDL_Quit();
