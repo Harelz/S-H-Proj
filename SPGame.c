@@ -336,14 +336,13 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
         spQueuePush(src->history, src->gameBoard);
     src->gameBoard[move->dest->row][move->dest->coloumn] = src->gameBoard[move->src->row][move->src->coloumn];
     src->gameBoard[move->src->row][move->src->coloumn] = SP_GAME_EMPTY_ENTRY;
-    char isTie = spGameIsTie(src);
-    if(isTie == (signed int)src->settings->curr_turn || isTie == SP_GAME_COLOR_BOTH) return SP_GAME_SUCCESS_TIE;
-    if(statusAfter == invColor(src->settings->curr_turn)) {
-        src->settings->curr_turn = invColor(src->settings->curr_turn);
+    src->settings->curr_turn = invColor(src->settings->curr_turn);
+    if(spGameIsTie(src)) return SP_GAME_SUCCESS_TIE;
+    if(statusAfter == src->settings->curr_turn) {
         if(spGameIsMate(src)) return SP_GAME_SUCCESS_MATED;
-        src->settings->curr_turn = invColor(src->settings->curr_turn);
         return SP_GAME_SUCCESS_CHECKED;
     }
+    src->settings->curr_turn = invColor(src->settings->curr_turn);
     return SP_GAME_SUCCESS;
 }
 
@@ -486,24 +485,16 @@ SPMovesList* spGameGetAllMoves(SPGame* src) {
     return moves;
 }
 
-char spGameIsTie(SPGame* src) {
-    bool flagB = false, flagW = false;
-    SPMovesList *moves = spGameGetAllMoves(src);
-    if (moves->actualSize == 0) return SP_GAME_TIE_SYMBOL;
-    for (int i = 0; i < moves->actualSize; i++) {
-        SPTile *t = spMovesListGetAt(moves, i)->src;
-        if (getColor(src->gameBoard[t->row][t->coloumn]) == BLACK)
-            flagB = true;
-        else if (getColor(src->gameBoard[t->row][t->coloumn]) == WHITE)
-            flagW = true;
-        free(t);
-        if (flagB && flagW) return SP_GAME_EMPTY_ENTRY;
+bool spGameIsTie(SPGame* src) {
+    SPMovesList* moves = spGameGetAllMoves(src);
+    for(int i = 0 ; i<moves->actualSize; i++) {
+        SPMove *move = spMovesListGetAt(moves, i);
+        if (getColor(src->gameBoard[move->src->row][move->src->coloumn]) == src->settings->curr_turn){
+                return false;}
+        spDestroyMove(move);
     }
-    free(moves);
-    if (!flagB && !flagW) return SP_GAME_COLOR_BOTH;
-    if(!flagB) return BLACK;
-    if(!flagW) return WHITE;
-    return '\0';
+    spMovesListDestroy(moves);
+    return true;
 }
 
 char spGameIsCheck(SPGame *src){

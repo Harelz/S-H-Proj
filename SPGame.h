@@ -208,7 +208,7 @@ bool checkValidStepForB(SPGame* src, int srcRow , int srcCol , int desRow, int d
 bool checkValidStepForN(int srcRow , int srcCol , int desRow, int desCol);
 bool checkValidStepForK(int srcRow , int srcCol , int desRow, int desCol);
 bool spGameTileIsThreatened(SPGame* game , SPMove* move);
-char spGameIsTie(SPGame* src);
+bool spGameIsTie(SPGame* src);
 char spGameIsCheck(SPGame* src);
 SP_GAME_MESSAGE spGameSetNaiveMove(SPGame* src, SPMove* move);
 char* spGetTilePiece (char piece);
