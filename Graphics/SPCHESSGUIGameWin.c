@@ -327,8 +327,8 @@ SPCHESS_GAME_EVENT spGameWindowHandleEvent(SPGameWin* src,
 	return SPCHESS_GAME_NONE;
 }
 
-SPCHESS_GAME_EVENT checkStatusForUserGui(SPGameWin* src) {
-	char winner = SPGameCheckWinner(src->game);
+SPCHESS_GAME_EVENT checkStatusForUserGui(SPGameWin* src) { // edited
+	/*char winner = spGameIsMate(src->game);
 	if (winner != '\0') {
 		if (winner == WHITE)
 			return SPCHESS_GAME_PLAYER_1_CHECKMATE;
@@ -347,7 +347,7 @@ SPCHESS_GAME_EVENT checkStatusForUserGui(SPGameWin* src) {
 	}
 	if (spGameIsTie(src->game))
 		return SPCHESS_GAME_TIE;
-
+*/
 	return SPCHESS_GAME_MOVE;
 
 }

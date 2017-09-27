@@ -1,3 +1,5 @@
+#include "C:\clone\S-H-Proj\SPGame.h"
+
 #ifndef GRAPHICS_SPCHESSGUIGAMEWIN_H_
 #define GRAPHICS_SPCHESSGUIGAMEWIN_H_
 

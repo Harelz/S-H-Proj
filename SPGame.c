@@ -526,8 +526,11 @@ bool spGameIsMate(SPGame *src){
             SPGame* statusGame = spGameStimulateMove(src, move);
             char statusAfter = spGameIsCheck(statusGame);
             spGameDestroy(statusGame);
-            if(!(statusAfter == SP_GAME_COLOR_BOTH || statusAfter == (signed int)src->settings->curr_turn))
-                return false;}
+            if(!(statusAfter == SP_GAME_COLOR_BOTH || statusAfter == (signed int)src->settings->curr_turn)) {
+                spMovesListDestroy(moves);
+                return false;
+            }
+        }
         spDestroyMove(move);
     }
     spMovesListDestroy(moves);
