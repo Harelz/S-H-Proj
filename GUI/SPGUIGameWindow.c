@@ -251,14 +251,9 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 		src->panel[3]->active = false; // undo button deactivated
 	else if (!spQueueIsEmpty(src->game->history))
 		src->panel[3]->active = true; // undo button activated
-	//computer turn (if computer is white)
 	if (src->game->settings->game_mode == SP_MODE_1P &&
 		src->game->settings->p1_color == BLACK && src->game->settings->curr_turn == WHITE) {
 		spGameWindowDraw(src, event);
-		/*SPMove* compMove =  spCreateMove(0,0,0,0);
-		spMinimaxSuggestMove(src->game,compMove);
-		spGameMoveHandler(src->game, compMove);
-		spDestroyMove(compMove);*/
 		spSetNaiveCPUMove(src->game);
 		SPGUI_GAME_EVENT msg = checkStatusForUserGui(src);
 		if (spStatusAfterMove(msg, src, event) != SPGUI_GAME_NONE)
