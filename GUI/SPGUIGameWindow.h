@@ -66,7 +66,6 @@ int popUpSave();
 /*
  * The functions return true iff the current mouse location is on the chess board itself.
  */
-bool isClickOnBoard(int x);
 
 /*
  * The functions coverts pixel mouse location from

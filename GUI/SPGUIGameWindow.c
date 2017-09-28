@@ -203,7 +203,6 @@ void spGameWindowDraw(SPGUIGameWindow* src, SDL_Event* event) {
 void drawPieceByEntry(SPGUIGameWindow* src, SDL_Rect rec, int i, int j) {
 	if (!src)
 		return;
-
 	char piece = src->game->gameBoard[i][j];
 	switch (piece) {
 	case W_PAWN:
@@ -253,33 +252,32 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 	else if (!spQueueIsEmpty(src->game->history))
 		src->panel[3]->active = true; // undo button activated
 	//computer turn (if computer is white)
-	if (src->game->settings->game_mode == 1 &&
-			src->game->settings->p1_color == 0 && src->game->settings->curr_turn == WHITE) {
+	if (src->game->settings->game_mode == SP_MODE_1P &&
+		src->game->settings->p1_color == BLACK && src->game->settings->curr_turn == WHITE) {
 		spGameWindowDraw(src, event);
-		SPMove* compMove =  spCreateMove(0,0,0,0);
+		/*SPMove* compMove =  spCreateMove(0,0,0,0);
 		spMinimaxSuggestMove(src->game,compMove);
 		spGameMoveHandler(src->game, compMove);
-		spDestroyMove(compMove);
+		spDestroyMove(compMove);*/
+		spSetNaiveCPUMove(src->game);
 		SPGUI_GAME_EVENT msg = checkStatusForUserGui(src);
 		if (spStatusAfterMove(msg, src, event) != SPGUI_GAME_NONE)
 			return msg;
 	}
 	if (event->type == SDL_MOUSEBUTTONDOWN || event->type == SDL_MOUSEBUTTONUP) {
-		if (isClickOnBoard(event->button.x)) { //drag n drop
-			int from[2] = { event->button.x, event->button.y };
+		if (event->button.x > PANEL_OFFSET) { //drag n drop
+			int from[2] = {event->button.x, event->button.y};
 			computeLocFromGui(from); //change from - gui location to console location
 			if (event->type == SDL_MOUSEBUTTONDOWN
-					&& getColor(src->game->gameBoard[from[0]][from[1]])==
-							src->game->settings->curr_turn) {
+				&& getColor(src->game->gameBoard[from[0]][from[1]]) == src->game->settings->curr_turn) {
 				src->chosenPiece[0] = from[0];
 				src->chosenPiece[1] = from[1];
-			} else if (event->type == SDL_MOUSEBUTTONUP
-					&& src->chosenPiece[0] != -1) {
-				//check if legal move, change chosePiece check undo checkcheck, not saved = true
-				int to[2] = { event->button.x, event->button.y };
+			} else if (event->type == SDL_MOUSEBUTTONUP && src->chosenPiece[0] != -1) {
+				//check if legal move, change chosenPiece check undo checkCheck, not saved = true
+				int to[2] = {event->button.x, event->button.y};
 				computeLocFromGui(to);
-				SPMove* myMove = spCreateMove(src->chosenPiece[0],src->chosenPiece[1],to[0],to[1]);
-				if (spGameMoveHandler(src->game, myMove) == 3) { // need to check if success
+				SPMove *myMove = spCreateMove(src->chosenPiece[0], src->chosenPiece[1], to[0], to[1]);
+				if (spGameMoveHandler(src->game, myMove) != 3) { // need to check if success
 					src->isSaved = false;
 					src->chosenPiece[0] = -1;
 					src->chosenPiece[1] = -1;
@@ -288,9 +286,9 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 						spDestroyMove(myMove);
 						return msg;
 					}
-					//computer turn (if computer is black)
-					if (src->game->settings->game_mode
-							== 1&& src->game->settings->p1_color == 1 && src->game->settings->curr_turn == BLACK) {
+					/*//computer turn (if computer is black)
+					if (src->game->settings->game_mode == 1&& src->game->settings->p1_color == 1
+						&& src->game->settings->curr_turn == BLACK) {
 						spGameWindowDraw(src, event);
 						SPMove* compMove = spCreateMove(0,0,0,0);
 						spMinimaxSuggestMove(src->game,compMove);
@@ -300,7 +298,7 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 						if (spStatusAfterMove(msg, src, event) != SPGUI_GAME_NONE){
 							spDestroyMove(myMove);
 							return msg;}
-					}
+					}*/
 					spDestroyMove(myMove);
 					return SPGUI_GAME_MOVE;
 				}
@@ -308,21 +306,19 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 				src->chosenPiece[1] = -1;
 				spDestroyMove(myMove);
 				return SPGUI_GAME_NONE;
-			}}
-		} else if (event->type == SDL_MOUSEBUTTONUP) {
+			}
+		} else if (event->type == SDL_MOUSEBUTTONUP)
 			return spPanelHandleEvent(src, event);
-		}
-		 else if (event->type == SDL_MOUSEMOTION
-			&& (src->chosenPiece[0] == -1 || !isClickOnBoard(event->button.x))) {
-		src->chosenPiece[0] = -1;
-		src->chosenPiece[1] = -1;
+	} else if (event->type == SDL_MOUSEMOTION
+				   && (src->chosenPiece[0] == -1 || event->button.x < PANEL_OFFSET)) {
+			src->chosenPiece[0] = -1;
+			src->chosenPiece[1] = -1;
 	} else if (event->type == SDL_WINDOWEVENT) {
 		if (event->window.event == SDL_WINDOWEVENT_CLOSE)
 			return SPGUI_GAME_QUIT;
 	}
-	return SPGUI_GAME_NONE;
-}
-
+		return SPGUI_GAME_NONE;
+	}
 SPGUI_GAME_EVENT checkStatusForUserGui(SPGUIGameWindow* src) { // edited
 	if (spGameIsMate(src->game)) {
 		if (src->game->settings->curr_turn == WHITE)
@@ -385,7 +381,6 @@ SPGUI_GAME_EVENT spPanelHandleEvent(SPGUIGameWindow* src, SDL_Event* event) {
 	} else if (btn == BUTTON_GAME_LOAD) {
 		return SPGUI_GAME_LOAD;
 	} else if (btn == BUTTON_GAME_UNDO) {
-		spGameUndoHandler(src->game);
 		spGameUndoHandler(src->game);
 		//if there is no history, de-activate undo btn
 		if (spQueueIsEmpty(src->game->history))
@@ -466,10 +461,6 @@ int popUpSave() {
 		return 1;
 
 	return 0;
-}
-
-bool isClickOnBoard(int x) {
-	return (x > PANEL_OFFSET);
 }
 
 void computeLocFromGui(int loc[2]) {

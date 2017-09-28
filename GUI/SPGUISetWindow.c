@@ -128,14 +128,14 @@ SPGUI_SET_EVENT spSetWindowEventHandler(SPGUISetWindow *src, SDL_Event *event) {
 			return SPGUI_SET_GAME_MODE;
 		} else if (btn >= BUTTON_SET_NOOB_DIFF && btn <= BUTTON_SET_HARD_DIFF) {
 
-			src->game->settings->difficulty = btn - BUTTON_SET_NOOB_DIFF + 1; //set difficulty (assuming BUTTON_SET_NOOB_DIFF = 14)
+			src->game->settings->difficulty = (SP_GAME_DIFFICULTY)(int)(btn - BUTTON_SET_NOOB_DIFF + 1);
 			//activate color player stage
 			src->btns[9]->active = true;
 			src->btns[10]->active = true;
 			return SPGUI_SET_DIFF;
 		} else if (btn == BUTTON_SET_WHITE_PLAYER
 				|| btn == BUTTON_SET_BLACK_PLAYER) {
-			src->game->settings->p1_color = btn - 19; //set user color (assuming BUTTON_SET_BLACK_PLAYER = 19)
+			src->game->settings->p1_color = (SP_USER_COLOR)(int)(btn - BUTTON_SET_BLACK_PLAYER);
 			src->btns[11]->active = true; //activate start button
 			return SPGUI_SET_COLOR;
 		} else if (btn == BUTTON_SET_BACK)
@@ -143,7 +143,6 @@ SPGUI_SET_EVENT spSetWindowEventHandler(SPGUISetWindow *src, SDL_Event *event) {
 		else if (btn == BUTTON_SET_START)
 			return SPGUI_SET_START;
 		break;
-
 	case SDL_WINDOWEVENT:
 		if (event->window.event == SDL_WINDOWEVENT_CLOSE)
 			return SPGUI_SET_QUIT;

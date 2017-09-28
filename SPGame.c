@@ -23,7 +23,7 @@ int spGameHandler(SPGame *game, SPGameCommand cmd) {
             return 3;
         case SP_MOVE:
             IS_VALID(cmd);
-            SP_GAME_MESSAGE move_msg = spGameMoveHandler(game,cmd.move);
+            SP_GAME_MESSAGE move_msg = (SP_GAME_MESSAGE)spGameMoveHandler(game,cmd.move);
             spDestroyMove(cmd.move);
             return move_msg;
         case SP_GET_MOVES:
@@ -355,7 +355,8 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
     SPGame* statusGame = spGameStimulateMove(src, move);
     char statusAfter = spGameIsCheck(statusGame);
     spGameDestroy(statusGame);
-    if(statusAfter == SP_GAME_COLOR_BOTH || statusAfter == (signed int)src->settings->curr_turn)  return SP_GAME_INVALID_MOVE;
+    if(statusAfter == SP_GAME_COLOR_BOTH || statusAfter == (signed int)src->settings->curr_turn)
+        return SP_GAME_INVALID_MOVE;
     if (src->history->actualSize == src->history->maxSize) {
         free(spQueuePop(src->history));
         spQueuePush(src->history, src->gameBoard);

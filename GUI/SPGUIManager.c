@@ -120,7 +120,6 @@ SPGUI_MANAGER_EVENT spManagerHandleMainEvent(SPGUIManager *src, SPGUI_MAIN_EVENT
 SPGUI_MANAGER_EVENT spManagerHandleGameEvent(SPGUIManager *src, SPGUI_GAME_EVENT event) {
 	if (!src)
 		return SPGUI_MANAGER_EVENT_NONE;
-
 	if (event == SPGUI_GAME_LOAD) {
 		SDL_HideWindow(src->gameWindow->gameWindow);
 		if (src->loadWindow != NULL)
