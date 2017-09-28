@@ -171,6 +171,11 @@ int spSetNaiveCPUMove(SPGame* game){
         spDestroyMove(a);
         return -1;
     }
+    if (spGameIsTie(game) && isConsole){
+        printf("The game is Tied\n");
+        spDestroyMove(a);
+        return -1;
+    }
     changeColor(game);
     if(spGameIsCheck(game) == (signed int)game->settings->p1_color && isConsole)
         printf("Check!\n");
@@ -204,6 +209,12 @@ int spSetCPUMove (SPGame* game,SPMove* move){
         free(lastBoard);
         return -1;
     }
+    if (spGameIsTie(game) && isConsole){
+        printf("The game is Tied\n");
+        free(lastBoard);
+        return -1;
+    }
+    if(spGameIsTie(game))
     changeColor(game);
     if(spGameIsCheck(game) == (signed int)(game->settings->p1_color) && isConsole)
         printf("Check!\n");
