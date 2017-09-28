@@ -22,6 +22,8 @@
  *
  */
 
+bool isConsole;
+
 //Definitions
 #define SP_GAMEBOARD_SIZE 8
 #define SP_GAME_TIE_SYMBOL '-'

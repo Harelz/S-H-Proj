@@ -82,32 +82,41 @@ void spGameGetMovesHandler(SPGame* game , SPTile* tile) {
 int spGameMoveHandler(SPGame* game , SPMove* move){
     if (!IN_RANGE(move->src->coloumn, 0,8) || !IN_RANGE(move->dest->coloumn, 0,8)
         || !IN_RANGE(move->src->row, 0,8) || !IN_RANGE(move->dest->row, 0,8)) {
-        printf("Invalid position on the board\n");
+        if(isConsole)
+            printf("Invalid position on the board\n");
         return 3;
     }
     else if (game->gameBoard[move->src->row][move->src->coloumn] == SP_GAME_EMPTY_ENTRY ||
              getColor(game->gameBoard[move->src->row][move->src->coloumn]) != game->settings->curr_turn) {
-        printf("The specified position does not contain your piece\n");
+        if(isConsole)
+            printf("The specified position does not contain your piece\n");
         return 3;
     }
     else{
         SP_GAME_MESSAGE msg = spGameSetMove(game, move);
         if (msg == SP_GAME_INVALID_MOVE){
-            printf("Illegal move\n");
+            if(isConsole)
+                printf("Illegal move\n");
             return 3;
         }
         else if (msg == SP_GAME_SUCCESS_TIE){
-            printf("The game is Tied\n");
+            if(isConsole)
+                printf("The game is Tied\n");
             return -1;
         }
         else if(msg == SP_GAME_SUCCESS_MATED){
-            printf("Checkmate! %s player wins the game\n", game->settings->curr_turn == WHITE ? "white" : "black" );
+            if(isConsole)
+                printf("Checkmate! %s player wins the game\n", game->settings->curr_turn == WHITE ? "white" : "black" );
             return -1;
         }
         else if(msg == SP_GAME_SUCCESS_CHECKED){
-            printf("Check: %s King is threatened!\n", game->settings->curr_turn == BLACK ? "white" : "black" );
+            if(isConsole)
+                printf("Check: %s King is threatened!\n", game->settings->curr_turn == BLACK ? "white" : "black" );
             changeColor(game);
-            return 1;
+            if (game->settings->game_mode == SP_MODE_1P)
+                return spSetCPUMove(game, move);
+            else
+                return 1;
         }
         else if(msg == SP_GAME_SUCCESS){
             changeColor(game);
@@ -153,10 +162,11 @@ int spSetNaiveCPUMove(SPGame* game){
     spMinimaxSuggestMove(minmaxGame, a);
     spGameDestroy(minmaxGame);
     spGameSetNaiveMove(game, a);
-    printf("Computer: move %s at <%c,%c> to <%c,%c>\n",
+    if(isConsole)
+        printf("Computer: move %s at <%c,%c> to <%c,%c>\n",
            spGetTilePiece(game->gameBoard[a->dest->row][a->dest->coloumn]),
            a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
-    if(spGameIsCheck(game) == (signed int)game->settings->p1_color)
+    if(spGameIsCheck(game) == (signed int)game->settings->p1_color && isConsole)
         printf("Check!\n");
     changeColor(game);
     spDestroyMove(a);
@@ -178,10 +188,11 @@ int spSetCPUMove (SPGame* game,SPMove* move){
             game->settings->p1_color == BLACK ? "white" : "black", a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
     spQueueFullPush(game->history, lastBoard->data, msg);
     spDestroyMove(a);
-    printf("Computer: move %s at <%c,%c> to <%c,%c>\n",
+    if(isConsole)
+        printf("Computer: move %s at <%c,%c> to <%c,%c>\n",
            spGetTilePiece(game->gameBoard[a->dest->row][a->dest->coloumn]),
            a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
-    if(spGameIsCheck(game) == (signed int)(game->settings->p1_color))
+    if(spGameIsCheck(game) == (signed int)(game->settings->p1_color) && isConsole)
         printf("Check!\n");
     changeColor(game);
     free(lastBoard);
