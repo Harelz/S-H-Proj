@@ -82,7 +82,7 @@ int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, in
                                                      isMax(BLACK, WHITE), diff - 1, bestMove);
                     else{
                         cutFlag = true; nodeScore = isMax(INT_MAX, INT_MIN); }
-                    spGameUndoHandler(game);
+                    free(spGameUndoHandler(game));
                     changeColor(game);
                     if (!isMaxi &&(defMove() || bestScore > nodeScore)) {
                         UPDATE_SCORE();

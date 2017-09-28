@@ -3,6 +3,7 @@
 #include "SPMiniMax.h"
 
 int spGameHandler(SPGame *game, SPGameCommand cmd) {
+    char* undo_msg;
     switch(cmd.cmd){
         case SP_RESET:
             printf("Restarting...\n");
@@ -12,7 +13,9 @@ int spGameHandler(SPGame *game, SPGameCommand cmd) {
             printf("Exiting...\n");
             return -1; //indicates to terminate
         case SP_UNDO:
-            printf("%s", spGameUndoHandler(game));
+            undo_msg = spGameUndoHandler(game);
+            printf("%s", undo_msg);
+            free(undo_msg);
             return 3;
         case SP_SAVE:
             IS_VALID(cmd);
@@ -20,10 +23,13 @@ int spGameHandler(SPGame *game, SPGameCommand cmd) {
             return 3;
         case SP_MOVE:
             IS_VALID(cmd);
-            return spGameMoveHandler(game,cmd.move);
+            SP_GAME_MESSAGE move_msg = spGameMoveHandler(game,cmd.move);
+            spDestroyMove(cmd.move);
+            return move_msg;
         case SP_GET_MOVES:
             IS_VALID(cmd);
             spGameGetMovesHandler(game,cmd.tile);
+            spDestroyMove(cmd.move);
             return 3;
         case SP_GINVALID_LINE:
             PRINT_INVALID_COMMAND;
@@ -40,7 +46,10 @@ char* spGameUndoHandler(SPGame* game){
     else {
         SPNode* prevBoard = spStackPop(game->history);
         memcpy(game->gameBoard, prevBoard->data, sizeof(game->gameBoard));
-        return prevBoard->msg;
+        char* msg = (char*)malloc(sizeof(prevBoard->msg));
+        strcpy(msg, prevBoard->msg);
+        free(prevBoard);
+        return msg;
     }
     return NULL;
 }
@@ -158,7 +167,7 @@ int spSetCPUMove (SPGame* game,SPMove* move){
     spMinimaxSuggestMove(minmaxGame, a);
     spGameDestroy(minmaxGame);
     spGameSetMove(game, a);
-    spStackPop(game->history);
+    free(spStackPop(game->history));
     char msg[sizeof("Undo move for player black : <x,y> -> <w,z>\nUndo move for player black : <x,y> -> <w,z>\n")];
     sprintf(msg, "Undo move for player %s : <%c,%c> -> <%c,%c>\nUndo move for player %s : <%c,%c> -> <%c,%c>\n",
             game->settings->p1_color == WHITE ? "white" : "black", move->src->row+'1', move->src->coloumn+'A',move->dest->row+'1', move->dest->coloumn+'A',
@@ -171,6 +180,7 @@ int spSetCPUMove (SPGame* game,SPMove* move){
     if(spGameIsCheck(game) == (signed int)(game->settings->p1_color))
         printf("Check!\n");
     changeColor(game);
+    free(lastBoard);
     return 1;
 }
 
@@ -187,8 +197,13 @@ bool spGameTileIsThreatened(SPGame* game , SPMove* move){
         SPMove* atk = spMovesListGetAt(mlst,i);
         if(getColor(movedGame->gameBoard[atk->src->row][atk->src->coloumn])
            != getColor(movedGame->gameBoard[move->dest->row][move->dest->coloumn])
-           && atk->dest->row == move->dest->row && atk->dest->coloumn == move->dest->coloumn)   return true;
+           && atk->dest->row == move->dest->row && atk->dest->coloumn == move->dest->coloumn){
+            spMovesListDestroy(mlst);
+            spGameDestroy(movedGame);
+            return true;
+        }
     }
+    spMovesListDestroy(mlst);
     spGameDestroy(movedGame);
     return false;
 
@@ -328,7 +343,7 @@ SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
     spGameDestroy(statusGame);
     if(statusAfter == SP_GAME_COLOR_BOTH || statusAfter == (signed int)src->settings->curr_turn)  return SP_GAME_INVALID_MOVE;
     if (src->history->actualSize == src->history->maxSize) {
-        spQueuePop(src->history);
+        free(spQueuePop(src->history));
         spQueuePush(src->history, src->gameBoard);
     }
     else
@@ -493,6 +508,8 @@ bool spGameIsTie(SPGame* src) {
     for(int i = 0 ; i<moves->actualSize; i++) {
         SPMove *move = spMovesListGetAt(moves, i);
         if (getColor(src->gameBoard[move->src->row][move->src->coloumn]) == src->settings->curr_turn){
+            spDestroyMove(move);
+            spMovesListDestroy(moves);
                 return false;}
         spDestroyMove(move);
     }
