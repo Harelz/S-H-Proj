@@ -161,7 +161,7 @@ void spGameWindowDraw(SPGUIGameWindow* src, SDL_Event* event) {
 	if (src == NULL)
 		return;
 
-	SDL_SetRenderDrawColor(src->gameRenderer, 169, 169, 169, 255);
+	SDL_SetRenderDrawColor(src->gameRenderer, 255, 255, 255, 255);
 	SDL_RenderClear(src->gameRenderer);
 
 	for (int i = 0; i < src->numOfPanel; i++)
