@@ -6,6 +6,8 @@
 #include "SPGUIGameWindow.h"
 #include "SPGUILoadWindow.h"
 
+
+//const char* savePaths[] = {SAVE1 , SAVE2 , SAVE3 , SAVE4 , SAVE5};
 /*
  * enum represents windows - in order
  * for the manager which functions to activate.

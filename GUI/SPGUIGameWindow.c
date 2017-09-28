@@ -258,7 +258,7 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 		spGameWindowDraw(src, event);
 		SPMove* compMove =  spCreateMove(0,0,0,0);
 		spMinimaxSuggestMove(src->game,compMove);
-		spGameSetMove(src->game, compMove);
+		spGameMoveHandler(src->game, compMove);
 		spDestroyMove(compMove);
 		SPGUI_GAME_EVENT msg = checkStatusForUserGui(src);
 		if (spStatusAfterMove(msg, src, event) != SPGUI_GAME_NONE)
@@ -279,7 +279,7 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 				int to[2] = { event->button.x, event->button.y };
 				computeLocFromGui(to);
 				SPMove* myMove = spCreateMove(src->chosenPiece[0],src->chosenPiece[1],to[0],to[1]);
-				if (spGameSetMove(src->game, myMove) == SP_GAME_SUCCESS) {
+				if (spGameMoveHandler(src->game, myMove) == 3) { // need to check if success
 					src->isSaved = false;
 					src->chosenPiece[0] = -1;
 					src->chosenPiece[1] = -1;
@@ -294,7 +294,7 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 						spGameWindowDraw(src, event);
 						SPMove* compMove = spCreateMove(0,0,0,0);
 						spMinimaxSuggestMove(src->game,compMove);
-						spGameSetMove(src->game, compMove);
+						spGameMoveHandler(src->game, compMove);
 						spDestroyMove(compMove);
 						SPGUI_GAME_EVENT msg = checkStatusForUserGui(src);
 						if (spStatusAfterMove(msg, src, event) != SPGUI_GAME_NONE){

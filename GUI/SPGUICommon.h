@@ -17,7 +17,8 @@
 #define SAVE3 "../GUI/saved_games/save3.xml"
 #define SAVE4 "../GUI/saved_games/save4.xml"
 #define SAVE5 "../GUI/saved_games/save5.xml"
-//const char* savePaths[] = {SAVE1 , SAVE2 , SAVE3 , SAVE4 , SAVE5};
+
+//
 /*
  * The function counts how many saved games exist (0-5)
  */

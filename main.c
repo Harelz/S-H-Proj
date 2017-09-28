@@ -3,6 +3,7 @@
 
 int main(int argc, char* argv[]) {
     MainGUIManager();
+    exit(1);
 	char s[SP_MAX_LINE_LENGTH];
     SPGame *game;
     int spStatus = 0;
