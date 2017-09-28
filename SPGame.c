@@ -513,9 +513,15 @@ bool spGameIsTie(SPGame* src) {
     SPMovesList* moves = spGameGetAllMoves(src);
     for(int i = 0 ; i<moves->actualSize; i++) {
         SPMove *move = spMovesListGetAt(moves, i);
-        if (getColor(src->gameBoard[move->src->row][move->src->coloumn]) == src->settings->curr_turn){
-            spMovesListDestroy(moves);
-                return false;}
+        if (getColor(src->gameBoard[move->src->row][move->src->coloumn]) == src->settings->curr_turn) {
+            SPGame *statusGame = spGameStimulateMove(src, move);
+            char statusAfter = spGameIsCheck(statusGame);
+            spGameDestroy(statusGame);
+            if (!(statusAfter == SP_GAME_COLOR_BOTH || statusAfter == (signed int) src->settings->curr_turn)) {
+                spMovesListDestroy(moves);
+                return false;
+            }
+        }
     }
     spMovesListDestroy(moves);
     return true;
