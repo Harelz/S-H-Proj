@@ -39,19 +39,23 @@ int spGameHandler(SPGame *game, SPGameCommand cmd) {
 }
 
 char* spGameUndoHandler(SPGame* game){
-    if (game->settings->game_mode == 2)
-        return "Undo command not available in 2 players mode\n";
-    else if (spQueueIsEmpty(game->history))
-        return "Empty history, move cannot be undone\n";
+    char* msg = (char*)malloc(sizeof("Undo move for player black : <x,y> -> <w,z>\nUndo move for player black : <x,y> -> <w,z>\n"));
+    if (game->settings->game_mode == 2) {
+        strcpy(msg, "Undo command not available in 2 players mode\n");
+        return msg;
+    }
+    else if (spQueueIsEmpty(game->history)) {
+        strcpy(msg, "Empty history, move cannot be undone\n");
+        return msg;
+    }
     else {
         SPNode* prevBoard = spStackPop(game->history);
         memcpy(game->gameBoard, prevBoard->data, sizeof(game->gameBoard));
-        char* msg = (char*)malloc(sizeof(prevBoard->msg));
         strcpy(msg, prevBoard->msg);
         free(prevBoard);
         return msg;
     }
-    return NULL;
+    return msg;
 }
 
 void spGameGetMovesHandler(SPGame* game , SPTile* tile) {
@@ -495,7 +499,9 @@ SPMovesList* spGameGetAllMoves(SPGame* src) {
         for (int c = 0; c < SP_GAMEBOARD_SIZE; c++) {
             SPMovesList* temp = spGameGetMoves(src,r,c);
             for(int i =0; i<temp->actualSize; i++){
-                spMovesListAddLast(moves,spMovesListGetAt(temp,i));
+                SPMove* newMove = spCreateMove(0,0,0,0);
+                spMoveToMove(newMove, spMovesListGetAt(temp,i));
+                spMovesListAddLast(moves, newMove);
             }
             spMovesListDestroy(temp);
         }
@@ -508,10 +514,8 @@ bool spGameIsTie(SPGame* src) {
     for(int i = 0 ; i<moves->actualSize; i++) {
         SPMove *move = spMovesListGetAt(moves, i);
         if (getColor(src->gameBoard[move->src->row][move->src->coloumn]) == src->settings->curr_turn){
-            spDestroyMove(move);
             spMovesListDestroy(moves);
                 return false;}
-        spDestroyMove(move);
     }
     spMovesListDestroy(moves);
     return true;
@@ -521,11 +525,11 @@ char spGameIsCheck(SPGame *src){
     bool flagB = false , flagW = false;
     SPMovesList* moves = spGameGetAllMoves(src);
     for(int i = 0 ; i<moves->actualSize; i++){
-        SPTile* t = spMovesListGetAt(moves , i) -> dest;
+        SPMove* move = spMovesListGetAt(moves , i);
+        SPTile* t =  move -> dest;
         char target = src->gameBoard[t->row][t->coloumn];
         if(target == B_KING)   flagB = true;
         else if(target == W_KING) flagW = true;
-        free(t);
     }
     spMovesListDestroy(moves);
     if(flagW && flagB) return SP_GAME_COLOR_BOTH;
@@ -547,7 +551,6 @@ bool spGameIsMate(SPGame *src){
                 return false;
             }
         }
-        spDestroyMove(move);
     }
     spMovesListDestroy(moves);
     return true;
@@ -556,7 +559,8 @@ bool spGameIsMate(SPGame *src){
 SPGame* spGameCopy(SPGame* src){
     SPGame* cGame = (SPGame *) malloc(sizeof(SPGame));
     if(cGame == NULL) return NULL;	//puts("Error: malloc has failed");
-    cGame->history = spQueueCopy(src->history);
+    //cGame->history = spQueueCopy(src->history);
+    cGame->history = spQueueCreate(3);
     cGame->settings = spSettingsCopy(src->settings);
     cGame->settings->curr_turn = src->settings->curr_turn;
     memcpy(cGame->gameBoard , src->gameBoard, sizeof(char[8][8]));

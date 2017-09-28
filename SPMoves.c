@@ -23,13 +23,13 @@ SPMove* spCreateMove(int srcRow , int srcCol ,int desRow , int desCol){
 }
 
 int spDestroyMove(SPMove* move){
-    if (move != NULL){
-        if (move->dest != NULL)
+    if (move){
+        if (move->dest)
             free(move->dest);
-        if (move->src != NULL)
+        if (move->src)
             free(move->src);
+        free(move);
     }
-    free(move);
     return 1;
 }
 

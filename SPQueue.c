@@ -42,6 +42,7 @@ int spQueuePush(Queue *myQ, char data[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE]) {
     /*the queue is empty*/
     SPNode* item = (SPNode*) malloc(sizeof(SPNode));
     item->prev = NULL;
+    strcpy(item->msg, "\0");
     memcpy(item->data , data , sizeof(char[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE]));
     if (myQ->actualSize == 0) {
         myQ->head = item;
@@ -119,6 +120,9 @@ int spQueueIsEmpty(Queue* myQ) {
 }
 
 Queue* spQueueCopy(Queue* myQ){
+    if (myQ == NULL || myQ->actualSize == 0 || myQ->head == NULL || myQ->tail == NULL){
+        return spQueueCreate(3);
+    }
     Queue* queue = (Queue*) malloc(sizeof (Queue));
     if (queue == NULL) {
         return NULL;
