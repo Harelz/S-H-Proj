@@ -168,7 +168,7 @@ int spSetNaiveCPUMove(SPGame* game){
            a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
     changeColor(game);
     if (spGameIsMate(game) && isConsole){
-        printf("Checkmate! %s player wins the game\n", game->settings->curr_turn == WHITE ? "white" : "black" );
+        printf("Checkmate! %s player wins the game\n", game->settings->curr_turn == BLACK ? "white" : "black" );
         spDestroyMove(a);
         return -1;
     }
