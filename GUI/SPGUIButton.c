@@ -1,4 +1,4 @@
-#include "SPCHESSGUIButton.h"
+#include "SPGUIButton.h"
 
 SDL_Rect* spCopyRect(SDL_Rect* src) {
 	if (src == NULL)
@@ -17,18 +17,13 @@ SDL_Rect* spCopyRect(SDL_Rect* src) {
 
 Button* createButton(SDL_Renderer* windowRender, const char* activeImage,
 		const char* inactiveImage, SDL_Rect* location, bool visible,
-		bool active, SPCHESS_BUTTON_TYPE type) {
-
+		bool active, SPGUI_BUTTON_TYPE type) {
 	if (windowRender == NULL || location == NULL || activeImage == NULL
 			|| inactiveImage == NULL)
 		return NULL;
-
 	Button* res = (Button*) malloc(sizeof(Button));
-
 	SDL_Surface* loadingSurface = SDL_LoadBMP(activeImage); //We use the surface as a temp var
-	SDL_Texture* activeTexture = SDL_CreateTextureFromSurface(windowRender,
-			loadingSurface);
-
+	SDL_Texture* activeTexture = SDL_CreateTextureFromSurface(windowRender, loadingSurface);
 	//loading active image
 	if (res == NULL || loadingSurface == NULL || activeTexture == NULL) {
 		printf("Could not create a surface: %s\n", activeImage);
@@ -38,12 +33,10 @@ Button* createButton(SDL_Renderer* windowRender, const char* activeImage,
 		return NULL;
 	}
 	SDL_FreeSurface(loadingSurface); //Surface is not actually needed after texture is created
-
 	//loading inactive image
 	SDL_Surface* loadingSurface2 = SDL_LoadBMP(inactiveImage); //We use the surface as a temp var
 	SDL_Texture* inactiveTexture = SDL_CreateTextureFromSurface(windowRender,
 			loadingSurface2);
-
 	if (res == NULL || loadingSurface2 == NULL || inactiveTexture == NULL) {
 		printf("Could not create a surface: %s\n", inactiveImage);
 		SDL_FreeSurface(loadingSurface2);
@@ -53,7 +46,6 @@ Button* createButton(SDL_Renderer* windowRender, const char* activeImage,
 		return NULL;
 	}
 	SDL_FreeSurface(loadingSurface2); //Surface is not actually needed after texture is created
-
 	res->windowRenderer = windowRender;
 	res->activeTexture = activeTexture;
 	res->inactiveTexture = inactiveTexture;
@@ -67,7 +59,6 @@ Button* createButton(SDL_Renderer* windowRender, const char* activeImage,
 void destroyButton(Button* src) {
 	if (!src)
 		return;
-
 	SDL_DestroyTexture(src->activeTexture);
 	SDL_DestroyTexture(src->inactiveTexture);
 	SDL_DestroyRenderer(src->windowRenderer);
@@ -90,7 +81,7 @@ void drawButton(Button* src) {
 
 Button** createButtons(SDL_Renderer* windowRender, const char* activeImages[],
 		const char* inactiveImages[], int xBtns[], int yBtns[], bool visible[],
-		bool active[], SPCHESS_BUTTON_TYPE types[], int numOfBtns) {
+		bool active[], SPGUI_BUTTON_TYPE types[], int numOfBtns) {
 
 	//maybe more
 	if (windowRender == NULL)
@@ -101,16 +92,15 @@ Button** createButtons(SDL_Renderer* windowRender, const char* activeImages[],
 		return NULL;
 
 	for (int i = 0; i < numOfBtns; i++) {
-		SDL_Rect rec = { .x = xBtns[i], .y = yBtns[i], .h = BUTTON_H, .w =
-		BUTTON_W };
+		SDL_Rect rec = { .x = xBtns[i], .y = yBtns[i], .h = BUTTON_H, .w = BUTTON_W};
 		btns[i] = createButton(windowRender, activeImages[i], inactiveImages[i],
-				&rec, visible[i], active[i], types[i]);
+							   &rec, visible[i], active[i], types[i]);
 		if (btns[i] == NULL) {
 			for (int k = 0; k < i; k++) {
 				destroyButton(btns[k]);
 				free(btns);
-				return NULL;
 			}
+			return NULL;
 		}
 	}
 	return btns;

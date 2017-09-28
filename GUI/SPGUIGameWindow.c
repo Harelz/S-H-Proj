@@ -1,13 +1,13 @@
-#include "SPCHESSGUIGameWin.h"
+#include "SPGUIGameWindow.h"
 
-SPGameWin* spGameWindowCreate(SPGame* gameCopy) {
-	SPGameWin* res = (SPGameWin*) calloc(sizeof(SPGameWin),
+SPGUIGameWindow* spGameWindowCreate(SPGame* gameCopy) {
+	SPGUIGameWindow* res = (SPGUIGameWindow*) calloc(sizeof(SPGUIGameWindow),
 			sizeof(char));
 	SDL_Surface* loadingSurfaceWhite = NULL; //Used as temp surface
 	SDL_Surface* loadingSurfaceBlack = NULL; //Used as temp surface
 	SDL_Surface* loadingSurfaceGrid = NULL; //loading surface grid, Used as temp surface
 	if (res == NULL) {
-		printf("Couldn't create SPGameWin struct\n");
+		printf("Couldn't create SPGUIGameWindow struct\n");
 		return NULL;
 	}
 	res->gameWindow = SDL_CreateWindow("CHESS GAME: Game Window",
@@ -44,7 +44,7 @@ SPGameWin* spGameWindowCreate(SPGame* gameCopy) {
 
 	bool active[NUM_OF_GAME_BUTTONS] = { true, true, true, false, true, true };
 
-	SPCHESS_BUTTON_TYPE types[NUM_OF_GAME_BUTTONS] = { BUTTON_GAME_RESTART,
+	SPGUI_BUTTON_TYPE types[NUM_OF_GAME_BUTTONS] = { BUTTON_GAME_RESTART,
 			BUTTON_GAME_SAVE, BUTTON_GAME_LOAD, BUTTON_GAME_UNDO,
 			BUTTON_GAME_MAIN_MENU, BUTTON_GAME_EXIT };
 
@@ -129,7 +129,7 @@ SPGameWin* spGameWindowCreate(SPGame* gameCopy) {
 	return res;
 }
 
-void spGameWindowDestroy(SPGameWin* src) {
+void spGameWindowDestroy(SPGUIGameWindow* src) {
 	if (!src)
 		return;
 
@@ -157,7 +157,7 @@ void spGameWindowDestroy(SPGameWin* src) {
 	free(src);
 }
 
-void spGameWindowDraw(SPGameWin* src, SDL_Event* event) {
+void spGameWindowDraw(SPGUIGameWindow* src, SDL_Event* event) {
 	if (src == NULL)
 		return;
 
@@ -200,7 +200,7 @@ void spGameWindowDraw(SPGameWin* src, SDL_Event* event) {
 	SDL_RenderPresent(src->gameRenderer);
 }
 
-void drawPieceByEntry(SPGameWin* src, SDL_Rect rec, int i, int j) {
+void drawPieceByEntry(SPGUIGameWindow* src, SDL_Rect rec, int i, int j) {
 	if (!src)
 		return;
 
@@ -245,33 +245,26 @@ void drawPieceByEntry(SPGameWin* src, SDL_Rect rec, int i, int j) {
 	}
 }
 
-SPCHESS_GAME_EVENT spGameWindowHandleEvent(SPGameWin* src,
-		SDL_Event* event) {
+SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event) {
 	if (!src || !event)
-		return SPCHESS_GAME_INVALID_ARG; //check to return invalid argument
-
-	//check game state for undo btn
-	if (src->game->settings->game_mode == 2)
-		src->panel[3]->active = false; //game mode is 2, de-activate undo btn
-	else if (!spQueueIsEmpty(src->game->history))//->movesPlayer1)
-			//&& !spMovesListIsEmpty(src->game)//->movesPlayer2))
-		src->panel[3]->active = true; //there is history, activate undo btn
-
+		return SPGUI_GAME_INVALID_ARG;
+	if (src->game->settings->game_mode == SP_MODE_2P)
+		src->panel[3]->active = false; // undo button deactivated
+	else if (!spQueueIsEmpty(src->game->history))
+		src->panel[3]->active = true; // undo button activated
 	//computer turn (if computer is white)
-	if (src->game->settings->game_mode
-			== 1&& src->game->settings->p1_color == 0 && src->game->settings->curr_turn == WHITE) {
+	if (src->game->settings->game_mode == 1 &&
+			src->game->settings->p1_color == 0 && src->game->settings->curr_turn == WHITE) {
 		spGameWindowDraw(src, event);
 		SPMove* compMove =  spCreateMove(0,0,0,0);
 		spMinimaxSuggestMove(src->game,compMove);
 		spGameSetMove(src->game, compMove);
 		spDestroyMove(compMove);
-		SPCHESS_GAME_EVENT msg = checkStatusForUserGui(src);
-		if (spStatusAfterMove(msg, src, event) != SPCHESS_GAME_NONE)
+		SPGUI_GAME_EVENT msg = checkStatusForUserGui(src);
+		if (spStatusAfterMove(msg, src, event) != SPGUI_GAME_NONE)
 			return msg;
 	}
-
-	if (event->type == SDL_MOUSEBUTTONDOWN
-			|| event->type == SDL_MOUSEBUTTONUP) {
+	if (event->type == SDL_MOUSEBUTTONDOWN || event->type == SDL_MOUSEBUTTONUP) {
 		if (isClickOnBoard(event->button.x)) { //drag n drop
 			int from[2] = { event->button.x, event->button.y };
 			computeLocFromGui(from); //change from - gui location to console location
@@ -290,8 +283,8 @@ SPCHESS_GAME_EVENT spGameWindowHandleEvent(SPGameWin* src,
 					src->isSaved = false;
 					src->chosenPiece[0] = -1;
 					src->chosenPiece[1] = -1;
-					SPCHESS_GAME_EVENT msg = checkStatusForUserGui(src);
-					if (spStatusAfterMove(msg, src, event) != SPCHESS_GAME_NONE) {
+					SPGUI_GAME_EVENT msg = checkStatusForUserGui(src);
+					if (spStatusAfterMove(msg, src, event) != SPGUI_GAME_NONE) {
 						spDestroyMove(myMove);
 						return msg;
 					}
@@ -303,18 +296,18 @@ SPCHESS_GAME_EVENT spGameWindowHandleEvent(SPGameWin* src,
 						spMinimaxSuggestMove(src->game,compMove);
 						spGameSetMove(src->game, compMove);
 						spDestroyMove(compMove);
-						SPCHESS_GAME_EVENT msg = checkStatusForUserGui(src);
-						if (spStatusAfterMove(msg, src, event) != SPCHESS_GAME_NONE){
+						SPGUI_GAME_EVENT msg = checkStatusForUserGui(src);
+						if (spStatusAfterMove(msg, src, event) != SPGUI_GAME_NONE){
 							spDestroyMove(myMove);
 							return msg;}
 					}
 					spDestroyMove(myMove);
-					return SPCHESS_GAME_MOVE;
+					return SPGUI_GAME_MOVE;
 				}
 				src->chosenPiece[0] = -1;
 				src->chosenPiece[1] = -1;
 				spDestroyMove(myMove);
-				return SPCHESS_GAME_NONE;
+				return SPGUI_GAME_NONE;
 			}}
 		} else if (event->type == SDL_MOUSEBUTTONUP) {
 			return spPanelHandleEvent(src, event);
@@ -325,80 +318,72 @@ SPCHESS_GAME_EVENT spGameWindowHandleEvent(SPGameWin* src,
 		src->chosenPiece[1] = -1;
 	} else if (event->type == SDL_WINDOWEVENT) {
 		if (event->window.event == SDL_WINDOWEVENT_CLOSE)
-			return SPCHESS_GAME_QUIT;
+			return SPGUI_GAME_QUIT;
 	}
-	return SPCHESS_GAME_NONE;
+	return SPGUI_GAME_NONE;
 }
 
-SPCHESS_GAME_EVENT checkStatusForUserGui(SPGameWin* src) { // edited
+SPGUI_GAME_EVENT checkStatusForUserGui(SPGUIGameWindow* src) { // edited
 	if (spGameIsMate(src->game)) {
 		if (src->game->settings->curr_turn == WHITE)
-			return SPCHESS_GAME_PLAYER_1_CHECKMATE;
+			return SPGUI_GAME_PLAYER_1_CHECKMATE;
 		else { //winner == BLACK
-			return SPCHESS_GAME_PLAYER_2_CHECKMATE;
+			return SPGUI_GAME_PLAYER_2_CHECKMATE;
 		}
 	}
 	char playerCheck = spGameIsCheck(src->game);
 	if (playerCheck != SP_GAME_EMPTY_ENTRY) {
 		if (src->game->settings->curr_turn == WHITE && (playerCheck == WHITE || playerCheck == SP_GAME_COLOR_BOTH))
-			return SPCHESS_GAME_PLAYER_1_CHECK;
+			return SPGUI_GAME_PLAYER_1_CHECK;
 		else if (src->game->settings->curr_turn == BLACK && (playerCheck == BLACK || playerCheck == SP_GAME_COLOR_BOTH))
-			return SPCHESS_GAME_PLAYER_2_CHECK;
+			return SPGUI_GAME_PLAYER_2_CHECK;
 	}
 	if (spGameIsTie(src->game))
-		return SPCHESS_GAME_TIE;
-	return SPCHESS_GAME_MOVE;
+		return SPGUI_GAME_TIE;
+	return SPGUI_GAME_MOVE;
 
 }
 
-SPCHESS_GAME_EVENT spStatusAfterMove(SPCHESS_GAME_EVENT msg, SPGameWin* src, SDL_Event* event) {
-	if (msg == SPCHESS_GAME_PLAYER_1_CHECKMATE
-			|| msg == SPCHESS_GAME_PLAYER_2_CHECKMATE
-			|| msg == SPCHESS_GAME_TIE) { //terminal state
+SPGUI_GAME_EVENT spStatusAfterMove(SPGUI_GAME_EVENT msg, SPGUIGameWindow* src, SDL_Event* event) {
+	if (msg == SPGUI_GAME_PLAYER_1_CHECKMATE
+			|| msg == SPGUI_GAME_PLAYER_2_CHECKMATE
+			|| msg == SPGUI_GAME_TIE) { //terminal state
 		return msg;
-	} else if (msg == SPCHESS_GAME_PLAYER_1_CHECK
-			|| msg == SPCHESS_GAME_PLAYER_2_CHECK) {
+	} else if (msg == SPGUI_GAME_PLAYER_1_CHECK
+			|| msg == SPGUI_GAME_PLAYER_2_CHECK) {
 		//draw the board before show "check" msg
 		spGameWindowDraw(src, event);
-		if (msg == SPCHESS_GAME_PLAYER_1_CHECK)
+		if (msg == SPGUI_GAME_PLAYER_1_CHECK)
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "CHECK!",
 					"White king is threatend!", NULL);
 		else
-			//msg == SPCHESS_GAME_PLAYER_2_CHECK
+			//msg == SPGUI_GAME_PLAYER_2_CHECK
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "CHECK!",
 					"Black king is threatend!", NULL);
 	}
-	return SPCHESS_GAME_NONE;
+	return SPGUI_GAME_NONE;
 }
 
-SPCHESS_GAME_EVENT spPanelHandleEvent(SPGameWin* src, SDL_Event* event) {
-	SPCHESS_BUTTON_TYPE btn = NO_BUTTON;
-
-	btn = getButtonClicked(src->panel, src->numOfPanel, event,
-	true);
-
+SPGUI_GAME_EVENT spPanelHandleEvent(SPGUIGameWindow* src, SDL_Event* event) {
+	SPGUI_BUTTON_TYPE btn = NO_BUTTON;
+	btn = getButtonClicked(src->panel, src->numOfPanel, event, true);
 	if (btn == BUTTON_GAME_RESTART) {
 		spGameDestroy(src->game);
 		src->game = spGameCreateDef();//restart the game with current settings
 		src->panel[3]->active = false; //de-activate undo btn
 		src->isSaved = false;
-		return SPCHESS_GAME_RESTART;
+		return SPGUI_GAME_RESTART;
 	} else if (btn == BUTTON_GAME_SAVE) {
 		promoteSlots();
-		if (spGameSaveHandler(src->game, SLOT0) == -1) {
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "ERROR",
-					"Unable to save game",
-					NULL);
-			return SPCHESS_GAME_NONE;
+		if (spGameSaveHandler(src->game, SAVE1) == -1) {
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "ERROR", "Unable to save game", NULL);
+			return SPGUI_GAME_NONE;
 		} else
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SUCCESS",
-					"game was successfully saved!", NULL);
-
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SUCCESS", "game was successfully saved!", NULL);
 		src->isSaved = true;
-		return SPCHESS_GAME_SAVE;
+		return SPGUI_GAME_SAVE;
 	} else if (btn == BUTTON_GAME_LOAD) {
-		return SPCHESS_GAME_LOAD;
-
+		return SPGUI_GAME_LOAD;
 	} else if (btn == BUTTON_GAME_UNDO) {
 		spGameUndoHandler(src->game);
 		spGameUndoHandler(src->game);
@@ -406,7 +391,7 @@ SPCHESS_GAME_EVENT spPanelHandleEvent(SPGameWin* src, SDL_Event* event) {
 		if (spQueueIsEmpty(src->game->history))
 			src->panel[3]->active = false;
 		src->isSaved = false;
-		return SPCHESS_GAME_UNDO;
+		return SPGUI_GAME_UNDO;
 	} else if (btn == BUTTON_GAME_MAIN_MENU) {
 		if (src->isSaved == false) {
 			//show SDL_ShowMessageBox asking the user if he wants to save
@@ -414,23 +399,23 @@ SPCHESS_GAME_EVENT spPanelHandleEvent(SPGameWin* src, SDL_Event* event) {
 			if (choice != 2) {
 				if (choice == 1) { //want to save
 					promoteSlots();
-					if (spGameSaveHandler(src->game, SLOT0) == -1) {
+					if (spGameSaveHandler(src->game, SAVE1) == -1) {
 						SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "ERROR",
 								"Unable to save game",
 								NULL);
-						return SPCHESS_GAME_NONE;
+						return SPGUI_GAME_NONE;
 					} else
 						SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
 								"SUCCESS", "game was successfully saved!",
 								NULL);
 					src->isSaved = true;
 				}
-				return SPCHESS_GAME_MAIN_MENU;
+				return SPGUI_GAME_MAIN_MENU;
 			} else
 				//popUpSave() == 2
-				return SPCHESS_GAME_NONE;
+				return SPGUI_GAME_NONE;
 		}
-		return SPCHESS_GAME_MAIN_MENU;
+		return SPGUI_GAME_MAIN_MENU;
 	} else if (btn == BUTTON_GAME_EXIT) {
 		if (src->isSaved == false) {
 			//show SDL_ShowMessageBox asking the user if he wants to save
@@ -438,11 +423,11 @@ SPCHESS_GAME_EVENT spPanelHandleEvent(SPGameWin* src, SDL_Event* event) {
 			if (choice != 2) {
 				if (choice == 1) { //want to save
 					promoteSlots();
-					if (spGameSaveHandler(src->game, SLOT0) == -1) {
+					if (spGameSaveHandler(src->game, SAVE1) == -1) {
 						SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "ERROR",
 								"Unable to save game",
 								NULL);
-						return SPCHESS_GAME_NONE;
+						return SPGUI_GAME_NONE;
 					} else
 						SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
 								"SUCCESS", "game was successfully saved!",
@@ -450,14 +435,14 @@ SPCHESS_GAME_EVENT spPanelHandleEvent(SPGameWin* src, SDL_Event* event) {
 
 					src->isSaved = true;
 				}
-				return SPCHESS_GAME_EXIT;
+				return SPGUI_GAME_EXIT;
 			} else
 				//popUpSave() == 2
-				return SPCHESS_GAME_NONE;
+				return SPGUI_GAME_NONE;
 		}
-		return SPCHESS_GAME_EXIT;
+		return SPGUI_GAME_EXIT;
 	}
-	return SPCHESS_GAME_NONE;
+	return SPGUI_GAME_NONE;
 }
 
 int popUpSave() {
@@ -493,11 +478,11 @@ void computeLocFromGui(int loc[2]) {
 	loc[1] = (int) ((tmp - PANEL_OFFSET) / (GUI_BOARD_SIZE / SP_GAMEBOARD_SIZE));
 }
 
-void spGameWindowHide(SPGameWin* src) {
+void spGameWindowHide(SPGUIGameWindow* src) {
 	SDL_HideWindow(src->gameWindow);
 }
 
-void spGameWindowShow(SPGameWin* src) {
+void spGameWindowShow(SPGUIGameWindow* src) {
 	SDL_ShowWindow(src->gameWindow);
 }
 

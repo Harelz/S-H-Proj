@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <SDL_video.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 //button eight and width
 #define BUTTON_W 150
@@ -53,7 +54,7 @@ typedef enum {
 	//no button
 	NO_BUTTON
 
-} SPCHESS_BUTTON_TYPE;
+} SPGUI_BUTTON_TYPE;
 
 
 /*
@@ -68,7 +69,7 @@ typedef struct button_t {
 	SDL_Rect* location;
 	bool visible;
 	bool active;
-	SPCHESS_BUTTON_TYPE type;
+	SPGUI_BUTTON_TYPE type;
 } Button;
 
 
@@ -77,10 +78,10 @@ typedef struct button_t {
  */
 Button* createButton(SDL_Renderer* windowRender, const char* activeImage,
 		const char* inactiveImage, SDL_Rect* location, bool visible,
-		bool active, SPCHESS_BUTTON_TYPE type);
+		bool active, SPGUI_BUTTON_TYPE type);
 Button** createButtons(SDL_Renderer* windowRender, const char* activeImages[],
 		const char* inactiveImages[], int xBtns[], int yBtns[], bool visible[],
-		bool active[], SPCHESS_BUTTON_TYPE types[], int numOfBtns);
+		bool active[], SPGUI_BUTTON_TYPE types[], int numOfBtns);
 
 /*
  * function destroys all memory related to button.

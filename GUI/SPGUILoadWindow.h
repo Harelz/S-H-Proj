@@ -1,20 +1,20 @@
 #ifndef GRAPHICS_SPCHESSGUILOADWIN_H_
 #define GRAPHICS_SPCHESSGUILOADWIN_H_
 
-#include "SPCHESSGUICommon.h"
+#include "SPGUICommon.h"
 #define NUM_OF_LOAD_BUTTONS 7
 
 /*
  * enum represents the diffrent load window events.
  */
 typedef enum {
-	SPCHESS_LOAD_SLOT,
-	SPCHESS_LOAD_BACK,
-	SPCHESS_LOAD_INVALID_ARGUMENT,
-	SPCHESS_LOAD_NONE,
-	SPCHESS_LOAD_LOAD,
-	SPCHESS_LOAD_QUIT
-} SPCHESS_LOAD_EVENT;
+	SPGUI_LOAD_SLOT,
+	SPGUI_LOAD_BACK,
+	SPGUI_LOAD_INVALID_ARGUMENT,
+	SPGUI_LOAD_NONE,
+	SPGUI_LOAD_LOAD,
+	SPGUI_LOAD_QUIT
+} SPGUI_LOAD_EVENT;
 
 /*
  * structur represents a lad window
@@ -26,17 +26,15 @@ typedef struct spchessloadwin_t {
 	Button** btns;
 	int slotPicked;
 	SPGame* game;
-} SPCHESSLoadWin;
+} SPGUILoadWindow;
 
 
 /*
  * standard load functions: createm destroy, draw, handle events, hide and show.
  */
-SPCHESSLoadWin* spLoadWindowCreate();
-void spLoadWindowDestroy(SPCHESSLoadWin* src);
-void spLoadWindowDraw(SPCHESSLoadWin* src);
-SPCHESS_LOAD_EVENT spLoadWindowHandleEvent(SPCHESSLoadWin* src, SDL_Event* event);
-void spLoadWindowHide(SPCHESSLoadWin* src);
-void spLoadWindowShow(SPCHESSLoadWin* src);
+SPGUILoadWindow* spLoadWindowCreate();
+void spLoadWindowDestroy(SPGUILoadWindow* src);
+void spLoadWindowDraw(SPGUILoadWindow* src);
+SPGUI_LOAD_EVENT spLoadWindowEventHandler(SPGUILoadWindow *src, SDL_Event *event);
 
 #endif /* GRAPHICS_SPCHESSGUILOADWIN_H_ */

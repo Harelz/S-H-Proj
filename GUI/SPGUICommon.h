@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_SPCHESSGUICOMMON_H_
 #define GRAPHICS_SPCHESSGUICOMMON_H_
 
-#include "SPCHESSGUIButton.h"
+#include "SPGUIButton.h"
 #include "../SPGame.h"
 #include "../SPMiniMax.h"
 #include <stdio.h>
@@ -9,17 +9,15 @@
 #include <unistd.h>
 
 //IMAGES PATH MACRO
-#define ACT_IMG(g) "./graphics/images/"#g".bmp"
-#define INACT_IMG(g) "./graphics/images/inactive_"#g".bmp"
-
-//SLOTS MACRO
-#define NUM_SLOTS 5
-#define SLOT0 "./graphics/saved_games/slot0.xml"
-#define SLOT1 "./graphics/saved_games/slot1.xml"
-#define SLOT2 "./graphics/saved_games/slot2.xml"
-#define SLOT3 "./graphics/saved_games/slot3.xml"
-#define SLOT4 "./graphics/saved_games/slot4.xml"
-
+#define ACT_IMG(g) "../GUI/images/"#g".bmp"
+#define INACT_IMG(g) "../GUI/images/inactive_"#g".bmp"
+#define NUM_OF_SAVES 5
+#define SAVE1 "../GUI/saved_games/save1.xml"
+#define SAVE2 "../GUI/saved_games/save2.xml"
+#define SAVE3 "../GUI/saved_games/save3.xml"
+#define SAVE4 "../GUI/saved_games/save4.xml"
+#define SAVE5 "../GUI/saved_games/save5.xml"
+const char* savePaths[] = {SAVE1 , SAVE2 , SAVE3 , SAVE4 , SAVE5};
 /*
  * The function counts how many saved games exist (0-5)
  */
@@ -34,7 +32,7 @@ void promoteSlots();
 /*
  * The function returns the button's type that was clicked (in the current window).
  */
-SPCHESS_BUTTON_TYPE getButtonClicked(Button** btns, int numOfBtns,
+SPGUI_BUTTON_TYPE getButtonClicked(Button** buttons, int numOfButtons,
 		SDL_Event* event, bool checkActive);
 
 #endif /* GRAPHICS_SPCHESSGUICOMMON_H_ */

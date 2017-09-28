@@ -213,7 +213,6 @@ bool spGameTileIsThreatened(SPGame* game , SPMove* move){
 
 }
 
-
 int spGameSaveHandler(SPGame *game, char *fpath){
     FILE *fp;
     int i,j;
@@ -285,7 +284,7 @@ SPGame* spGameCreateDef(){
     return game;
 }
 
-SPGame* spGameCreate (SPSettings* settings){
+SPGame* spGameCreate(SPSettings* settings){
     SPGame* game = (SPGame *) malloc(sizeof(SPGame));
     if(game == NULL) return NULL;	//puts("Error: malloc has failed");
     game->history = spQueueCreate(3);

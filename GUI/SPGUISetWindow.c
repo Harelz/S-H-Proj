@@ -1,7 +1,7 @@
-#include "SPCHESSGUISetWin.h"
+#include "SPGUISetWindow.h"
 
-SPCHESSSetWin* spSetWindowCreate() {
-	SPCHESSSetWin* res = (SPCHESSSetWin*) calloc(sizeof(SPCHESSSetWin),
+SPGUISetWindow* spSetWindowCreate() {
+	SPGUISetWindow* res = (SPGUISetWindow*) calloc(sizeof(SPGUISetWindow),
 			sizeof(char));
 	if (res == NULL) {
 		printf("Couldn't create spChessSetWin struct\n");
@@ -49,7 +49,7 @@ SPCHESSSetWin* spSetWindowCreate() {
 			false, false,
 			false, false, false, false, true };
 
-	SPCHESS_BUTTON_TYPE types[NUM_OF_SET_BUTTONS] = { BUTTON_SET_GAME_MODE,
+	SPGUI_BUTTON_TYPE types[NUM_OF_SET_BUTTONS] = { BUTTON_SET_GAME_MODE,
 			BUTTON_SET_ONE_PLAYER, BUTTON_SET_TWO_PLAYER, BUTTON_SET_DIFF,
 			BUTTON_SET_NOOB_DIFF, BUTTON_SET_EASY_DIFF, BUTTON_SET_MOD_DIFF,
 			BUTTON_SET_HARD_DIFF, BUTTON_SET_SELECT_COLOR,
@@ -69,7 +69,7 @@ SPCHESSSetWin* spSetWindowCreate() {
 	return res;
 }
 
-void spSetWindowDestroy(SPCHESSSetWin* src) {
+void spSetWindowDestroy(SPGUISetWindow* src) {
 	if (!src)
 		return;
 
@@ -88,7 +88,7 @@ void spSetWindowDestroy(SPCHESSSetWin* src) {
 	free(src);
 }
 
-void spSetWindowDraw(SPCHESSSetWin* src) {
+void spSetWindowDraw(SPGUISetWindow* src) {
 	if (src == NULL)
 		return;
 
@@ -100,72 +100,61 @@ void spSetWindowDraw(SPCHESSSetWin* src) {
 	SDL_RenderPresent(src->setRenderer);
 }
 
-SPCHESS_SET_EVENT spSetWindowHandleEvent(SPCHESSSetWin* src, SDL_Event* event) {
+SPGUI_SET_EVENT spSetWindowEventHandler(SPGUISetWindow *src, SDL_Event *event) {
 	if (!src || !event)
-		return SPCHESS_SET_INVALID_ARGUMENT;
-
-	SPCHESS_BUTTON_TYPE btn = NO_BUTTON;
-
+		return SPGUI_SET_INVALID_ARGUMENT;
+	SPGUI_BUTTON_TYPE btn = NO_BUTTON;
 	switch (event->type) {
 	case SDL_MOUSEBUTTONUP:
 		btn = getButtonClicked(src->btns, src->numOfBtns, event, true);
-
 		if (btn == BUTTON_SET_TWO_PLAYER) {
-			src->game->settings->game_mode = 2; //change the game mode to 2
+			src->game->settings->game_mode = SP_MODE_2P;
 			src->btns[11]->active = true; //activate start button
-			//de-activate other options
-
 			src->btns[4]->active = false;
 			src->btns[5]->active = false;
 			src->btns[6]->active = false;
 			src->btns[7]->active = false;
 			src->btns[9]->active = false;
 			src->btns[10]->active = false;
-
-			return SPCHESS_SET_GAME_MODE;
+			return SPGUI_SET_GAME_MODE;
 		} else if (btn == BUTTON_SET_ONE_PLAYER) {
-
-			src->game->settings->game_mode = 1; //change the game mode to 1
+			src->game->settings->game_mode = SP_MODE_1P;
+			src->btns[11]->active = false; //de-activate start btn
 			//activate possible difficulty levels
 			src->btns[4]->active = true;
 			src->btns[5]->active = true;
 			src->btns[6]->active = true;
 			src->btns[7]->active = true;
-			src->btns[11]->active = false; //de-activate start btn
-			return SPCHESS_SET_GAME_MODE;
+			return SPGUI_SET_GAME_MODE;
 		} else if (btn >= BUTTON_SET_NOOB_DIFF && btn <= BUTTON_SET_HARD_DIFF) {
 
-			src->game->settings->difficulty = btn - 13; //set difficulty (assuming BUTTON_SET_NOOB_DIFF = 14)
+			src->game->settings->difficulty = btn - BUTTON_SET_NOOB_DIFF + 1; //set difficulty (assuming BUTTON_SET_NOOB_DIFF = 14)
 			//activate color player stage
 			src->btns[9]->active = true;
 			src->btns[10]->active = true;
-			return SPCHESS_SET_DIFF;
+			return SPGUI_SET_DIFF;
 		} else if (btn == BUTTON_SET_WHITE_PLAYER
 				|| btn == BUTTON_SET_BLACK_PLAYER) {
 			src->game->settings->p1_color = btn - 19; //set user color (assuming BUTTON_SET_BLACK_PLAYER = 19)
 			src->btns[11]->active = true; //activate start button
-			return SPCHESS_SET_COLOR;
+			return SPGUI_SET_COLOR;
 		} else if (btn == BUTTON_SET_BACK)
-			return SPCHESS_SET_BACK;
+			return SPGUI_SET_BACK;
 		else if (btn == BUTTON_SET_START)
-			return SPCHESS_SET_START;
+			return SPGUI_SET_START;
 		break;
 
 	case SDL_WINDOWEVENT:
 		if (event->window.event == SDL_WINDOWEVENT_CLOSE)
-			return SPCHESS_SET_QUIT;
+			return SPGUI_SET_QUIT;
 		break;
 	default:
-		return SPCHESS_SET_NONE;
+		return SPGUI_SET_NONE;
 	}
-	return SPCHESS_SET_NONE;
+	return SPGUI_SET_NONE;
 }
 
-void spSetWindowHide(SPCHESSSetWin* src) {
-	SDL_HideWindow(src->setWindow);
-}
-
-void spSetWindowShow(SPCHESSSetWin* src) {
+void spSetWindowShow(SPGUISetWindow* src) {
 	SDL_ShowWindow(src->setWindow);
 }
 
