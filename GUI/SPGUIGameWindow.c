@@ -272,10 +272,13 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 				int to[2] = {event->button.x, event->button.y};
 				computeLocFromGui(to);
 				SPMove *myMove = spCreateMove(src->chosenPiece[0], src->chosenPiece[1], to[0], to[1]);
-				if (spGameMoveHandler(src->game, myMove) != 3) { // need to check if success
+                int status;
+				if ((status = spGameMoveHandler(src->game, myMove)) != 3) { // need to check if success
 					src->isSaved = false;
 					src->chosenPiece[0] = -1;
 					src->chosenPiece[1] = -1;
+                    if (status == -1)
+                        changeColor(src->game);
 					SPGUI_GAME_EVENT msg = checkStatusForUserGui(src);
 					if (spStatusAfterMove(msg, src, event) != SPGUI_GAME_NONE) {
 						spDestroyMove(myMove);
@@ -316,9 +319,9 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 	}
 SPGUI_GAME_EVENT checkStatusForUserGui(SPGUIGameWindow* src) { // edited
 	if (spGameIsMate(src->game)) {
-		if (src->game->settings->curr_turn == WHITE)
+		if (src->game->settings->curr_turn == BLACK) // Black Player Wins!
 			return SPGUI_GAME_PLAYER_1_CHECKMATE;
-		else { //winner == BLACK
+		else { //White Player Wins!
 			return SPGUI_GAME_PLAYER_2_CHECKMATE;
 		}
 	}
