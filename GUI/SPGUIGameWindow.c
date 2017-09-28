@@ -478,11 +478,3 @@ void computeLocFromGui(int loc[2]) {
 	loc[1] = (int) ((tmp - PANEL_OFFSET) / (GUI_BOARD_SIZE / SP_GAMEBOARD_SIZE));
 }
 
-void spGameWindowHide(SPGUIGameWindow* src) {
-	SDL_HideWindow(src->gameWindow);
-}
-
-void spGameWindowShow(SPGUIGameWindow* src) {
-	SDL_ShowWindow(src->gameWindow);
-}
-

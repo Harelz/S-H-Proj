@@ -92,6 +92,7 @@ SPGUI_LOAD_EVENT spLoadWindowEventHandler(SPGUILoadWindow *src, SDL_Event *event
 		}
 		if (btn == BUTTON_LOAD_LOAD && src->slotPicked >= 0 && src->slotPicked <= 4) {
 			SPGame* loaded = spGameCreateDef();
+			const char* savePaths[] = {SAVE1 , SAVE2 , SAVE3 , SAVE4 , SAVE5};
 			loadGame(loaded, (char *)savePaths[src->slotPicked]);
 			spGameDestroy(src->game);
 			src->game = loaded;

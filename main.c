@@ -1,5 +1,6 @@
 #include "SPGame.h"
 #include "GUI/SPGUIManager.h"
+
 int main(int argc, char* argv[]) {
     MainGUIManager();
 	char s[SP_MAX_LINE_LENGTH];

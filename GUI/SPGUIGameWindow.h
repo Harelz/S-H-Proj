@@ -79,8 +79,6 @@ void computeLocFromGui(int loc[2]);
  */
 void spGameWindowDraw(SPGUIGameWindow* src, SDL_Event* event);
 void spGameWindowDestroy(SPGUIGameWindow* src);
-void spGameWindowHide(SPGUIGameWindow* src);
-void spGameWindowShow(SPGUIGameWindow* src);
 
 /*
  * The handle events game window functions - act according to the event sent and the location.

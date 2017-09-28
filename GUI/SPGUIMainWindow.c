@@ -98,11 +98,3 @@ SPGUI_MAIN_EVENT spMainWindowEventHandler(SPGUIMainWindow *src, SDL_Event *event
 	return SPGUI_MAIN_NONE;
 }
 
-void spMainWindowHide(SPGUIMainWindow* src) {
-	SDL_HideWindow(src->mainWindow);
-}
-
-void spMainWindowShow(SPGUIMainWindow* src) {
-	SDL_ShowWindow(src->mainWindow);
-}
-

@@ -153,8 +153,3 @@ SPGUI_SET_EVENT spSetWindowEventHandler(SPGUISetWindow *src, SDL_Event *event) {
 	}
 	return SPGUI_SET_NONE;
 }
-
-void spSetWindowShow(SPGUISetWindow* src) {
-	SDL_ShowWindow(src->setWindow);
-}
-

@@ -1,6 +1,7 @@
 #include "SPGUICommon.h"
 
 int countSavedFiles() {
+	const char* savePaths[] = {SAVE1 , SAVE2 , SAVE3 , SAVE4 , SAVE5};
 	int cnt = 0;
 	for(int i = 0; i<NUM_OF_SAVES ; i++){
 		if (access(savePaths[i], F_OK) != -1)
@@ -12,6 +13,7 @@ int countSavedFiles() {
 }
 
 void promoteSlots() {
+	const char* savePaths[] = {SAVE1 , SAVE2 , SAVE3 , SAVE4 , SAVE5};
 	int numOfSaves = countSavedFiles();
 	if (access(savePaths[numOfSaves-1], F_OK) != -1)
 		remove(SAVE5);

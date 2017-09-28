@@ -92,7 +92,7 @@ SPGUI_MANAGER_EVENT spManagerHandleMainEvent(SPGUIManager *src, SPGUI_MAIN_EVENT
 	if (!src)
 		return SPGUI_MANAGER_EVENT_NONE;
 	if (event == SPGUI_MAIN_NEW_GAME) {
-		spMainWindowHide(src->mainWindow);
+		SDL_HideWindow(src->mainWindow->mainWindow);
 		src->setWindow = spSetWindowCreate();
 		if (src->setWindow == NULL) {
 			printf("couldn't create set window\n");
@@ -102,7 +102,7 @@ SPGUI_MANAGER_EVENT spManagerHandleMainEvent(SPGUIManager *src, SPGUI_MAIN_EVENT
 		src->prevWindow = SPGUI_MAIN_WINDOW;
 	}
 	if (event == SPGUI_MAIN_LOAD) {
-		spMainWindowHide(src->mainWindow);
+		SDL_HideWindow(src->mainWindow->mainWindow);
 		src->loadWindow = spLoadWindowCreate();
 		if (src->loadWindow == NULL) {
 			printf("couldn't create load window\n");
@@ -122,9 +122,9 @@ SPGUI_MANAGER_EVENT spManagerHandleGameEvent(SPGUIManager *src, SPGUI_GAME_EVENT
 		return SPGUI_MANAGER_EVENT_NONE;
 
 	if (event == SPGUI_GAME_LOAD) {
-		spGameWindowHide(src->gameWindow);
+		SDL_HideWindow(src->gameWindow->gameWindow);
 		if (src->loadWindow != NULL)
-			SDL_ShowWindow(src->loadWindow);
+			SDL_ShowWindow(src->loadWindow->loadWindow);
 		else {
 			src->loadWindow = spLoadWindowCreate();
 			if (src->loadWindow == NULL) {
@@ -137,7 +137,7 @@ SPGUI_MANAGER_EVENT spManagerHandleGameEvent(SPGUIManager *src, SPGUI_GAME_EVENT
 	}
 	if (event == SPGUI_GAME_MAIN_MENU) {
 		spGameWindowDestroy(src->gameWindow);
-		spMainWindowShow(src->mainWindow);
+		SDL_ShowWindow(src->mainWindow->mainWindow);
 		src->activeWindow = SPGUI_MAIN_WINDOW;
 		src->prevWindow = SPGUI_NO_WINDOW;
 	}
@@ -168,18 +168,18 @@ SPGUI_MANAGER_EVENT spManagerHandleLoadEvent(SPGUIManager *src, SPGUI_LOAD_EVENT
 		return SPGUI_MANAGER_EVENT_NONE;
 
 	if (event == SPGUI_LOAD_BACK) {
-        SDL_HideWindow(src->loadWindow);
+        SDL_HideWindow(src->loadWindow->loadWindow);
 		if (src->prevWindow == SPGUI_MAIN_WINDOW) {
 			src->activeWindow = SPGUI_MAIN_WINDOW;
-			spMainWindowShow(src->mainWindow);
+			SDL_ShowWindow(src->mainWindow->mainWindow);
 		} else if (src->prevWindow == SPGUI_GAME_WINDOW) {
 			src->activeWindow = SPGUI_GAME_WINDOW;
-			spGameWindowShow(src->gameWindow);
+			SDL_ShowWindow(src->gameWindow->gameWindow);
 		}
 		src->prevWindow = SPGUI_LOAD_WINDOW;
 	}
 	if (event == SPGUI_LOAD_LOAD) {
-        SDL_HideWindow(src->loadWindow);
+        SDL_HideWindow(src->loadWindow->loadWindow);
 		src->gameWindow = spGameWindowCreate(src->loadWindow->game);
 		if (src->gameWindow == NULL) {
 			printf("couldn't create game window\n");
@@ -200,13 +200,13 @@ SPGUI_MANAGER_EVENT spManagerHandleSetEvent(SPGUIManager *src, SPGUI_SET_EVENT e
 	if (!src)
 		return SPGUI_MANAGER_EVENT_NONE;
 	if (event == SPGUI_SET_BACK) {
-		SDL_HideWindow(src->setWindow);
-		spMainWindowShow(src->mainWindow);
+		SDL_HideWindow(src->setWindow->setWindow);
+		SDL_ShowWindow(src->mainWindow->mainWindow);
 		src->activeWindow = SPGUI_MAIN_WINDOW;
 		src->prevWindow = SPGUI_SET_WINDOW;
 	}
 	if (event == SPGUI_SET_START) {
-		SDL_HideWindow(src->setWindow);
+		SDL_HideWindow(src->setWindow->setWindow);
 		src->gameWindow = spGameWindowCreate(src->setWindow->game);
 		if (src->gameWindow == NULL) {
 			printf("couldn't create game window\n");

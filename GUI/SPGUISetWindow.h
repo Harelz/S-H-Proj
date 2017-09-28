@@ -42,7 +42,6 @@ typedef struct spchesssetwin_t {
 SPGUISetWindow* spSetWindowCreate();
 void spSetWindowDraw(SPGUISetWindow* src);
 void spSetWindowDestroy(SPGUISetWindow* src);
-void spSetWindowShow(SPGUISetWindow* src);
 SPGUI_SET_EVENT spSetWindowEventHandler(SPGUISetWindow *src,
 										SDL_Event *event);
 

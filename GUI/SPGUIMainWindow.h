@@ -33,8 +33,6 @@ typedef struct spchessmainwin_t {
 SPGUIMainWindow* spMainWindowCreate();
 void spMainWindowDraw(SPGUIMainWindow* src);
 void spMainWindowDestroy(SPGUIMainWindow* src);
-void spMainWindowHide(SPGUIMainWindow* src);
-void spMainWindowShow(SPGUIMainWindow* src);
 SPGUI_MAIN_EVENT spMainWindowEventHandler(SPGUIMainWindow *src, SDL_Event *event);
 
 
