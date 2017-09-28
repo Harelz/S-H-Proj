@@ -101,7 +101,7 @@ int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, in
 
 int spMinimaxSuggestMove(SPGame *game, SPMove *bestMove) {
     if (game->settings->curr_turn == WHITE)
-        return spMinimaxRecCalc(game, INT_MIN, INT_MAX, BLACK, game->settings->difficulty, bestMove);
+        return spMinimaxRecCalc(GAME_PACK_WHITE);
     else
-        return spMinimaxRecCalc(game, INT_MIN, INT_MAX, WHITE, game->settings->difficulty, bestMove);
+        return spMinimaxRecCalc(GAME_PACK_BLACK);
 }
