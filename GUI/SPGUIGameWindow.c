@@ -284,19 +284,6 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 						spDestroyMove(myMove);
 						return msg;
 					}
-					/*//computer turn (if computer is black)
-					if (src->game->settings->game_mode == 1&& src->game->settings->p1_color == 1
-						&& src->game->settings->curr_turn == BLACK) {
-						spGameWindowDraw(src, event);
-						SPMove* compMove = spCreateMove(0,0,0,0);
-						spMinimaxSuggestMove(src->game,compMove);
-						spGameMoveHandler(src->game, compMove);
-						spDestroyMove(compMove);
-						SPGUI_GAME_EVENT msg = checkStatusForUserGui(src);
-						if (spStatusAfterMove(msg, src, event) != SPGUI_GAME_NONE){
-							spDestroyMove(myMove);
-							return msg;}
-					}*/
 					spDestroyMove(myMove);
 					return SPGUI_GAME_MOVE;
 				}
@@ -362,9 +349,10 @@ SPGUI_GAME_EVENT spPanelHandleEvent(SPGUIGameWindow* src, SDL_Event* event) {
 	SPGUI_BUTTON_TYPE btn = NO_BUTTON;
 	btn = getButtonClicked(src->panel, src->numOfPanel, event, true);
 	if (btn == BUTTON_GAME_RESTART) {
+		SPGame* restarted = spGameCreate(spSettingsCopy(src->game->settings));
 		spGameDestroy(src->game);
-		src->game = spGameCreateDef();//restart the game with current settings
-		src->panel[3]->active = false; //de-activate undo btn
+		src->game = restarted;
+		if(src->game->settings->game_mode == SP_MODE_1P) src->panel[3]->active = false; //de-activate undo btn
 		src->isSaved = false;
 		return SPGUI_GAME_RESTART;
 	} else if (btn == BUTTON_GAME_SAVE) {
