@@ -1,11 +1,8 @@
 #ifndef SPSETTINGS_H_
 #define SPSETTINGS_H_
 
-#include <stdbool.h>
-#include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
-#include "SPParser.h" // include SPGame.h which includes SPTileArrayList
+#include "SPParser.h"
 
 typedef enum sp_game_mode_t {
 	SP_MODE_1P = 1,

@@ -1,5 +1,4 @@
 #include "SPGame.h"
-#include "SPParser.h"
 #include "SPMiniMax.h"
 
 int spGameHandler(SPGame *game, SPGameCommand cmd) {

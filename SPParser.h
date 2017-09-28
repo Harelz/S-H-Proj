@@ -1,7 +1,6 @@
 #ifndef SPPARSER_H_
 #define SPPARSER_H_
-#include <stdbool.h>
-#include <stdlib.h>
+
 #include <string.h>
 #include "SPMoves.h"
 #include <ctype.h>

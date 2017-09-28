@@ -1,10 +1,10 @@
 #ifndef SPGAME_H_
 #define SPGAME_H_
-#include <stdbool.h>
+
 #include <math.h>
 #include "SPSettings.h"
 #include "SPQueue.h"
-#include <ctype.h>
+
 /**
  * SPGame Summary:
  *

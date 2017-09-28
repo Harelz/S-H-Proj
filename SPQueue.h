@@ -1,11 +1,5 @@
-//
-// Created by hoshri on 9/11/2017.
-//
-
 #ifndef UNTITLED1_SPQUEUE_H
 #define UNTITLED1_SPQUEUE_H
-
-#endif //UNTITLED1_SPQUEUE_H
 
 #define SP_GAMEBOARD_SIZE 8
 
@@ -34,3 +28,5 @@ SPNode* spQueuePop(Queue* myQ);
 SPNode* spStackPop(Queue* myQ);
 int spQueueIsEmpty(Queue* myQ);
 Queue* spQueueCopy(Queue* myQ);
+
+#endif //UNTITLED1_SPQUEUE_H

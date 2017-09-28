@@ -1,11 +1,5 @@
-//
-// Created by hoshri on 9/11/2017.
-//
-
 #ifndef UNTITLED1_SPMOVES_H
 #define UNTITLED1_SPMOVES_H
-
-#endif //UNTITLED1_SPMOVES_H
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -57,4 +51,4 @@ bool spMovesListIsFull(SPMovesList* src);
 bool spMovesListIsEmpty(SPMovesList* src);
 int spMoveToMove(SPMove* toMove, SPMove* fromMove);
 
-
+#endif //UNTITLED1_SPMOVES_H

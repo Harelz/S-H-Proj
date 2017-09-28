@@ -3,9 +3,6 @@
 
 #include "SPGUIButton.h"
 #include "../SPGame.h"
-#include "../SPMiniMax.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 
 //IMAGES PATH MACRO

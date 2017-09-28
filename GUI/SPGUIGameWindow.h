@@ -3,8 +3,6 @@
 #define GRAPHICS_SPCHESSGUIGAMEWIN_H_
 
 #include "SPGUICommon.h"
-#include "../SPMiniMax.h"
-#include "../SPGame.h"
 #define NUM_OF_GAME_BUTTONS 6
 #define NUM_OF_DIFF_PIECES 6
 #define PANEL_OFFSET 200
