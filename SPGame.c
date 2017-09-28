@@ -166,6 +166,13 @@ int spSetNaiveCPUMove(SPGame* game){
         printf("Computer: move %s at <%c,%c> to <%c,%c>\n",
            spGetTilePiece(game->gameBoard[a->dest->row][a->dest->coloumn]),
            a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
+    changeColor(game);
+    if (spGameIsMate(game) && isConsole){
+        printf("Checkmate! %s player wins the game\n", game->settings->curr_turn == WHITE ? "white" : "black" );
+        spDestroyMove(a);
+        return -1;
+    }
+    changeColor(game);
     if(spGameIsCheck(game) == (signed int)game->settings->p1_color && isConsole)
         printf("Check!\n");
     changeColor(game);
@@ -187,11 +194,18 @@ int spSetCPUMove (SPGame* game,SPMove* move){
             game->settings->p1_color == WHITE ? "white" : "black", move->src->row+'1', move->src->coloumn+'A',move->dest->row+'1', move->dest->coloumn+'A',
             game->settings->p1_color == BLACK ? "white" : "black", a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
     spQueueFullPush(game->history, lastBoard->data, msg);
-    spDestroyMove(a);
     if(isConsole)
         printf("Computer: move %s at <%c,%c> to <%c,%c>\n",
            spGetTilePiece(game->gameBoard[a->dest->row][a->dest->coloumn]),
            a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
+    spDestroyMove(a);
+    changeColor(game);
+    if (spGameIsMate(game) && isConsole){
+        printf("Checkmate! %s player wins the game\n", game->settings->curr_turn == BLACK ? "white" : "black" );
+        free(lastBoard);
+        return -1;
+    }
+    changeColor(game);
     if(spGameIsCheck(game) == (signed int)(game->settings->p1_color) && isConsole)
         printf("Check!\n");
     changeColor(game);

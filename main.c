@@ -6,7 +6,7 @@ int main(int argc, char* argv[]) {
         isConsole = false;
         return MainGUIManager();
     }
-    else if(argc == 1 || argc == 2 && strcmp(argv[1], "-c") == 0) { //DEFAULT MODE - CONSOLE
+    else if(argc == 1 || (argc == 2 && strcmp(argv[1], "-c") == 0)) { //DEFAULT MODE - CONSOLE
         isConsole = true;
         char s[SP_MAX_LINE_LENGTH];
         SPGame *game;
