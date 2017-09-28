@@ -21,8 +21,8 @@ typedef enum sp_difficulty_t {
 } SP_GAME_DIFFICULTY;
 
 typedef enum sp_user_color_t {
-	SP_USER_COLOR_WHITE = 1,
-	SP_USER_COLOR_BLACK = 0
+	SP_USER_COLOR_BLACK = 0,
+	SP_USER_COLOR_WHITE = 1
 } SP_USER_COLOR;
 
 typedef struct sp_game_sett_t {

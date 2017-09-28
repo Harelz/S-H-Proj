@@ -22,12 +22,12 @@ SPGUIMainWindow* spMainWindowCreate() {
 		return NULL;
 	}
 	res->numOfButtons = NUM_OF_MAIN_BUTTONS;
-	const char* activeImages[NUM_OF_MAIN_BUTTONS] = { ACT_IMG(new_game), ACT_IMG(
-			load), ACT_IMG(exit) };
+	const char* activeImages[NUM_OF_MAIN_BUTTONS] = { ACTIVE_BMP_PATH(new_game), ACTIVE_BMP_PATH(
+			load), ACTIVE_BMP_PATH(exit) };
 
 	const char* inactiveImages[NUM_OF_MAIN_BUTTONS] = {
-			INACT_IMG(new_game), INACT_IMG(load),
-			INACT_IMG(exit) };
+			INACTIVE_BMP_PATH(new_game), INACTIVE_BMP_PATH(load),
+			INACTIVE_BMP_PATH(exit) };
 
 	int xBtns[NUM_OF_MAIN_BUTTONS] = { 125, 125, 125 };
 	int yBtns[NUM_OF_MAIN_BUTTONS] = { 63, 176, 289 };

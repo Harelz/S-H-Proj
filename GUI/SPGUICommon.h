@@ -9,8 +9,8 @@
 #include <unistd.h>
 
 //IMAGES PATH MACRO
-#define ACT_IMG(g) "../GUI/images/button_"#g".bmp"
-#define INACT_IMG(g) "../GUI/images/button_"#g"_F.bmp"
+#define ACTIVE_BMP_PATH(g) "../GUI/images/button_"#g".bmp"
+#define INACTIVE_BMP_PATH(g) "../GUI/images/button_"#g"_F.bmp"
 #define NUM_OF_SAVES 5
 #define SAVE1 "../GUI/saved_games/save1.xml"
 #define SAVE2 "../GUI/saved_games/save2.xml"
@@ -29,11 +29,9 @@ int countSavedFiles();
  * In addition the last saved game is removed.
  */
 void promoteSlots();
-
 /*
  * The function returns the button's type that was clicked (in the current window).
  */
 SPGUI_BUTTON_TYPE getButtonClicked(Button** buttons, int numOfButtons,
 		SDL_Event* event, bool checkActive);
-
 #endif /* GRAPHICS_SPCHESSGUICOMMON_H_ */

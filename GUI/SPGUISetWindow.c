@@ -24,17 +24,17 @@ SPGUISetWindow* spSetWindowCreate() {
 	}
 
 	res->numOfBtns = NUM_OF_SET_BUTTONS;
-	const char* activeImages[NUM_OF_SET_BUTTONS] = { ACT_IMG(game_mode),
-			ACT_IMG(one_player), ACT_IMG(two_players), ACT_IMG(difficulty),
-			ACT_IMG(noob), ACT_IMG(easy), ACT_IMG(moderate), ACT_IMG(hard),
-			ACT_IMG(select_color), ACT_IMG(black_player), ACT_IMG(
-					white_player), ACT_IMG(start), ACT_IMG(back) };
+	const char* activeImages[NUM_OF_SET_BUTTONS] = { ACTIVE_BMP_PATH(game_mode),
+			ACTIVE_BMP_PATH(one_player), ACTIVE_BMP_PATH(two_players), ACTIVE_BMP_PATH(difficulty),
+			ACTIVE_BMP_PATH(noob), ACTIVE_BMP_PATH(easy), ACTIVE_BMP_PATH(moderate), ACTIVE_BMP_PATH(hard),
+			ACTIVE_BMP_PATH(select_color), ACTIVE_BMP_PATH(black_player), ACTIVE_BMP_PATH(
+					white_player), ACTIVE_BMP_PATH(start), ACTIVE_BMP_PATH(back) };
 
-	const char* inactiveImages[NUM_OF_SET_BUTTONS] = { ACT_IMG(game_mode),
-			INACT_IMG(one_player), INACT_IMG(two_players), ACT_IMG(difficulty),
-			INACT_IMG(noob), INACT_IMG(easy), INACT_IMG(moderate), INACT_IMG(
-					hard), ACT_IMG(select_color), INACT_IMG(black_player),
-					INACT_IMG(white_player), INACT_IMG(start), INACT_IMG(back) };
+	const char* inactiveImages[NUM_OF_SET_BUTTONS] = { ACTIVE_BMP_PATH(game_mode),
+			INACTIVE_BMP_PATH(one_player), INACTIVE_BMP_PATH(two_players), ACTIVE_BMP_PATH(difficulty),
+			INACTIVE_BMP_PATH(noob), INACTIVE_BMP_PATH(easy), INACTIVE_BMP_PATH(moderate), INACTIVE_BMP_PATH(
+					hard), ACTIVE_BMP_PATH(select_color), INACTIVE_BMP_PATH(black_player),
+					INACTIVE_BMP_PATH(white_player), INACTIVE_BMP_PATH(start), INACTIVE_BMP_PATH(back) };
 
 	int xBtns[NUM_OF_SET_BUTTONS] = { 270, 170, 360, 270, 35, 205, 375, 545,
 			270, 170, 360, 460, 80 };
@@ -136,6 +136,8 @@ SPGUI_SET_EVENT spSetWindowEventHandler(SPGUISetWindow *src, SDL_Event *event) {
 		} else if (btn == BUTTON_SET_WHITE_PLAYER
 				|| btn == BUTTON_SET_BLACK_PLAYER) {
 			src->game->settings->p1_color = (SP_USER_COLOR)(int)(btn - BUTTON_SET_BLACK_PLAYER);
+			src->btns[9 + src->game->settings->p1_color]->active = false;
+			src->btns[10 - src->game->settings->p1_color]->active = true;
 			src->btns[11]->active = true; //activate start button
 			return SPGUI_SET_COLOR;
 		} else if (btn == BUTTON_SET_BACK)

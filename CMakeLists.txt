@@ -56,7 +56,7 @@ configure_file(GUI/images/button_black_player_F.bmp GUI/images/button_black_play
 configure_file(GUI/images/white_rook.bmp GUI/images/white_rook.bmp COPYONLY)
 configure_file(GUI/images/button_slot4_F.bmp GUI/images/button_slot4_F.bmp COPYONLY)
 configure_file(GUI/images/button_start.bmp GUI/images/button_start.bmp COPYONLY)
-configure_file(GUI/images/button_oad.bmp GUI/images/button_load.bmp COPYONLY)
+configure_file(GUI/images/button_load.bmp GUI/images/button_load.bmp COPYONLY)
 configure_file(GUI/images/button_noob_F.bmp GUI/images/button_noob_F.bmp COPYONLY)
 configure_file(GUI/images/button_slot2_F.bmp GUI/images/button_slot2_F.bmp COPYONLY)
 configure_file(GUI/images/button_moderate_F.bmp GUI/images/button_moderate_F.bmp COPYONLY)

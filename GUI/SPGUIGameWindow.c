@@ -29,13 +29,13 @@ SPGUIGameWindow* spGameWindowCreate(SPGame* gameCopy) {
 
 	//create panel array
 	res->numOfPanel = NUM_OF_GAME_BUTTONS;
-	const char* activeImages[NUM_OF_GAME_BUTTONS] = { ACT_IMG(restart), ACT_IMG(
-			save), ACT_IMG(load), ACT_IMG(undo), ACT_IMG(main_menu), ACT_IMG(
+	const char* activeImages[NUM_OF_GAME_BUTTONS] = { ACTIVE_BMP_PATH(restart), ACTIVE_BMP_PATH(
+			save), ACTIVE_BMP_PATH(load), ACTIVE_BMP_PATH(undo), ACTIVE_BMP_PATH(main_menu), ACTIVE_BMP_PATH(
 			exit) };
 
-	const char* inactiveImages[NUM_OF_GAME_BUTTONS] = { ACT_IMG(restart),
-			INACT_IMG(save), INACT_IMG(load), INACT_IMG(undo), INACT_IMG(
-					main_menu), INACT_IMG(exit) };
+	const char* inactiveImages[NUM_OF_GAME_BUTTONS] = { ACTIVE_BMP_PATH(restart),
+			INACTIVE_BMP_PATH(save), INACTIVE_BMP_PATH(load), INACTIVE_BMP_PATH(undo), INACTIVE_BMP_PATH(
+					main_menu), INACTIVE_BMP_PATH(exit) };
 
 	int xBtns[NUM_OF_GAME_BUTTONS] = { 25, 25, 25, 25, 25, 25 };
 	int yBtns[NUM_OF_GAME_BUTTONS] = { 40, 120, 200, 280, 490, 570 };
@@ -57,7 +57,7 @@ SPGUIGameWindow* spGameWindowCreate(SPGame* gameCopy) {
 		free(res);
 	}
 	//Create a chess_board texture:
-	loadingSurfaceGrid = SDL_LoadBMP(ACT_IMG(chess_grid));
+	loadingSurfaceGrid = SDL_LoadBMP(ACTIVE_BMP_PATH(chess_grid));
 	if (loadingSurfaceGrid == NULL) {
 		printf("Could not create a surface: %s\n", SDL_GetError());
 		return NULL;
@@ -74,13 +74,13 @@ SPGUIGameWindow* spGameWindowCreate(SPGame* gameCopy) {
 	}
 	SDL_FreeSurface(loadingSurfaceGrid); //We finished with the surface -> delete it
 	//create white & black pieces
-	const char* whiteImages[NUM_OF_DIFF_PIECES] = { ACT_IMG(white_pawn),
-			ACT_IMG(white_knight), ACT_IMG(white_bishop), ACT_IMG(white_rook),
-			ACT_IMG(white_queen), ACT_IMG(white_king) };
+	const char* whiteImages[NUM_OF_DIFF_PIECES] = { ACTIVE_BMP_PATH(white_pawn),
+			ACTIVE_BMP_PATH(white_knight), ACTIVE_BMP_PATH(white_bishop), ACTIVE_BMP_PATH(white_rook),
+			ACTIVE_BMP_PATH(white_queen), ACTIVE_BMP_PATH(white_king) };
 
-	const char* blackImages[NUM_OF_DIFF_PIECES] = { ACT_IMG(black_pawn),
-			ACT_IMG(black_knight), ACT_IMG(black_bishop), ACT_IMG(black_rook),
-			ACT_IMG(black_queen), ACT_IMG(black_king) };
+	const char* blackImages[NUM_OF_DIFF_PIECES] = { ACTIVE_BMP_PATH(black_pawn),
+			ACTIVE_BMP_PATH(black_knight), ACTIVE_BMP_PATH(black_bishop), ACTIVE_BMP_PATH(black_rook),
+			ACTIVE_BMP_PATH(black_queen), ACTIVE_BMP_PATH(black_king) };
 
 	for (int i = 0; i < NUM_OF_DIFF_PIECES; i++) {
 		loadingSurfaceWhite = SDL_LoadBMP(whiteImages[i]);

@@ -21,12 +21,12 @@ SPGUILoadWindow* spLoadWindowCreate() {
 		return NULL;
 	}
 	res->numOfBtns = NUM_OF_LOAD_BUTTONS;
-	const char* activeImages[NUM_OF_LOAD_BUTTONS] = { ACT_IMG(slot0), ACT_IMG(
-			slot1), ACT_IMG(slot2), ACT_IMG(slot3), ACT_IMG(slot4), ACT_IMG(
-			back), ACT_IMG(load) };
-	const char* inactiveImages[NUM_OF_LOAD_BUTTONS] = { INACT_IMG(slot0),
-			INACT_IMG(slot1), INACT_IMG(slot2), INACT_IMG(slot3), INACT_IMG(
-					slot4), INACT_IMG(back), INACT_IMG(load) };
+	const char* activeImages[NUM_OF_LOAD_BUTTONS] = { ACTIVE_BMP_PATH(slot0), ACTIVE_BMP_PATH(
+			slot1), ACTIVE_BMP_PATH(slot2), ACTIVE_BMP_PATH(slot3), ACTIVE_BMP_PATH(slot4), ACTIVE_BMP_PATH(
+			back), ACTIVE_BMP_PATH(load) };
+	const char* inactiveImages[NUM_OF_LOAD_BUTTONS] = { INACTIVE_BMP_PATH(slot0),
+			INACTIVE_BMP_PATH(slot1), INACTIVE_BMP_PATH(slot2), INACTIVE_BMP_PATH(slot3), INACTIVE_BMP_PATH(
+					slot4), INACTIVE_BMP_PATH(back), INACTIVE_BMP_PATH(load) };
 	int xBtns[NUM_OF_LOAD_BUTTONS] = { 230, 230, 230, 230, 230, 50, 400 };
 	int yBtns[NUM_OF_LOAD_BUTTONS] = { 50, 130, 210, 290, 370, 490, 490 };
 	bool visible[NUM_OF_LOAD_BUTTONS] = { false, false, false, false, false, true, true };
