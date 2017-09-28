@@ -9,8 +9,8 @@
 #include <unistd.h>
 
 //IMAGES PATH MACRO
-#define ACT_IMG(g) "../GUI/images/"#g".bmp"
-#define INACT_IMG(g) "../GUI/images/inactive_"#g".bmp"
+#define ACT_IMG(g) "../GUI/images/button_"#g".bmp"
+#define INACT_IMG(g) "../GUI/images/button_"#g"_F.bmp"
 #define NUM_OF_SAVES 5
 #define SAVE1 "../GUI/saved_games/save1.xml"
 #define SAVE2 "../GUI/saved_games/save2.xml"
