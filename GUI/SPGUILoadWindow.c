@@ -83,14 +83,16 @@ SPGUI_LOAD_EVENT spLoadWindowEventHandler(SPGUILoadWindow *src, SDL_Event *event
 		if (btn == BUTTON_LOAD_BACK)
 			return SPGUI_LOAD_BACK;
 		if (btn >= BUTTON_LOAD_SLOT0 && btn <= BUTTON_LOAD_SLOT4) {
-			for(int i = 0; i<NUM_OF_SAVES; i++) //de-activate all slots
-				src->btns[i]->active = false;
+			for(int i = 0; i<NUM_OF_SAVES; i++) //activate all slots
+				src->btns[i]->active = true;
 			src->slotPicked = btn - (int)BUTTON_LOAD_SLOT0;
-			src->btns[src->slotPicked]->active = true; //active chosen slot
+			src->btns[src->slotPicked]->active = false; //deactivate chosen slot
 			src->btns[6]->active = true; //active load btn
 			return SPGUI_LOAD_SLOT;
 		}
 		if (btn == BUTTON_LOAD_LOAD && src->slotPicked >= 0 && src->slotPicked <= 4) {
+			for(int i = 0; i<NUM_OF_SAVES; i++) //activate all slots
+				src->btns[i]->active = true;
 			SPGame* loaded = spGameCreateDef();
 			const char* savePaths[] = {SAVE1 , SAVE2 , SAVE3 , SAVE4 , SAVE5};
 			loadGame(loaded, (char *)savePaths[src->slotPicked]);
