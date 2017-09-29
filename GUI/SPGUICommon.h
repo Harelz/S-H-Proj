@@ -10,17 +10,22 @@
 #ifdef _WIN32
 	#define ACTIVE_BMP_PATH(g) "../GUI/images/button_"#g".bmp"
 	#define INACTIVE_BMP_PATH(g) "../GUI/images/button_"#g"_F.bmp"
+	#define SAVE1 "../GUI/saved_games/save1.xml"
+	#define SAVE2 "../GUI/saved_games/save2.xml"
+	#define SAVE3 "../GUI/saved_games/save3.xml"
+	#define SAVE4 "../GUI/saved_games/save4.xml"
+	#define SAVE5 "../GUI/saved_games/save5.xml"
 #elif __unix__
 	#define ACTIVE_BMP_PATH(g) "./GUI/images/button_"#g".bmp"
 	#define INACTIVE_BMP_PATH(g) "./GUI/images/button_"#g"_F.bmp"
+	#define SAVE1 "./GUI/saved_games/save1.xml"
+	#define SAVE2 "./GUI/saved_games/save2.xml"
+	#define SAVE3 "./GUI/saved_games/save3.xml"
+	#define SAVE4 "./GUI/saved_games/save4.xml"
+	#define SAVE5 "./GUI/saved_games/save5.xml"
 #endif
 
 #define NUM_OF_SAVES 5
-#define SAVE1 "../GUI/saved_games/save1.xml"
-#define SAVE2 "../GUI/saved_games/save2.xml"
-#define SAVE3 "../GUI/saved_games/save3.xml"
-#define SAVE4 "../GUI/saved_games/save4.xml"
-#define SAVE5 "../GUI/saved_games/save5.xml"
 
 //
 /*
@@ -38,4 +43,5 @@ void promoteSlots();
  */
 SPGUI_BUTTON_TYPE getButtonClicked(Button** buttons, int numOfButtons,
 		SDL_Event* event, bool checkActive);
+
 #endif /* GRAPHICS_SPCHESSGUICOMMON_H_ */
