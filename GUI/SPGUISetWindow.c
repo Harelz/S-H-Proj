@@ -103,7 +103,7 @@ void spSetWindowDraw(SPGUISetWindow* src) {
 SPGUI_SET_EVENT spSetWindowEventHandler(SPGUISetWindow *src, SDL_Event *event) {
 	if (!src || !event)
 		return SPGUI_SET_INVALID_ARGUMENT;
-	SPGUI_BUTTON_TYPE btn = NO_BUTTON;
+	SPGUI_BUTTON_TYPE btn;
 	switch (event->type) {
 	case SDL_MOUSEBUTTONUP:
 		btn = getButtonClicked(src->btns, src->numOfBtns, event, true);
@@ -131,9 +131,13 @@ SPGUI_SET_EVENT spSetWindowEventHandler(SPGUISetWindow *src, SDL_Event *event) {
 			src->btns[7]->active = true;
 			return SPGUI_SET_GAME_MODE;
 		} else if (btn >= BUTTON_SET_NOOB_DIFF && btn <= BUTTON_SET_HARD_DIFF) {
-
-			src->game->settings->difficulty = (SP_GAME_DIFFICULTY)(int)(btn - BUTTON_SET_NOOB_DIFF + 1);
+			int diff = (int)(btn - BUTTON_SET_NOOB_DIFF);
+			src->game->settings->difficulty = (SP_GAME_DIFFICULTY)(diff + 1);
 			//activate color player stage
+			src->btns[4+diff]->active = false; // deactivate level chosen
+			for(int i = 4; i<=7; i++)
+				if(i != 4+diff)
+					src->btns[i]->active = true;
 			src->btns[9]->active = true;
 			src->btns[10]->active = true;
 			return SPGUI_SET_DIFF;

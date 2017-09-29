@@ -6,8 +6,15 @@
 #include <unistd.h>
 
 //IMAGES PATH MACRO
-#define ACTIVE_BMP_PATH(g) "../GUI/images/button_"#g".bmp"
-#define INACTIVE_BMP_PATH(g) "../GUI/images/button_"#g"_F.bmp"
+
+#ifdef _WIN32
+	#define ACTIVE_BMP_PATH(g) "../GUI/images/button_"#g".bmp"
+	#define INACTIVE_BMP_PATH(g) "../GUI/images/button_"#g"_F.bmp"
+#elif __unix__
+	#define ACTIVE_BMP_PATH(g) "./GUI/images/button_"#g".bmp"
+	#define INACTIVE_BMP_PATH(g) "./GUI/images/button_"#g"_F.bmp"
+#endif
+
 #define NUM_OF_SAVES 5
 #define SAVE1 "../GUI/saved_games/save1.xml"
 #define SAVE2 "../GUI/saved_games/save2.xml"

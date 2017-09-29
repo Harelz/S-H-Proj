@@ -34,7 +34,7 @@ SPMiniMax.o: SPMiniMax.c SPMiniMax.h SPGame.h
 	$(CC) $(COMP_FLAG) -c $*.c
 
 #gui rules
-GUI/SPGUIButton.o: SPGUIButton.c SPCHESSGUIButton.h
+GUI/SPGUIButton.o: SPGUIButton.c SPGUIButton.h
 	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
 GUI/SPGUICommon.o: SPGUICommon.c SPGUICommon.h SPGUIButton.h SPGame.h
 	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
