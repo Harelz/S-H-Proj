@@ -100,7 +100,7 @@ int spGameMoveHandler(SPGame* game , SPMove* move){
         }
         else if (msg == SP_GAME_SUCCESS_TIE){
             if(isConsole)
-                printf("The game is Tied\n");
+                printf("The game is tied\n");
             return -1;
         }
         else if(msg == SP_GAME_SUCCESS_MATED){
@@ -172,7 +172,7 @@ int spSetNaiveCPUMove(SPGame* game){
         return -1;
     }
     if (spGameIsTie(game) && isConsole){
-        printf("The game is Tied\n");
+        printf("The game is tied\n");
         spDestroyMove(a);
         return -1;
     }
@@ -210,7 +210,7 @@ int spSetCPUMove (SPGame* game,SPMove* move){
         return -1;
     }
     if (spGameIsTie(game) && isConsole){
-        printf("The game is Tied\n");
+        printf("The game is tied\n");
         free(lastBoard);
         return -1;
     }
