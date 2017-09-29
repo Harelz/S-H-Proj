@@ -312,6 +312,10 @@ SPGUI_GAME_EVENT checkStatusForUserGui(SPGUIGameWindow* src) { // edited
 			return SPGUI_GAME_PLAYER_2_CHECKMATE;
 		}
 	}
+	changeColor(src->game);
+	if (spGameIsTie(src->game))
+		return SPGUI_GAME_TIE;
+	changeColor(src->game);
 	char playerCheck = spGameIsCheck(src->game);
 	if (playerCheck != SP_GAME_EMPTY_ENTRY) {
 		if (src->game->settings->curr_turn == WHITE && (playerCheck == WHITE || playerCheck == SP_GAME_COLOR_BOTH))
@@ -319,8 +323,6 @@ SPGUI_GAME_EVENT checkStatusForUserGui(SPGUIGameWindow* src) { // edited
 		else if (src->game->settings->curr_turn == BLACK && (playerCheck == BLACK || playerCheck == SP_GAME_COLOR_BOTH))
 			return SPGUI_GAME_PLAYER_2_CHECK;
 	}
-	if (spGameIsTie(src->game))
-		return SPGUI_GAME_TIE;
 	return SPGUI_GAME_MOVE;
 
 }

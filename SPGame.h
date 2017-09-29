@@ -76,6 +76,7 @@ typedef enum sp_game_message_t {
 
 int spGameHandler(SPGame *game, SPGameCommand cmd);
 int spGameSaveHandler(SPGame *game, char *fpath);
+int countLines(char* fpath);
 int loadGame(SPGame* game, char* fpath);
 SPGame* spSetNewBoard(SPGame* src);
 SPGame* spGameCreateDef();

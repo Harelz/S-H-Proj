@@ -15,7 +15,7 @@ int spGameHandler(SPGame *game, SPGameCommand cmd) {
             undo_msg = spGameUndoHandler(game);
             printf("%s", undo_msg);
             free(undo_msg);
-            return 3;
+            return 1;
         case SP_SAVE:
             IS_VALID(cmd);
             spGameSaveHandler(game, cmd.pathArg);
@@ -272,9 +272,26 @@ int spGameSaveHandler(SPGame *game, char *fpath){
         fprintf(fp, "</row_%d>\n",i);
     }
     fprintf(fp, "\t</board>\n");
-    fprintf(fp, "</game>\n");
+    fprintf(fp, "</game>");
     fclose(fp);
     return 1;
+}
+
+int countLines(char* fpath){
+    FILE* myfile = fopen(fpath, "r");
+    if (myfile == NULL)
+        return -1;
+    int ch, numLines = 0;
+    do
+    {
+        ch = fgetc(myfile);
+        if(ch == '\n')
+            numLines++;
+    } while (ch != EOF);
+    if(ch != '\n' && numLines != 0)
+        numLines++;
+    fclose(myfile);
+    return numLines;
 }
 
 int loadGame(SPGame* game, char* fpath){
@@ -286,17 +303,27 @@ int loadGame(SPGame* game, char* fpath){
         printf("Error: File doesn’t exist or cannot be opened\n");
         return 4;
     }
+    int numLines = countLines(fpath);
+    if (numLines < 15 || numLines > 18){
+        if (isConsole)
+            printf("Error: File is NOT in the format it should be.\n");
+        return 4;
+    }
     fgets(line, sizeof(line), fp);
     fgets(line, sizeof(line), fp);
     fgets(line, sizeof(line), fp);
-    game->settings->curr_turn = (SP_USER_COLOR)line[15]-'0';
+    game->settings->curr_turn = (SP_USER_COLOR)(line[15]-'0');
     fgets(line, sizeof(line), fp);
-    game->settings->game_mode = (SP_GAME_MODE)line[12]-'0';
+    game->settings->game_mode = (SP_GAME_MODE)(line[12]-'0');
     if (game->settings->game_mode == 1) {
         fgets(line, sizeof(line), fp);
-        game->settings->difficulty = (SP_GAME_DIFFICULTY)line[13] - '0';
+        game->settings->difficulty = (SP_GAME_DIFFICULTY)(line[13] - '0');
         fgets(line, sizeof(line), fp);
-        game->settings->p1_color = (SP_USER_COLOR)line[13] - '0';
+        game->settings->p1_color = (SP_USER_COLOR)(line[13] - '0');
+    }
+    else if (numLines >= 17){ //has tags but irrelevant. extra precaution - though it should be 17 exactly.
+        fgets(line, sizeof(line), fp);
+        fgets(line, sizeof(line), fp);
     }
     fgets(line, sizeof(line), fp);
     for (i = 8; i > 0; i--){

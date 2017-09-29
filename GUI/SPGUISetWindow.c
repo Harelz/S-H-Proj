@@ -110,6 +110,8 @@ SPGUI_SET_EVENT spSetWindowEventHandler(SPGUISetWindow *src, SDL_Event *event) {
 		if (btn == BUTTON_SET_TWO_PLAYER) {
 			src->game->settings->game_mode = SP_MODE_2P;
 			src->btns[11]->active = true; //activate start button
+			src->btns[1]->active = true; // de-select one player
+			src->btns[2]->active = false; // select two players
 			src->btns[4]->active = false;
 			src->btns[5]->active = false;
 			src->btns[6]->active = false;
@@ -119,6 +121,8 @@ SPGUI_SET_EVENT spSetWindowEventHandler(SPGUISetWindow *src, SDL_Event *event) {
 			return SPGUI_SET_GAME_MODE;
 		} else if (btn == BUTTON_SET_ONE_PLAYER) {
 			src->game->settings->game_mode = SP_MODE_1P;
+			src->btns[1]->active = false; // select one player
+			src->btns[2]->active = true; // de-select two players
 			src->btns[11]->active = false; //de-activate start btn
 			//activate possible difficulty levels
 			src->btns[4]->active = true;
