@@ -70,10 +70,10 @@ SPMovesList* spMovesListCopy(SPMovesList* src) {
 }
 
 void spMovesListDestroy(SPMovesList* src) {
-    for (int k = 0; k < src->actualSize; k++){
-        spDestroyMove(spMovesListGetAt(src, k));
-    }
     if(src != NULL){
+        for (int k = 0; k < src->actualSize; k++){
+            spDestroyMove(spMovesListGetAt(src, k));
+        }
         free(src->moves);
         free(src);
     }

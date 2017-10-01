@@ -8,9 +8,9 @@
 //specify the maximum line length
 #define SP_MAX_LINE_LENGTH 1024
 
-#define IN_RANGE(i, min, max) ((i >= min) && (i < max))
+#define IN_RANGE(i, min, max) (((i) >= (min)) && ((i) < (max)))
 #define PRINT_INVALID_COMMAND printf("Error: invalid command\n")
-#define IS_VALID(cmd) if(!cmd.validArg) PRINT_INVALID_COMMAND
+#define IS_VALID(cmd) if(!(cmd).validArg) PRINT_INVALID_COMMAND
 
 //a type used to represent a command
 typedef enum {
@@ -87,8 +87,6 @@ bool spParserIsInt(const char* str);
  *              is valid
  *   arg      - the integer argument in case validArg is set to true
  */
-
-bool spParserIsAtoH(const char* str);
 
 SPSettingCommand spSettingsParser(const char* str);
 

@@ -26,19 +26,38 @@ bool isConsole;
 
 //Definitions
 #define SP_GAMEBOARD_SIZE 8
-#define SP_GAME_TIE_SYMBOL '-'
 #define SP_GAME_EMPTY_ENTRY '_'
 #define SP_GAME_COLOR_BOTH '&'
 
 //reference defines
 #define WHITE SP_USER_COLOR_WHITE
 #define BLACK SP_USER_COLOR_BLACK
+/**
+ * Returns the opposite to the current player of the specified game.
+ * @param C - a color
+ * @return
+ * WHITE - if it's black
+ * BLACK - if it's white
+ */
 #define invColor(C) ((C)==WHITE? BLACK:WHITE)
-#define getColor(P) (islower(P)? WHITE:BLACK)
-#define changeColor(GAME) (GAME->settings->curr_turn = invColor(GAME->settings->curr_turn))
-#define MAX(a,b) (((a)>(b)) ? a : b)
-#define MIN(a,b) (((a)<(b)) ? a : b)
+/**
+ * Returns the current player of the specified piece. assuming it is a game piece.
+ * @param P - a color
+ * @return
+ * WHITE - if it's a white turn
+ * BLACK - if it's a black turn
+ */
+#define getColor(P) (islower(P)? WHITE: BLACK)
+/**
+ * Inverts the current player of the specified game.
+ * @param GAME - the source game
+ * @return
+ */
+#define changeColor(GAME) ((GAME)->settings->curr_turn = invColor((GAME)->settings->curr_turn))
 
+/**
+ * Defines for all pieces, self explanatory.
+ */
 #define W_PAWN 'm'
 #define B_PAWN 'M'
 #define W_BISHOP 'b'
@@ -169,16 +188,6 @@ bool spGameIsValidMove(SPGame* src, int srcRow , int srcCol , int desRow, int de
  *
  */
 SP_GAME_MESSAGE spGamePrintBoard(SPGame* src);
-
-/**
- * Returns the current player of the specified game.
- * @param src - the source game
- * @return
- * SP_GAME_PLAYER_1_SYMBOL - if it's player one's turn
- * SP_GAME_PLAYER_2_SYMBOL - if it's player two's turn
- * SP_GAME_EMPTY_ENTRY     - otherwise
- */
-char spGameGetCurrentPlayer(SPGame* src);
 
 /**
 * Checks if there's a winner in the specified game status. The function returns either

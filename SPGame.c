@@ -244,7 +244,6 @@ bool spGameTileIsThreatened(SPGame* game , SPMove* move){
     spMovesListDestroy(mlst);
     spGameDestroy(movedGame);
     return false;
-
 }
 
 int spGameSaveHandler(SPGame *game, char *fpath){

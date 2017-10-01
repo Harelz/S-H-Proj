@@ -67,10 +67,10 @@ SPGameCommand spGameParser(const char* str){
 	else if (spcmd.cmd == SP_MOVE){
 		SPTile* fromTile = spParseTile(token);
 		token = strtok(NULL , " \t\r\n");
-		char* s = token;
+		char* str = token;
 		token = strtok(NULL , " \t\r\n");
 		SPTile* toTile = spParseTile(token);
-		if (fromTile == NULL || strcmp(s,"to") != 0 || toTile == NULL)
+		if (fromTile == NULL || strcmp(str,"to") != 0 || toTile == NULL)
 			spcmd.cmd = SP_GINVALID_LINE;
 		else{
 			SPMove* totMove = spCreateMoveFromTile(fromTile, toTile);
@@ -94,7 +94,7 @@ SPSettingCommand spSettingsParser(const char* str){
 		spcmd.cmd = SP_SINVALID_LINE;
 		return spcmd;
 	}
-	char* token = (char*)strtok(s, " \t\r\n");
+	char* token = strtok(s, " \t\r\n");
 	if(token == NULL){
 		spcmd.cmd = SP_SINVALID_LINE;
 		return spcmd;
@@ -117,7 +117,7 @@ SPSettingCommand spSettingsParser(const char* str){
 		spcmd.cmd = SP_START;
 	else
 		spcmd.cmd = SP_SINVALID_LINE;
-	token = (char*)strtok(NULL , " \t\r\n");
+	token = strtok(NULL , " \t\r\n");
 	if(token == NULL) {
         spcmd.arg = -1;
         return spcmd;
