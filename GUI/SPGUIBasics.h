@@ -36,12 +36,10 @@
  * enum describes the diffrent buttons' type.
  */
 typedef enum {
-	//main window
 	BUTTON_MAIN_NEW_GAME,
 	BUTTON_MAIN_LOAD,
 	BUTTON_MAIN_EXIT,
 
-	//load window
 	BUTTON_LOAD_SLOT0,
 	BUTTON_LOAD_SLOT1,
 	BUTTON_LOAD_SLOT2,
@@ -50,7 +48,6 @@ typedef enum {
 	BUTTON_LOAD_LOAD,
 	BUTTON_LOAD_BACK,
 
-	//set window
 	BUTTON_SET_GAME_MODE,
 	BUTTON_SET_ONE_PLAYER,
 	BUTTON_SET_TWO_PLAYER,
@@ -65,7 +62,6 @@ typedef enum {
 	BUTTON_SET_BACK,
 	BUTTON_SET_START,
 
-	//game window
 	BUTTON_GAME_RESTART,
 	BUTTON_GAME_SAVE,
 	BUTTON_GAME_LOAD,
@@ -73,7 +69,6 @@ typedef enum {
 	BUTTON_GAME_MAIN_MENU,
 	BUTTON_GAME_EXIT,
 
-	//no button
 	NO_BUTTON
 
 } SPGUI_BUTTON_TYPE;
@@ -102,14 +97,14 @@ Button* createButton(SDL_Renderer* windowRender, const char* activeImage,
 		const char* inactiveImage, SDL_Rect* location, bool visible,
 		bool active, SPGUI_BUTTON_TYPE type);
 Button** createButtons(SDL_Renderer* windowRender, const char* activeImages[],
-		const char* inactiveImages[], int xBtns[], int yBtns[], bool visible[],
-		bool active[], SPGUI_BUTTON_TYPE types[], int numOfBtns);
+		const char* inactiveImages[], int xVals[], int yVals[], bool visible[],
+		bool active[], SPGUI_BUTTON_TYPE types[], int numOfButtons);
 
 /*
  * function destroys all memory related to button.
  */
 void destroyButton(Button* src);
-void destroyButtons(Button** buttons, int numOfBtns);
+void destroyButtons(Button** buttons, int numOfButtons);
 
 /*
  * function draws a button according to it's window

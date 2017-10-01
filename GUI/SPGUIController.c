@@ -1,7 +1,7 @@
 #include "SPGUIController.h"
 
 int MainGUIManager() {
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) { //SDL2 INIT
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		printf("ERROR: unable to init SDL: %s\n", SDL_GetError());
 		return 1;
 	}
@@ -43,8 +43,8 @@ void spControllerDestroy(SPGUIController *src) {
 		return;
 	if (src->activeWindow == SPGUI_GAME_WINDOW)
 		spGameWindowDestroy(src->gameWindow);
-	else if (src->activeWindow == SPGUI_SET_WINDOW)
-		spSetWindowDestroy(src->settingsWindow);
+	else if (src->activeWindow == SPGUI_SETTINGS_WINDOW)
+		spSettingsWindowDestroy(src->settingsWindow);
 	else if (src->activeWindow == SPGUI_LOAD_WINDOW)
 		spLoadWindowDestroy(src->loadWindow);
 	spMainWindowDestroy(src->mainWindow);
@@ -58,8 +58,8 @@ void spControllerDraw(SPGUIController *src, SDL_Event *event) {
 		spMainWindowDraw(src->mainWindow);
 	else if (src->activeWindow == SPGUI_GAME_WINDOW)
 		spGameWindowDraw(src->gameWindow, event);
-	else if (src->activeWindow == SPGUI_SET_WINDOW)
-		spSetWindowDraw(src->settingsWindow);
+	else if (src->activeWindow == SPGUI_SETTINGS_WINDOW)
+		spSettingsWindowDraw(src->settingsWindow);
 	else if (src->activeWindow == SPGUI_LOAD_WINDOW)
 		spLoadWindowDraw(src->loadWindow);
 }
@@ -79,8 +79,8 @@ SPGUI_CONTROLLER_EVENT spControllerEventHandler(SPGUIController *src, SDL_Event 
 		SPGUI_LOAD_EVENT loadEvent = spLoadWindowEventHandler(src->loadWindow, event);
 		spControllerDraw(src, event);
 		return spControllerHandleLoadEvent(src, loadEvent);
-	} else if (src->activeWindow == SPGUI_SET_WINDOW) {
-		SPGUI_SET_EVENT setEvent = spSetWindowEventHandler(src->settingsWindow, event);
+	} else if (src->activeWindow == SPGUI_SETTINGS_WINDOW) {
+		SPGUI_SETTINGS_EVENT setEvent = spSettingsWindowEventHandler(src->settingsWindow, event);
 		spControllerDraw(src, event);
 		return spControllerHandleSetEvent(src, setEvent);
 	}
@@ -92,12 +92,12 @@ SPGUI_CONTROLLER_EVENT spControllerHandleMainEvent(SPGUIController *src, SPGUI_M
 		return SPGUI_CONTROLLER_EVENT_NONE;
 	if (event == SPGUI_MAIN_NEW_GAME) {
 		SDL_HideWindow(src->mainWindow->mainWindow);
-		src->settingsWindow = spSetWindowCreate();
+		src->settingsWindow = spSettingsWindowCreate();
 		if (src->settingsWindow == NULL) {
 			printf("couldn't create settings window\n");
 			return SPGUI_CONTROLLER_EVENT_QUIT;
 		}
-		src->activeWindow = SPGUI_SET_WINDOW;
+		src->activeWindow = SPGUI_SETTINGS_WINDOW;
 		src->previousWindow = SPGUI_MAIN_WINDOW;
 	}
 	if (event == SPGUI_MAIN_LOAD) {
@@ -191,27 +191,27 @@ SPGUI_CONTROLLER_EVENT spControllerHandleLoadEvent(SPGUIController *src, SPGUI_L
 
 }
 
-SPGUI_CONTROLLER_EVENT spControllerHandleSetEvent(SPGUIController *src, SPGUI_SET_EVENT event) {
+SPGUI_CONTROLLER_EVENT spControllerHandleSetEvent(SPGUIController *src, SPGUI_SETTINGS_EVENT event) {
 	if (!src)
 		return SPGUI_CONTROLLER_EVENT_NONE;
-	if (event == SPGUI_SET_BACK) {
-		SDL_HideWindow(src->settingsWindow->setWindow);
+	if (event == SPGUI_SETTINGS_BACK) {
+		SDL_HideWindow(src->settingsWindow->settingsWindow);
 		SDL_ShowWindow(src->mainWindow->mainWindow);
 		src->activeWindow = SPGUI_MAIN_WINDOW;
-		src->previousWindow = SPGUI_SET_WINDOW;
+		src->previousWindow = SPGUI_SETTINGS_WINDOW;
 	}
-	if (event == SPGUI_SET_START) {
-		SDL_HideWindow(src->settingsWindow->setWindow);
+	if (event == SPGUI_SETTINGS_START) {
+		SDL_HideWindow(src->settingsWindow->settingsWindow);
 		src->gameWindow = spGameWindowCreate(src->settingsWindow->game);
 		if (src->gameWindow == NULL) {
 			printf("couldn't create game window\n");
 			return SPGUI_CONTROLLER_EVENT_QUIT;
 		}
-		spSetWindowDestroy(src->settingsWindow);
+		spSettingsWindowDestroy(src->settingsWindow);
 		src->activeWindow = SPGUI_GAME_WINDOW;
-		src->previousWindow = SPGUI_SET_WINDOW;
+		src->previousWindow = SPGUI_SETTINGS_WINDOW;
 	}
-	if (event == SPGUI_SET_QUIT)
+	if (event == SPGUI_SETTINGS_QUIT)
 		return SPGUI_CONTROLLER_EVENT_QUIT;
 	return SPGUI_CONTROLLER_EVENT_NONE;
 }

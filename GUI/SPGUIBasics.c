@@ -22,9 +22,8 @@ Button* createButton(SDL_Renderer* windowRender, const char* activeImage,
 			|| inactiveImage == NULL)
 		return NULL;
 	Button* res = (Button*) malloc(sizeof(Button));
-	SDL_Surface* loadingSurface = SDL_LoadBMP(activeImage); //We use the surface as a temp var
+	SDL_Surface* loadingSurface = SDL_LoadBMP(activeImage);
 	SDL_Texture* activeTexture = SDL_CreateTextureFromSurface(windowRender, loadingSurface);
-	//loading active image
 	if (res == NULL || loadingSurface == NULL || activeTexture == NULL) {
 		printf("Could not create a surface: %s\n", activeImage);
 		SDL_FreeSurface(loadingSurface);
@@ -32,9 +31,8 @@ Button* createButton(SDL_Renderer* windowRender, const char* activeImage,
 		free(res);
 		return NULL;
 	}
-	SDL_FreeSurface(loadingSurface); //Surface is not actually needed after texture is created
-	//loading inactive image
-	SDL_Surface* loadingSurface2 = SDL_LoadBMP(inactiveImage); //We use the surface as a temp var
+	SDL_FreeSurface(loadingSurface);
+	SDL_Surface* loadingSurface2 = SDL_LoadBMP(inactiveImage);
 	SDL_Texture* inactiveTexture = SDL_CreateTextureFromSurface(windowRender,
 			loadingSurface2);
 	if (res == NULL || loadingSurface2 == NULL || inactiveTexture == NULL) {
@@ -45,7 +43,7 @@ Button* createButton(SDL_Renderer* windowRender, const char* activeImage,
 		free(res);
 		return NULL;
 	}
-	SDL_FreeSurface(loadingSurface2); //Surface is not actually needed after texture is created
+	SDL_FreeSurface(loadingSurface2);
 	res->windowRenderer = windowRender;
 	res->activeTexture = activeTexture;
 	res->inactiveTexture = inactiveTexture;
@@ -80,19 +78,15 @@ void drawButton(Button* src) {
 }
 
 Button** createButtons(SDL_Renderer* windowRender, const char* activeImages[],
-		const char* inactiveImages[], int xBtns[], int yBtns[], bool visible[],
-		bool active[], SPGUI_BUTTON_TYPE types[], int numOfBtns) {
-
-	//maybe more
+		const char* inactiveImages[], int xVals[], int yVals[], bool visible[],
+		bool active[], SPGUI_BUTTON_TYPE types[], int numOfButtons) {
 	if (windowRender == NULL)
 		return NULL;
-
-	Button** buttons = (Button**) malloc(sizeof(Button*) * numOfBtns);
+	Button** buttons = (Button**) malloc(sizeof(Button*) * numOfButtons);
 	if (buttons == NULL)
 		return NULL;
-
-	for (int i = 0; i < numOfBtns; i++) {
-		SDL_Rect rec = { .x = xBtns[i], .y = yBtns[i], .h = BUTTON_H, .w = BUTTON_W};
+	for (int i = 0; i < numOfButtons; i++) {
+		SDL_Rect rec = { .x = xVals[i], .y = yVals[i], .h = BUTTON_H, .w = BUTTON_W};
 		buttons[i] = createButton(windowRender, activeImages[i], inactiveImages[i],
 							   &rec, visible[i], active[i], types[i]);
 		if (buttons[i] == NULL) {
@@ -106,10 +100,10 @@ Button** createButtons(SDL_Renderer* windowRender, const char* activeImages[],
 	return buttons;
 }
 
-void destroyButtons(Button** buttons, int numOfBtns) {
+void destroyButtons(Button** buttons, int numOfButtons) {
 	if(buttons == NULL)
 		return;
-	for(int i = 0; i < numOfBtns; i++)
+	for(int i = 0; i < numOfButtons; i++)
 		destroyButton(buttons[i]);
 }
 
@@ -133,29 +127,6 @@ void promoteSlots() {
 		remove(SAVE5);
 	for(int i = numOfSaves-2; i>=0 ; i--)
 		rename(savePaths[i], savePaths[i+1]);
-	/*
-	int numOfSavedSlots = countSavedFiles();
-	int ind = numOfSavedSlots - 1;
-	if (numOfSavedSlots == NUM_OF_SAVES) {
-		remove(SAVE5);
-		ind--;
-	}
-	if (ind >= 3) {
-		rename(SAVE4, SAVE5);
-		ind--;
-	}
-	if (ind >= 2) {
-		rename(SAVE3, SAVE4);
-		ind--;
-	}
-	if (ind >= 1) {
-		rename(SAVE2, SAVE3);
-		ind--;
-	}
-	if (ind >= 0) {
-		rename(SAVE1, SAVE2);
-		ind--;
-	}*/
 }
 SPGUI_BUTTON_TYPE getClickedButtonType(Button **buttons, int numOfButtons, SDL_Event *event, bool checkActive) {
 	SDL_Point point;

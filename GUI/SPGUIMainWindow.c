@@ -21,7 +21,6 @@ SPGUIMainWindow* spMainWindowCreate() {
 		printf("Could not create window: %s\n", SDL_GetError());
 		return NULL;
 	}
-	res->numOfButtons = NUM_OF_MAIN_BUTTONS;
 	const char* activeImages[NUM_OF_MAIN_BUTTONS] = { ACTIVE_BMP_PATH(new_game), ACTIVE_BMP_PATH(
 			load), ACTIVE_BMP_PATH(exit) };
 
@@ -29,15 +28,15 @@ SPGUIMainWindow* spMainWindowCreate() {
 			INACTIVE_BMP_PATH(new_game), INACTIVE_BMP_PATH(load),
 			INACTIVE_BMP_PATH(exit) };
 
-	int xBtns[NUM_OF_MAIN_BUTTONS] = { 125, 125, 125 };
-	int yBtns[NUM_OF_MAIN_BUTTONS] = { 63, 176, 289 };
+	int xVals[NUM_OF_MAIN_BUTTONS] = { 125, 125, 125 };
+	int yVals[NUM_OF_MAIN_BUTTONS] = { 63, 176, 289 };
 	bool visible[NUM_OF_MAIN_BUTTONS] = { true, true, true };
 	bool active[NUM_OF_MAIN_BUTTONS] = { true, true, true };
 	SPGUI_BUTTON_TYPE types[NUM_OF_MAIN_BUTTONS] = { BUTTON_MAIN_NEW_GAME,
 			BUTTON_MAIN_LOAD, BUTTON_MAIN_EXIT };
 
 	res->buttons = createButtons(res->mainRenderer, activeImages, inactiveImages,
-			xBtns, yBtns, visible, active, types, res->numOfButtons);
+			xVals, yVals, visible, active, types, NUM_OF_MAIN_BUTTONS);
 
 	if (res->buttons == NULL) {
 		SDL_DestroyRenderer(res->mainRenderer);
@@ -52,7 +51,7 @@ void spMainWindowDestroy(SPGUIMainWindow* src) {
 		return;
 
 	if (src->buttons != NULL)
-		destroyButtons(src->buttons, src->numOfButtons);
+		destroyButtons(src->buttons, NUM_OF_MAIN_BUTTONS);
 
 	if (src->mainRenderer != NULL)
 		SDL_DestroyRenderer(src->mainRenderer);
@@ -69,7 +68,7 @@ void spMainWindowDraw(SPGUIMainWindow* src) {
 
 	SDL_SetRenderDrawColor(src->mainRenderer, 40, 40, 40, 0);
 	SDL_RenderClear(src->mainRenderer);
-	for (int i = 0; i < src->numOfButtons; i++)
+	for (int i = 0; i < NUM_OF_MAIN_BUTTONS; i++)
 		drawButton(src->buttons[i]);
 	SDL_RenderPresent(src->mainRenderer);
 }
@@ -77,15 +76,15 @@ void spMainWindowDraw(SPGUIMainWindow* src) {
 SPGUI_MAIN_EVENT spMainWindowEventHandler(SPGUIMainWindow *src, SDL_Event *event) {
 	if (!src || !event)
 		return SPGUI_MAIN_INVALID_ARGUMENT;
-	SPGUI_BUTTON_TYPE btn = NO_BUTTON;
+	SPGUI_BUTTON_TYPE button = NO_BUTTON;
 	switch (event->type) {
 	case SDL_MOUSEBUTTONUP:
-		btn = getClickedButtonType(src->buttons, src->numOfButtons, event, false);
-		if (btn == BUTTON_MAIN_NEW_GAME)
+		button = getClickedButtonType(src->buttons, NUM_OF_MAIN_BUTTONS, event, false);
+		if (button == BUTTON_MAIN_NEW_GAME)
 			return SPGUI_MAIN_NEW_GAME;
-		else if (btn == BUTTON_MAIN_LOAD)
+		else if (button == BUTTON_MAIN_LOAD)
 			return SPGUI_MAIN_LOAD;
-		else if (btn == BUTTON_MAIN_EXIT)
+		else if (button == BUTTON_MAIN_EXIT)
 			return SPGUI_MAIN_EXIT;
 		break;
 	case SDL_WINDOWEVENT:

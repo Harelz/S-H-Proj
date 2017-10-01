@@ -3,9 +3,9 @@
 SPGUIGameWindow* spGameWindowCreate(SPGame* gameCopy) {
 	SPGUIGameWindow* res = (SPGUIGameWindow*) calloc(sizeof(SPGUIGameWindow),
 			sizeof(char));
-	SDL_Surface* loadingSurfaceWhite = NULL; //Used as temp surface
-	SDL_Surface* loadingSurfaceBlack = NULL; //Used as temp surface
-	SDL_Surface* loadingSurfaceGrid = NULL; //loading surface grid, Used as temp surface
+	SDL_Surface* loadingSurfaceWhite = NULL;
+	SDL_Surface* loadingSurfaceBlack = NULL;
+	SDL_Surface* loadingSurfaceGrid = NULL;
 	if (res == NULL) {
 		printf("Couldn't create SPGUIGameWindow struct\n");
 		return NULL;
@@ -26,8 +26,6 @@ SPGUIGameWindow* spGameWindowCreate(SPGame* gameCopy) {
 		printf("Could not create window: %s\n", SDL_GetError());
 		return NULL;
 	}
-
-	//create panel array
 	res->numOfPanel = NUM_OF_GAME_BUTTONS;
 	const char* activeImages[NUM_OF_GAME_BUTTONS] = { ACTIVE_BMP_PATH(restart), ACTIVE_BMP_PATH(
 			save), ACTIVE_BMP_PATH(load), ACTIVE_BMP_PATH(undo), ACTIVE_BMP_PATH(main_menu), ACTIVE_BMP_PATH(
@@ -37,8 +35,8 @@ SPGUIGameWindow* spGameWindowCreate(SPGame* gameCopy) {
 			INACTIVE_BMP_PATH(save), INACTIVE_BMP_PATH(load), INACTIVE_BMP_PATH(undo), INACTIVE_BMP_PATH(
 					main_menu), INACTIVE_BMP_PATH(exit) };
 
-	int xBtns[NUM_OF_GAME_BUTTONS] = { 25, 25, 25, 25, 25, 25 };
-	int yBtns[NUM_OF_GAME_BUTTONS] = { 40, 120, 200, 280, 490, 570 };
+	int xVals[NUM_OF_GAME_BUTTONS] = { 25, 25, 25, 25, 25, 25 };
+	int yVals[NUM_OF_GAME_BUTTONS] = { 40, 120, 200, 280, 490, 570 };
 
 	bool visible[NUM_OF_GAME_BUTTONS] = { true, true, true, true, true, true };
 
@@ -49,14 +47,13 @@ SPGUIGameWindow* spGameWindowCreate(SPGame* gameCopy) {
 			BUTTON_GAME_MAIN_MENU, BUTTON_GAME_EXIT };
 
 	res->panel = createButtons(res->gameRenderer, activeImages, inactiveImages,
-			xBtns, yBtns, visible, active, types, res->numOfPanel);
+			xVals, yVals, visible, active, types, res->numOfPanel);
 
 	if (res->panel == NULL) {
 		SDL_DestroyRenderer(res->gameRenderer);
 		SDL_DestroyWindow(res->gameWindow);
 		free(res);
 	}
-	//Create a chess_board texture:
 	loadingSurfaceGrid = SDL_LoadBMP(ACTIVE_BMP_PATH(chess_grid));
 	if (loadingSurfaceGrid == NULL) {
 		printf("Could not create a surface: %s\n", SDL_GetError());
@@ -72,8 +69,7 @@ SPGUIGameWindow* spGameWindowCreate(SPGame* gameCopy) {
 		free(res);
 		return NULL;
 	}
-	SDL_FreeSurface(loadingSurfaceGrid); //We finished with the surface -> delete it
-	//create white & black pieces
+	SDL_FreeSurface(loadingSurfaceGrid);
 	const char* whiteImages[NUM_OF_DIFF_PIECES] = { ACTIVE_BMP_PATH(white_pawn),
 			ACTIVE_BMP_PATH(white_knight), ACTIVE_BMP_PATH(white_bishop), ACTIVE_BMP_PATH(white_rook),
 			ACTIVE_BMP_PATH(white_queen), ACTIVE_BMP_PATH(white_king) };
@@ -122,8 +118,8 @@ SPGUIGameWindow* spGameWindowCreate(SPGame* gameCopy) {
 		SDL_FreeSurface(loadingSurfaceWhite);
 		SDL_FreeSurface(loadingSurfaceBlack);
 	}
-	res->game = spGameCopy(gameCopy); //copy the of the game sent
-	res->isSaved = false; //the game is not saved yet
+	res->game = spGameCopy(gameCopy);
+	res->isSaved = false;
 	res->chosenPiece[0] = -1;
 	res->chosenPiece[1] = -1;
 	return res;
@@ -168,13 +164,13 @@ void spGameWindowDraw(SPGUIGameWindow* src, SDL_Event* event) {
 		drawButton(src->panel[i]);
 
 	SDL_Rect rec = { .x = PANEL_OFFSET, .y = 0, .w = GUI_BOARD_SIZE, .h =
-	GUI_BOARD_SIZE }; //rect of chess_grid
+	GUI_BOARD_SIZE };
 	SDL_RenderCopy(src->gameRenderer, src->chessGrid, NULL, &rec);
 
-	//fill the board acoording to pieces
+
 	for (int i = 0; i < SP_GAMEBOARD_SIZE; i++) {
 		for (int j = 0; j < SP_GAMEBOARD_SIZE; j++) {
-			if (i == src->chosenPiece[0] && j == src->chosenPiece[1]) //the chosen piece needs not to be drawn at his location
+			if (i == src->chosenPiece[0] && j == src->chosenPiece[1])
 				continue;
 			else {
 				rec.x = (PANEL_OFFSET + j * (GUI_BOARD_SIZE / SP_GAMEBOARD_SIZE)) + 5;
@@ -188,10 +184,10 @@ void spGameWindowDraw(SPGUIGameWindow* src, SDL_Event* event) {
 
 		}
 	}
-	if (event != NULL && src->chosenPiece[0] != -1) { //piece was selected, move it with mouse
+	if (event != NULL && src->chosenPiece[0] != -1) {
 		int mouseX = event->motion.x;
 		int mouseY = event->motion.y;
-		rec.x = mouseX - (int) ((GUI_BOARD_SIZE / SP_GAMEBOARD_SIZE) / 2); //piece is centered according to mouse
+		rec.x = mouseX - (int) ((GUI_BOARD_SIZE / SP_GAMEBOARD_SIZE) / 2);
 		rec.y = mouseY - (int) ((GUI_BOARD_SIZE / SP_GAMEBOARD_SIZE) / 2);
 		rec.h = (GUI_BOARD_SIZE / SP_GAMEBOARD_SIZE) - 15;
 		rec.w = (GUI_BOARD_SIZE / SP_GAMEBOARD_SIZE) - 15;
@@ -248,9 +244,9 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 	if (!src || !event)
 		return SPGUI_GAME_INVALID_ARG;
 	if (src->game->settings->game_mode == SP_MODE_2P)
-		src->panel[3]->active = false; // undo button deactivated
+		src->panel[3]->active = false;
 	else if (!spQueueIsEmpty(src->game->history))
-		src->panel[3]->active = true; // undo button activated
+		src->panel[3]->active = true;
 	if (src->game->settings->game_mode == SP_MODE_1P &&
 		src->game->settings->p1_color == BLACK && src->game->settings->curr_turn == WHITE) {
 		spGameWindowDraw(src, event);
@@ -260,20 +256,19 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 			return msg;
 	}
 	if (event->type == SDL_MOUSEBUTTONDOWN || event->type == SDL_MOUSEBUTTONUP) {
-		if (event->button.x > PANEL_OFFSET) { //drag n drop
+		if (event->button.x > PANEL_OFFSET) {
 			int from[2] = {event->button.x, event->button.y};
-			computeLocFromGui(from); //change from - gui location to console location
+			computeLocFromGui(from);
 			if (event->type == SDL_MOUSEBUTTONDOWN
 				&& getColor(src->game->gameBoard[from[0]][from[1]]) == src->game->settings->curr_turn) {
 				src->chosenPiece[0] = from[0];
 				src->chosenPiece[1] = from[1];
 			} else if (event->type == SDL_MOUSEBUTTONUP && src->chosenPiece[0] != -1) {
-				//check if legal move, change chosenPiece check undo checkCheck, not saved = true
 				int to[2] = {event->button.x, event->button.y};
 				computeLocFromGui(to);
 				SPMove *myMove = spCreateMove(src->chosenPiece[0], src->chosenPiece[1], to[0], to[1]);
-                int status;
-				if ((status = spGameMoveHandler(src->game, myMove)) != 3) { // need to check if success
+                int status = spGameMoveHandler(src->game, myMove);
+				if (status != 3) {
 					src->isSaved = false;
 					src->chosenPiece[0] = -1;
 					src->chosenPiece[1] = -1;
@@ -304,11 +299,11 @@ SPGUI_GAME_EVENT spGameWindowEventHandler(SPGUIGameWindow *src, SDL_Event *event
 	}
 		return SPGUI_GAME_NONE;
 	}
-SPGUI_GAME_EVENT checkStatusForUserGui(SPGUIGameWindow* src) { // edited
+SPGUI_GAME_EVENT checkStatusForUserGui(SPGUIGameWindow* src) {
 	if (spGameIsMate(src->game)) {
-		if (src->game->settings->curr_turn == BLACK) // Black Player Wins!
+		if (src->game->settings->curr_turn == BLACK)
 			return SPGUI_GAME_PLAYER_1_CHECKMATE;
-		else { //White Player Wins!
+		else {
 			return SPGUI_GAME_PLAYER_2_CHECKMATE;
 		}
 	}
@@ -330,17 +325,16 @@ SPGUI_GAME_EVENT checkStatusForUserGui(SPGUIGameWindow* src) { // edited
 SPGUI_GAME_EVENT spStatusAfterMove(SPGUI_GAME_EVENT msg, SPGUIGameWindow* src, SDL_Event* event) {
 	if (msg == SPGUI_GAME_PLAYER_1_CHECKMATE
 			|| msg == SPGUI_GAME_PLAYER_2_CHECKMATE
-			|| msg == SPGUI_GAME_TIE) { //terminal state
+			|| msg == SPGUI_GAME_TIE) {
 		return msg;
 	} else if (msg == SPGUI_GAME_PLAYER_1_CHECK
 			|| msg == SPGUI_GAME_PLAYER_2_CHECK) {
-		//draw the board before show "check" msg
+
 		spGameWindowDraw(src, event);
 		if (msg == SPGUI_GAME_PLAYER_1_CHECK)
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "CHECK!",
 					"White king is threatend!", NULL);
 		else
-			//msg == SPGUI_GAME_PLAYER_2_CHECK
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "CHECK!",
 					"Black king is threatend!", NULL);
 	}
@@ -348,16 +342,16 @@ SPGUI_GAME_EVENT spStatusAfterMove(SPGUI_GAME_EVENT msg, SPGUIGameWindow* src, S
 }
 
 SPGUI_GAME_EVENT spPanelHandleEvent(SPGUIGameWindow* src, SDL_Event* event) {
-	SPGUI_BUTTON_TYPE btn = NO_BUTTON;
-	btn = getClickedButtonType(src->panel, src->numOfPanel, event, true);
-	if (btn == BUTTON_GAME_RESTART) {
+	SPGUI_BUTTON_TYPE button = NO_BUTTON;
+	button = getClickedButtonType(src->panel, src->numOfPanel, event, true);
+	if (button == BUTTON_GAME_RESTART) {
 		SPGame* restarted = spGameCreate(spSettingsCopy(src->game->settings));
 		spGameDestroy(src->game);
 		src->game = restarted;
-		if(src->game->settings->game_mode == SP_MODE_1P) src->panel[3]->active = false; //de-activate undo btn
+		if(src->game->settings->game_mode == SP_MODE_1P) src->panel[3]->active = false;
 		src->isSaved = false;
 		return SPGUI_GAME_RESTART;
-	} else if (btn == BUTTON_GAME_SAVE) {
+	} else if (button == BUTTON_GAME_SAVE) {
 		promoteSlots();
 		if (spGameSaveHandler(src->game, SAVE1) == -1) {
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "ERROR", "Unable to save game", NULL);
@@ -366,21 +360,19 @@ SPGUI_GAME_EVENT spPanelHandleEvent(SPGUIGameWindow* src, SDL_Event* event) {
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SUCCESS", "game was successfully saved!", NULL);
 		src->isSaved = true;
 		return SPGUI_GAME_SAVE;
-	} else if (btn == BUTTON_GAME_LOAD) {
+	} else if (button == BUTTON_GAME_LOAD) {
 		return SPGUI_GAME_LOAD;
-	} else if (btn == BUTTON_GAME_UNDO) {
+	} else if (button == BUTTON_GAME_UNDO) {
 		free(spGameUndoHandler(src->game));
-		//if there is no history, de-activate undo btn
 		if (spQueueIsEmpty(src->game->history))
 			src->panel[3]->active = false;
 		src->isSaved = false;
 		return SPGUI_GAME_UNDO;
-	} else if (btn == BUTTON_GAME_MAIN_MENU) {
+	} else if (button == BUTTON_GAME_MAIN_MENU) {
 		if (src->isSaved == false) {
-			//show SDL_ShowMessageBox asking the user if he wants to save
 			int choice = popUpSave();
 			if (choice != 2) {
-				if (choice == 1) { //want to save
+				if (choice == 1) {
 					promoteSlots();
 					if (spGameSaveHandler(src->game, SAVE1) == -1) {
 						SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "ERROR",
@@ -395,16 +387,14 @@ SPGUI_GAME_EVENT spPanelHandleEvent(SPGUIGameWindow* src, SDL_Event* event) {
 				}
 				return SPGUI_GAME_MAIN_MENU;
 			} else
-				//popUpSave() == 2
 				return SPGUI_GAME_NONE;
 		}
 		return SPGUI_GAME_MAIN_MENU;
-	} else if (btn == BUTTON_GAME_EXIT) {
+	} else if (button == BUTTON_GAME_EXIT) {
 		if (src->isSaved == false) {
-			//show SDL_ShowMessageBox asking the user if he wants to save
 			int choice = popUpSave();
 			if (choice != 2) {
-				if (choice == 1) { //want to save
+				if (choice == 1) {
 					promoteSlots();
 					if (spGameSaveHandler(src->game, SAVE1) == -1) {
 						SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "ERROR",
@@ -420,7 +410,6 @@ SPGUI_GAME_EVENT spPanelHandleEvent(SPGUIGameWindow* src, SDL_Event* event) {
 				}
 				return SPGUI_GAME_EXIT;
 			} else
-				//popUpSave() == 2
 				return SPGUI_GAME_NONE;
 		}
 		return SPGUI_GAME_EXIT;

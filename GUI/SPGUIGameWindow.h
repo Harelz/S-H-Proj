@@ -34,7 +34,7 @@ typedef enum {
  * flag indicates whether the game was saved,
  * and if there is a motion piece.
  */
-typedef struct SPGamewin_t {
+typedef struct spguigamewindow_t {
 	SDL_Window* gameWindow;
 	SDL_Renderer* gameRenderer;
 	int numOfPanel;

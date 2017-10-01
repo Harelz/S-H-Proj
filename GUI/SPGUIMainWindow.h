@@ -18,10 +18,9 @@ typedef enum {
 /*
  * structure represents main window.
  */
-typedef struct spchessmainwin_t {
+typedef struct spguimainwindow_t {
 	SDL_Window* mainWindow;
 	SDL_Renderer* mainRenderer;
-	int numOfButtons;
 	Button** buttons;
 
 } SPGUIMainWindow;
@@ -34,6 +33,5 @@ SPGUIMainWindow* spMainWindowCreate();
 void spMainWindowDraw(SPGUIMainWindow* src);
 void spMainWindowDestroy(SPGUIMainWindow* src);
 SPGUI_MAIN_EVENT spMainWindowEventHandler(SPGUIMainWindow *src, SDL_Event *event);
-
 
 #endif /* GRAPHICS_SPCHESSGUIMAINWIN_H_ */

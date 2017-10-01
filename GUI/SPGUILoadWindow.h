@@ -19,11 +19,10 @@ typedef enum {
 /*
  * structur represents a lad window
  */
-typedef struct spchessloadwin_t {
+typedef struct spguiloadwindow_t {
 	SDL_Window* loadWindow;
 	SDL_Renderer* loadRenderer;
-	int numOfBtns;
-	Button** btns;
+	Button** buttons;
 	int slotPicked;
 	SPGame* game;
 } SPGUILoadWindow;
