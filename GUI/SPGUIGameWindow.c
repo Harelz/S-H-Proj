@@ -369,7 +369,7 @@ SPGUI_GAME_EVENT spPanelHandleEvent(SPGUIGameWindow* src, SDL_Event* event) {
 	} else if (btn == BUTTON_GAME_LOAD) {
 		return SPGUI_GAME_LOAD;
 	} else if (btn == BUTTON_GAME_UNDO) {
-		spGameUndoHandler(src->game);
+		free(spGameUndoHandler(src->game));
 		//if there is no history, de-activate undo btn
 		if (spQueueIsEmpty(src->game->history))
 			src->panel[3]->active = false;
