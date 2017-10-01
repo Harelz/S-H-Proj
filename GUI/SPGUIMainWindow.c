@@ -79,7 +79,7 @@ SPGUI_MAIN_EVENT spMainWindowEventHandler(SPGUIMainWindow *src, SDL_Event *event
 	SPGUI_BUTTON_TYPE button = NO_BUTTON;
 	switch (event->type) {
 	case SDL_MOUSEBUTTONUP:
-		button = getClickedButtonType(src->buttons, NUM_OF_MAIN_BUTTONS, event, false);
+		button = getPressedButtonType(src->buttons, NUM_OF_MAIN_BUTTONS, event, false);
 		if (button == BUTTON_MAIN_NEW_GAME)
 			return SPGUI_MAIN_NEW_GAME;
 		else if (button == BUTTON_MAIN_LOAD)

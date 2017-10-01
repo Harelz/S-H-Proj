@@ -103,7 +103,7 @@ SPGUI_SETTINGS_EVENT spSettingsWindowEventHandler(SPGUISettingsWindow *src, SDL_
 	SPGUI_BUTTON_TYPE button;
 	switch (event->type) {
 	case SDL_MOUSEBUTTONUP:
-		button = getClickedButtonType(src->buttons, NUM_OF_SET_BUTTONS, event, true);
+		button = getPressedButtonType(src->buttons, NUM_OF_SET_BUTTONS, event, true);
 		if (button == BUTTON_SET_TWO_PLAYER) {
 			src->game->settings->game_mode = SP_MODE_2P;
 			src->buttons[11]->active = true;

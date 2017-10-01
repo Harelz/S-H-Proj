@@ -4,7 +4,7 @@
 int main(int argc, char* argv[]) {
     if(argc == 2 && strcmp(argv[1], "-g") == 0) { //GUI MODE
         isConsole = false;
-        return MainGUIManager();
+        return MainGUIController();
     }
     else if(argc == 1 || (argc == 2 && strcmp(argv[1], "-c") == 0)) { //DEFAULT MODE - CONSOLE
         isConsole = true;

@@ -7,10 +7,13 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "../SPGame.h"
-
+// button sizes
 #define BUTTON_W 150
 #define BUTTON_H 50
+
 #define NUM_OF_SAVES 5
+
+// files relatives paths
 #ifdef _WIN32
 #define ACTIVE_BMP_PATH(g) "../GUI/images/button_"#g".bmp"
 #define INACTIVE_BMP_PATH(g) "../GUI/images/button_"#g"_F.bmp"
@@ -32,9 +35,7 @@
 
 
 
-/*
- * enum describes the diffrent buttons' type.
- */
+// enum which represents button types
 typedef enum {
 	BUTTON_MAIN_NEW_GAME,
 	BUTTON_MAIN_LOAD,
@@ -74,11 +75,7 @@ typedef enum {
 } SPGUI_BUTTON_TYPE;
 
 
-/*
- * structure represents a button: has windowRenderer, active image,
- * inactive image, location on the window, booleans indicate whether
- * it's visible or not and active or not, and it's enum type.
- */
+// button struct
 typedef struct button_t {
 	SDL_Renderer* windowRenderer;
 	SDL_Texture* activeTexture;
@@ -90,48 +87,74 @@ typedef struct button_t {
 } Button;
 
 
-/*
- * fuction creates a button/buttons set by it's params.
+/**
+ * Creates a new button with the parameters given
+ *
+ * @return
+ * NULL if either a memory allocation failure.
+ * Otherwise, a new button instant is returned.
  */
-Button* createButton(SDL_Renderer* windowRender, const char* activeImage,
-		const char* inactiveImage, SDL_Rect* location, bool visible,
-		bool active, SPGUI_BUTTON_TYPE type);
-Button** createButtons(SDL_Renderer* windowRender, const char* activeImages[],
-		const char* inactiveImages[], int xVals[], int yVals[], bool visible[],
-		bool active[], SPGUI_BUTTON_TYPE types[], int numOfButtons);
+Button* createButton(SDL_Renderer* windowRender, const char* activeImage, const char* inactiveImage,
+					 SDL_Rect* location, bool visible,bool active, SPGUI_BUTTON_TYPE type);
+
+/**
+ * Creates a list of buttons with the parameters given
+ *
+ * @return
+ * NULL if either a memory allocation failure.
+ * Otherwise, a list of buttons is returned.
+ */
+Button** createButtons(SDL_Renderer* windowRender, const char* activeImages[],const char* inactiveImages[],
+		int xVals[], int yVals[], bool visible[],bool active[], SPGUI_BUTTON_TYPE types[], int numOfButtons);
 
 /*
- * function destroys all memory related to button.
+ * free the memory which located by the button
  */
 void destroyButton(Button* src);
+
+/*
+ * free the memory which located by the buttons array
+ */
 void destroyButtons(Button** buttons, int numOfButtons);
 
 /*
- * function draws a button according to it's window
- * renderer and it's rectangle representing it's loaction on the window.
+ * the function draws a button on the window according to the
+ * button's window renderer and its SDL_Rect values
  */
 void drawButton(Button* src);
 
-/*
- * function creates a copy of a rectangle given.
+/**
+ * Copies and returns the SDL_Rect given
+ *
+ * @return
+ * NULL if either a memory allocation failure.
+ * Otherwise, the copied SDL_Rect is returned.
  */
-SDL_Rect* spCopyRect(SDL_Rect* src);
+SDL_Rect* copyRect(SDL_Rect *src);
 
-/*
- * The function counts how many saved games exist (0-5)
+/**
+ * Counts the number of save files in the sev_games folder
+ *
+ * @return
+ * Number of saves that exist.
  */
 int countSavedFiles();
 
 /*
- * The function promote the saved games: each game is promoted to it's next location.
- * In addition the last saved game is removed.
+ * 'logic shift' the saving files' order while deleting the overwriting
+ * the fifth file if neccessery
  */
 void promoteSlots();
-/*
- * The function returns the button's type that was clicked (in the current window).
+
+/**
+ * the function detects the button's type (if exists) that have been clicked in the
+ * event from the buttons array. if checkActive == true, the function detects
+ * only activated buttons in the array
+ *
+ * @return
+ * The type of the pressed button or NO_BUTTON
+ * if no button have been pressed in the event
  */
-SPGUI_BUTTON_TYPE getClickedButtonType(Button **buttons, int numOfButtons, SDL_Event *event, bool checkActive);
-
-
+SPGUI_BUTTON_TYPE getPressedButtonType(Button **buttons, int numOfButtons, SDL_Event *event, bool checkActive);
 
 #endif /* GRAPHICS_SPCHESSGUIBUTTON_H_ */

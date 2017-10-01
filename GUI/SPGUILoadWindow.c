@@ -78,7 +78,7 @@ SPGUI_LOAD_EVENT spLoadWindowEventHandler(SPGUILoadWindow *src, SDL_Event *event
 	SPGUI_BUTTON_TYPE button = NO_BUTTON;
 	switch (event->type) {
 	case SDL_MOUSEBUTTONUP:
-		button = getClickedButtonType(src->buttons, NUM_OF_LOAD_BUTTONS, event, false);
+		button = getPressedButtonType(src->buttons, NUM_OF_LOAD_BUTTONS, event, false);
 		if (button == BUTTON_LOAD_BACK)
 			return SPGUI_LOAD_BACK;
 		if (button >= BUTTON_LOAD_SLOT0 && button <= BUTTON_LOAD_SLOT4) {

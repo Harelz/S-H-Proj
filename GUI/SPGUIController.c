@@ -1,6 +1,6 @@
 #include "SPGUIController.h"
 
-int MainGUIManager() {
+int MainGUIController() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		printf("ERROR: unable to init SDL: %s\n", SDL_GetError());
 		return 1;
@@ -51,7 +51,7 @@ void spControllerDestroy(SPGUIController *src) {
 	free(src);
 }
 
-void spControllerDraw(SPGUIController *src, SDL_Event *event) {
+void spControllerDrawActiveWindow(SPGUIController *src, SDL_Event *event) {
 	if (!src)
 		return;
 	if (src->activeWindow == SPGUI_MAIN_WINDOW)
@@ -69,20 +69,20 @@ SPGUI_CONTROLLER_EVENT spControllerEventHandler(SPGUIController *src, SDL_Event 
 		return SPGUI_CONTROLLER_EVENT_NONE;
 	if (src->activeWindow == SPGUI_MAIN_WINDOW) {
 		SPGUI_MAIN_EVENT mainEvent = spMainWindowEventHandler(src->mainWindow, event);
-		spControllerDraw(src, event);
+		spControllerDrawActiveWindow(src, event);
 		return spControllerHandleMainEvent(src, mainEvent);
 	} else if (src->activeWindow == SPGUI_GAME_WINDOW) {
 		SPGUI_GAME_EVENT gameEvent = spGameWindowEventHandler(src->gameWindow, event);
-		spControllerDraw(src, event);
+		spControllerDrawActiveWindow(src, event);
 		return spControllerHandleGameEvent(src, gameEvent);
 	} else if (src->activeWindow == SPGUI_LOAD_WINDOW) {
 		SPGUI_LOAD_EVENT loadEvent = spLoadWindowEventHandler(src->loadWindow, event);
-		spControllerDraw(src, event);
+		spControllerDrawActiveWindow(src, event);
 		return spControllerHandleLoadEvent(src, loadEvent);
 	} else if (src->activeWindow == SPGUI_SETTINGS_WINDOW) {
 		SPGUI_SETTINGS_EVENT setEvent = spSettingsWindowEventHandler(src->settingsWindow, event);
-		spControllerDraw(src, event);
-		return spControllerHandleSetEvent(src, setEvent);
+		spControllerDrawActiveWindow(src, event);
+		return spControllerHandleSettingsEvent(src, setEvent);
 	}
 	return SPGUI_CONTROLLER_EVENT_NONE;
 }
@@ -191,7 +191,7 @@ SPGUI_CONTROLLER_EVENT spControllerHandleLoadEvent(SPGUIController *src, SPGUI_L
 
 }
 
-SPGUI_CONTROLLER_EVENT spControllerHandleSetEvent(SPGUIController *src, SPGUI_SETTINGS_EVENT event) {
+SPGUI_CONTROLLER_EVENT spControllerHandleSettingsEvent(SPGUIController *src, SPGUI_SETTINGS_EVENT event) {
 	if (!src)
 		return SPGUI_CONTROLLER_EVENT_NONE;
 	if (event == SPGUI_SETTINGS_BACK) {

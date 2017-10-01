@@ -1,6 +1,6 @@
 #include "SPGUIBasics.h"
 
-SDL_Rect* spCopyRect(SDL_Rect* src) {
+SDL_Rect* copyRect(SDL_Rect *src) {
 	if (src == NULL)
 		return NULL;
 
@@ -47,7 +47,7 @@ Button* createButton(SDL_Renderer* windowRender, const char* activeImage,
 	res->windowRenderer = windowRender;
 	res->activeTexture = activeTexture;
 	res->inactiveTexture = inactiveTexture;
-	res->location = spCopyRect(location);
+	res->location = copyRect(location);
 	res->visible = visible;
 	res->active = active;
 	res->type = type;
@@ -128,7 +128,7 @@ void promoteSlots() {
 	for(int i = numOfSaves-2; i>=0 ; i--)
 		rename(savePaths[i], savePaths[i+1]);
 }
-SPGUI_BUTTON_TYPE getClickedButtonType(Button **buttons, int numOfButtons, SDL_Event *event, bool checkActive) {
+SPGUI_BUTTON_TYPE getPressedButtonType(Button **buttons, int numOfButtons, SDL_Event *event, bool checkActive) {
 	SDL_Point point;
 	point.x = event->button.x;
 	point.y = event->button.y;

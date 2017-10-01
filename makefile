@@ -10,7 +10,7 @@ EXEC = chessprog
 
 #objects for exec
 CONSOLE_OBJS =SPGame.o SPMiniMax.o SPParser.o SPSettings.o SPQueue.o SPMoves.o
-GUI_OBJS = SPGUIButton.o SPGUICommon.o SPGUIGameWindow.o SPGUILoadWindow.o SPGUIMainWindow.o SPGUIManager.o SPGUISetWindow.o
+GUI_OBJS = SPGUIBasics.o SPGUIGameWindow.o SPGUILoadWindow.o SPGUIMainWindow.o SPGUIController.o SPGUISettingsWindow.o
 ALL_OBJS = $(CONSOLE_OBJS) $(GUI_OBJS) main.o
 
 #The exec file
@@ -34,23 +34,21 @@ SPMiniMax.o: SPMiniMax.c SPMiniMax.h SPGame.h
 	$(CC) $(COMP_FLAG) -c $*.c
 
 #gui rules
-GUI/SPGUIButton.o: SPGUIButton.c SPGUIButton.h
+GUI/SPGUIBasics.o: SPGUIBasics.c SPGUIBasics.h
 	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
-GUI/SPGUICommon.o: SPGUICommon.c SPGUICommon.h SPGUIButton.h SPGame.h
+GUI/SPGUIMainWindow.o: SPGUIMainWindow.c SPGUIMainWindow.h SPGUIBasics.h
 	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
-GUI/SPGUIMainWindow.o: SPGUIMainWindow.c SPGUIMainWindow.h SPGUICommon.h
+GUI/SPGUILoadWindow.o: SPGUILoadWindow.c SPGUILoadWindow.h SPGUIBasics.h
 	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
-GUI/SPGUILoadWindow.o: SPGUILoadWindow.c SPGUILoadWindow.h SPGUICommon.h
+GUI/SPGUISettingsWindow.o: SPGUISettingsWindow.c SPGUISettingsWindow.h SPGUIBasics.h
 	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
-GUI/SPGUISetWindow.o: SPGUISetWindow.c SPGUISetWindow.h SPGUICommon.h
+GUI/SPGUIGameWindow.o: SPGUIGameWindow.c SPGUIGameWindow.h SPGUIBasics.h
 	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
-GUI/SPGUIGameWindow.o: SPGUIGameWindow.c SPGUIGameWindow.h SPGUICommon.h
-	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
-GUI/SPGUIManager.o: SPGUIManager.c SPGUIManager.h SPGUILoadWindow.h SPGUILoadWindow.h SPGUISetWindow.h SPGUIGameWindow.h
+GUI/SPGUIController.o: SPGUIController.c SPGUIController.h SPGUILoadWindow.h SPGUILoadWindow.h SPGUISettingsWindow.h SPGUIGameWindow.h
 	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
 	
 #main rule
-main.o: main.c SPGame.h SPGUIManager.h
+main.o: main.c SPGame.h SPGUIController.h
 	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
 	
 #clean rule	

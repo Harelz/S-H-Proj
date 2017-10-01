@@ -6,10 +6,7 @@
 #include "SPGUIGameWindow.h"
 #include "SPGUILoadWindow.h"
 
-/*
- * enum represents windows - in order
- * for the manager which functions to activate.
- */
+// enum which represents all the gui windows
 typedef enum {
 	SPGUI_MAIN_WINDOW,
 	SPGUI_GAME_WINDOW,
@@ -18,18 +15,13 @@ typedef enum {
 	SPGUI_NO_WINDOW
 } SPGUI_WINDOW;
 
-/*
- * main events of the gui
- */
+// enum which represents controller events
 typedef enum {
 	SPGUI_CONTROLLER_EVENT_QUIT,
     SPGUI_CONTROLLER_EVENT_NONE,
 } SPGUI_CONTROLLER_EVENT;
 
-/*
- * structure represents the manager - it has a param for each window and enums
- * represent the active and last windows.
- */
+// The Controller struct
 typedef struct spguicontroller_t {
 	SPGUIMainWindow* mainWindow;
 	SPGUISettingsWindow* settingsWindow;
@@ -39,23 +31,72 @@ typedef struct spguicontroller_t {
 	SPGUI_WINDOW previousWindow;
 } SPGUIController;
 
-/*
- * standard controller functions: create, destroy, draw and handle events.
+/**
+ * Creates a Controller with new main, load, settings, and game windows,
+ * and sets the main window as the active one.
+ *
+ * @return
+ * NULL if either a memory allocation failure.
+ * Otherwise, a new Controller is returned.
  */
 SPGUIController* spControllerCreate();
+
+/**
+ * free the memory which located by the controller
+ */
 void spControllerDestroy(SPGUIController *src);
-void spControllerDraw(SPGUIController *src, SDL_Event *event);
+
+/**
+ * Draws the controller's active window
+ */
+void spControllerDrawActiveWindow(SPGUIController *src, SDL_Event *event);
+
+/**
+ * handles the event given , according to the current's active window
+ *
+ * @return
+ * SPGUI_CONTROLLER_EVENT_QUIT - if the handler decides that terminate is needed.
+ * SPGUI_CONTROLLER_EVENT_NONE - otherwise.
+ */
 SPGUI_CONTROLLER_EVENT spControllerEventHandler(SPGUIController *src, SDL_Event *event);
 
-/*
- * functions handle the controller after a specific window
- * event (switch windows, close and create windows etc.)
+/**
+ * handles the event given , if the active window is main window
+ *
+ * @return
+ * SPGUI_CONTROLLER_EVENT_QUIT - if the handler decides that terminate is needed.
+ * SPGUI_CONTROLLER_EVENT_NONE - otherwise.
  */
 SPGUI_CONTROLLER_EVENT spControllerHandleMainEvent(SPGUIController *src, SPGUI_MAIN_EVENT event);
-SPGUI_CONTROLLER_EVENT spControllerHandleSetEvent(SPGUIController *src, SPGUI_SETTINGS_EVENT event);
+
+/**
+ * handles the event given , if the active window is settings window
+ *
+ * @return
+ * SPGUI_CONTROLLER_EVENT_QUIT - if the handler decides that terminate is needed.
+ * SPGUI_CONTROLLER_EVENT_NONE - otherwise.
+ */
+SPGUI_CONTROLLER_EVENT spControllerHandleSettingsEvent(SPGUIController *src, SPGUI_SETTINGS_EVENT event);
+
+/**
+ * handles the event given , if the active window is game window
+ *
+ * @return
+ * SPGUI_CONTROLLER_EVENT_QUIT - if the handler decides that terminate is needed.
+ * SPGUI_CONTROLLER_EVENT_NONE - otherwise.
+ */
 SPGUI_CONTROLLER_EVENT spControllerHandleGameEvent(SPGUIController *src, SPGUI_GAME_EVENT event);
+
+/**
+ * handles the event given , if the active window is load window
+ *
+ * @return
+ * SPGUI_CONTROLLER_EVENT_QUIT - if the handler decides that terminate is needed.
+ * SPGUI_CONTROLLER_EVENT_NONE - otherwise.
+ */
 SPGUI_CONTROLLER_EVENT spControllerHandleLoadEvent(SPGUIController *src, SPGUI_LOAD_EVENT event);
 
-int MainGUIManager();
+//Main gui program - basicly opens and closes SDL, and infinite looping with the controller's handler
+int MainGUIController();
 
 #endif /* GRAPHICS_SPCHESSGUIMANAGER_H_ */
