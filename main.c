@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
                 SPSettingCommand cmd = spSettingsParser(s);
                 spStatus = settingsHandler(game->settings, cmd);
                 if (spStatus == 2)
-                    spStatus = loadGame(game, cmd.pathArg);
+                    spStatus = spGameLoadHandler(game, cmd.pathArg);
             }
             while (spStatus == 1 || spStatus == 3) {
                 if (game->settings->game_mode == SP_MODE_1P && game->settings->curr_turn != game->settings->p1_color) {

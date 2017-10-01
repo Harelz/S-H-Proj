@@ -94,7 +94,7 @@ SPGUI_LOAD_EVENT spLoadWindowEventHandler(SPGUILoadWindow *src, SDL_Event *event
 				src->buttons[i]->active = true;
 			SPGame* loaded = spGameCreateDef();
 			const char* savePaths[] = {SAVE1 , SAVE2 , SAVE3 , SAVE4 , SAVE5};
-			loadGame(loaded, (char *)savePaths[src->slotPicked]);
+            spGameLoadHandler(loaded, (char *) savePaths[src->slotPicked]);
 			spGameDestroy(src->game);
 			src->game = loaded;
 			return SPGUI_LOAD_LOAD;

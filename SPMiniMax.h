@@ -14,6 +14,14 @@
 #define GAME_PACK_WHITE game_cpy, INT_MIN, INT_MAX, BLACK, game->settings->difficulty, bestMove
 #define GAME_PACK_BLACK game_cpy, INT_MIN, INT_MAX, WHITE, game->settings->difficulty, bestMove
 #define HARD_SIZE() if (game->settings->difficulty == SP_DIFF_HARD) game_cpy->history->maxSize = 4;
+
+/**
+ * given a game board, the function calculates the scoring
+ * function for the user color given.
+ *
+ * @return
+ * the value of the scoring function
+ */
 int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_COLOR color);
 
 /**
@@ -35,7 +43,7 @@ int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_C
 int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, int diff, SPMove *bestMove);
 
 /**
- * The function calls the miniMaxRec function with the right values. That means in case of white player the
+ * The function calls the miniMaxRecCalc function with the right values. That means in case of white player the
  * isMaxPlayer gets 0 cause we want to minimize score for the next player, and in the opposite case it's 1 because
  * we want to maximize the score. The scoreAlpha is set to INT_MIN, and scoreBeta is set to INT_MAX. We also pass
  * the depth - difficulty level which gets lower by 1 at each call of the miniMaxRec.

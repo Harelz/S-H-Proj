@@ -12,7 +12,6 @@
 int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_COLOR color) {
     char c;
     int i,j, whiteScore = 0, blackScore = 0, boardScore = 0;
-    //pawn = 1 , knight = 3 , bishop = 3 , rook = 5, queen = 9, king=100
     for (i = 0; i < SP_GAMEBOARD_SIZE; i++){
         for (j = 0; j < SP_GAMEBOARD_SIZE; j++){
             c = board[i][j];
@@ -66,9 +65,9 @@ int spMinimaxRecCalc(SPGame* game, int alphaScore, int betaScore, int isMaxi, in
     SPMovesList* moveLst;
     bestScore = isMaxi ? alphaScore : betaScore;
     bool cutFlag = false;
-    if (diff == 0) /*stop condition*/
-        return spMinimaxScoring(game->gameBoard, BLACK);// game->settings->difficulty % 2 == 0 ? BLACK : WHITE);
-    for (i = 0; i < SP_GAMEBOARD_SIZE && !cutFlag; i++) { /*move over board*/
+    if (diff == 0)
+        return spMinimaxScoring(game->gameBoard, BLACK);
+    for (i = 0; i < SP_GAMEBOARD_SIZE && !cutFlag; i++) {
         for (j = 0; j < SP_GAMEBOARD_SIZE && !cutFlag; j++) {
             if (getColor(game->gameBoard[i][j])==game->settings->curr_turn && game->gameBoard[i][j] != SP_GAME_EMPTY_ENTRY) {
                 moveLst = spGameGetMoves(game, i, j);
@@ -77,7 +76,7 @@ int spMinimaxRecCalc(SPGame* game, int alphaScore, int betaScore, int isMaxi, in
                     if (msg == SP_GAME_INVALID_MOVE)
                         continue;
                     changeColor(game);
-                    if (!(msg == SP_GAME_SUCCESS_MATED)) //swap if else
+                    if (!(msg == SP_GAME_SUCCESS_MATED))
                         nodeScore = spMinimaxRecCalc(game, isMax(bestScore, alphaScore), isMax(betaScore, bestScore),
                                                      isMax(BLACK, WHITE), diff - 1, bestMove);
                     else{
@@ -103,7 +102,7 @@ int spMinimaxSuggestMove(SPGame *game, SPMove *bestMove) {
     SPGame* game_cpy = spGameCopy(game);
     if (!game_cpy)
         return -1;
-    HARD_SIZE(); // if game is hard, need to extend queue to save upto 4 moves.
+    HARD_SIZE();
     int stat;
     if (game->settings->curr_turn == WHITE) {
         stat = spMinimaxRecCalc(GAME_PACK_WHITE);

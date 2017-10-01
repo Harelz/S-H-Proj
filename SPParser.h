@@ -12,7 +12,7 @@
 #define PRINT_INVALID_COMMAND printf("Error: invalid command\n")
 #define IS_VALID(cmd) if(!(cmd).validArg) PRINT_INVALID_COMMAND
 
-//a type used to represent a command
+//a enum used to represent a command
 typedef enum {
 	SP_CHOOSE_GAME_MODE,
 	SP_DIFFICULTY,
@@ -25,7 +25,7 @@ typedef enum {
 	SP_SINVALID_LINE,
 } SP_SETTING_COMMAND;
 
-//a new type that is used to encapsulate a parsed line
+//a struct that is used to encapsulate a parsed settings' command line
 typedef struct {
 	SP_SETTING_COMMAND cmd;
 	bool validArg; //is set to true if the line contains a valid argument
@@ -33,6 +33,7 @@ typedef struct {
 	int arg;
 } SPSettingCommand;
 
+// enum which represents types of command lines
 typedef enum {
 	SP_MOVE,
 	SP_GET_MOVES,
@@ -43,18 +44,7 @@ typedef enum {
 	SP_GINVALID_LINE
 } SP_GAME_COMMAND;
 
-/*
-typedef struct{
-	int row;
-	int column;
-} SPTile;
-
-typedef struct {
-	SPTile from;
-	SPTile to;
-} SPMove;*/
-
-//a new type that is used to encapsulate a parsed line
+//a struct that is used to encapsulate a parsed game's command line
 typedef struct  {
 	SP_GAME_COMMAND cmd;
 	bool validArg; //is set to true if the line contains a valid argument
@@ -74,24 +64,36 @@ typedef struct  {
 bool spParserIsInt(const char* str);
 
 /**
- * Parses a specified line. If the line is a command which has an integer
- * argument then the argument is parsed and is saved in the field arg and the
- * field validArg is set to true. In any other case then 'validArg' is set to
+ * Parses a specified line. If the line is a valid settings' command then
+ * the the information about the command is saved in the SettingsCommand struct
+ * and the field validArg is set to true. In any other case then 'validArg' is set to
  * false and the value 'arg' is undefined
  *
  * @return
- * A parsed line such that:
- *   cmd - contains the command type, if the line is invalid then this field is
- *         set to INVALID_LINE
- *   validArg - is set to true if the command is add_disc and the integer argument
- *              is valid
- *   arg      - the integer argument in case validArg is set to true
+ *   an SPSettingCommand which holds the information of the parsed string given
  */
-
 SPSettingCommand spSettingsParser(const char* str);
 
+
+/**
+ * Parses a specified line. If the line is a valid games' command then
+ * the the information about the command is saved in the GameCommand struct
+ * and the field validArg is set to true. In any other case then 'validArg' is set to
+ * false and the value 'arg' is undefined
+ *
+ * @return
+*   an SPGameCommand which holds the information of the parsed string given
+ */
 SPGameCommand spGameParser(const char* str);
 
+/**
+ * Parses a specified string. If the string represents a tile then the argument
+ * is parsed and returned as a tile.
+ *
+ * @return
+ * NULL if the string doesnt represent a tile.
+ * Otherwise, on success, returns the tile represented by the string.
+ */
 SPTile* spParseTile(char* s);
 
 #endif

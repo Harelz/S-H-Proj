@@ -69,7 +69,7 @@ void spGameGetMovesHandler(SPGame* game , SPTile* tile) {
             SPMove *m = spMovesListGetAt(mlst, i);
             if (game->settings->difficulty == SP_DIFF_EASY || game->settings->difficulty == SP_DIFF_NOOB)
                 printf("<%d,%c>%s%s\n", m->dest->row + 1, m->dest->coloumn + 'A',
-                       spGameTileIsThreatened(game,m) ? "*" : "",
+                       spGameMoveIsThreatened(game, m) ? "*" : "",
                        (game->gameBoard[m->dest->row][m->dest->coloumn] != SP_GAME_EMPTY_ENTRY
                         && getColor(game->gameBoard[m->dest->row][m->dest->coloumn]) != getColor(game->gameBoard[tile->row][tile->coloumn])) ? "^" : ""); // check thretened and eaten
             else
@@ -130,7 +130,7 @@ int spGameMoveHandler(SPGame* game , SPMove* move){
 
 }
 
-char* spGetTilePiece (char piece){
+char* spGetPiecesName(char piece){
     switch (piece){
         case W_PAWN:
         case B_PAWN:
@@ -163,7 +163,7 @@ int spSetNaiveCPUMove(SPGame* game){
     spGameSetNaiveMove(game, a);
     if(isConsole)
         printf("Computer: move %s at <%c,%c> to <%c,%c>\n",
-           spGetTilePiece(game->gameBoard[a->dest->row][a->dest->coloumn]),
+               spGetPiecesName(game->gameBoard[a->dest->row][a->dest->coloumn]),
            a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
     changeColor(game);
     if (spGameIsMate(game) && isConsole){
@@ -185,24 +185,24 @@ int spSetNaiveCPUMove(SPGame* game){
 }
 int spSetCPUMove (SPGame* game,SPMove* move){
     SPNode* lastBoard = spStackPop(game->history);
-    SPMove* a = spCreateMove(0,0,0,0);
+    SPMove* suggested = spCreateMove(0,0,0,0);
     SPGame* minmaxGame = spGameCopy(game);
-    if (a==NULL || minmaxGame == NULL || lastBoard == NULL)
+    if (suggested==NULL || minmaxGame == NULL || lastBoard == NULL)
         return 0;
-    spMinimaxSuggestMove(minmaxGame, a);
+    spMinimaxSuggestMove(minmaxGame, suggested);
     spGameDestroy(minmaxGame);
-    spGameSetMove(game, a);
+    spGameSetMove(game, suggested);
     free(spStackPop(game->history));
     char msg[sizeof("Undo move for player black : <x,y> -> <w,z>\nUndo move for player black : <x,y> -> <w,z>\n")];
     sprintf(msg, "Undo move for player %s : <%c,%c> -> <%c,%c>\nUndo move for player %s : <%c,%c> -> <%c,%c>\n",
             game->settings->p1_color == WHITE ? "white" : "black", move->src->row+'1', move->src->coloumn+'A',move->dest->row+'1', move->dest->coloumn+'A',
-            game->settings->p1_color == BLACK ? "white" : "black", a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
+            game->settings->p1_color == BLACK ? "white" : "black", suggested->src->row+'1', suggested->src->coloumn+'A',suggested->dest->row+'1', suggested->dest->coloumn+'A');
     spQueueFullPush(game->history, lastBoard->data, msg);
     if(isConsole)
         printf("Computer: move %s at <%c,%c> to <%c,%c>\n",
-           spGetTilePiece(game->gameBoard[a->dest->row][a->dest->coloumn]),
-           a->src->row+'1', a->src->coloumn+'A',a->dest->row+'1', a->dest->coloumn+'A');
-    spDestroyMove(a);
+               spGetPiecesName(game->gameBoard[suggested->dest->row][suggested->dest->coloumn]),
+           suggested->src->row+'1', suggested->src->coloumn+'A',suggested->dest->row+'1', suggested->dest->coloumn+'A');
+    spDestroyMove(suggested);
     changeColor(game);
     if (spGameIsMate(game) && isConsole){
         printf("Checkmate! %s player wins the game\n", game->settings->curr_turn == BLACK ? "white" : "black" );
@@ -224,11 +224,12 @@ int spSetCPUMove (SPGame* game,SPMove* move){
 
 SPGame* spGameStimulateMove(SPGame* game , SPMove* move) {
     SPGame* movedGame = spGameCopy(game);
-    spGameSetNaiveMove(movedGame,move);
+    if(movedGame != NULL)
+        spGameSetNaiveMove(movedGame,move);
     return movedGame;
 }
 
-bool spGameTileIsThreatened(SPGame* game , SPMove* move){
+bool spGameMoveIsThreatened(SPGame *game, SPMove *move){
     SPGame* movedGame = spGameStimulateMove(game,move);
     SPMovesList* mlst = spGameGetAllMoves(movedGame);
     for(int i = 0; i<mlst->actualSize; i++){
@@ -293,7 +294,7 @@ int countLines(char* fpath){
     return numLines;
 }
 
-int loadGame(SPGame* game, char* fpath){
+int spGameLoadHandler(SPGame *game, char *fpath){
     FILE *fp;
     int i, j;
     char line[9999];
@@ -355,9 +356,7 @@ SPGame* spGameCreate(SPSettings* settings){
     return game;
 }
 
-SPGame* spSetNewBoard(SPGame* game) {
-    if (game == NULL)
-        return game;
+void spSetNewBoard(SPGame* game) {
     game->gameBoard[0][0] = game->gameBoard[7][0] = game->gameBoard[0][7] = game->gameBoard[7][7] = B_ROOK;
     game->gameBoard[0][1] = game->gameBoard[7][1] = game->gameBoard[0][6] = game->gameBoard[7][6] = B_KNIGHT;
     game->gameBoard[0][2] = game->gameBoard[7][2] = game->gameBoard[0][5] = game->gameBoard[7][5] = B_BISHOP;
@@ -371,7 +370,6 @@ SPGame* spSetNewBoard(SPGame* game) {
             game->gameBoard[j][i] = SP_GAME_EMPTY_ENTRY;
         }
     }
-    return game;
 }
 
 SP_GAME_MESSAGE spGamePrintBoard(SPGame* src){
@@ -393,10 +391,9 @@ SP_GAME_MESSAGE spGamePrintBoard(SPGame* src){
     return SP_GAME_SUCCESS;
 }
 
-SP_GAME_MESSAGE spGameSetNaiveMove(SPGame* src, SPMove* move){
+void spGameSetNaiveMove(SPGame* src, SPMove* move){
     src->gameBoard[move->dest->row][move->dest->coloumn] = src->gameBoard[move->src->row][move->src->coloumn];
     src->gameBoard[move->src->row][move->src->coloumn] = SP_GAME_EMPTY_ENTRY;
-    return SP_GAME_SUCCESS;
 }
 SP_GAME_MESSAGE spGameSetMove(SPGame* src, SPMove* move){
     if (!spGameIsValidMove(src, move->src->row, move->src->coloumn, move->dest->row, move->dest->coloumn))
