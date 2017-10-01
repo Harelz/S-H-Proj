@@ -2,7 +2,7 @@
 #ifndef GRAPHICS_SPCHESSGUIGAMEWIN_H_
 #define GRAPHICS_SPCHESSGUIGAMEWIN_H_
 
-#include "SPGUICommon.h"
+#include "SPGUIBasics.h"
 #define NUM_OF_GAME_BUTTONS 6
 #define NUM_OF_DIFF_PIECES 6
 #define PANEL_OFFSET 200

@@ -1,5 +1,5 @@
 #include "SPGame.h"
-#include "GUI/SPGUIManager.h"
+#include "GUI/SPGUIController.h"
 
 int main(int argc, char* argv[]) {
     if(argc == 2 && strcmp(argv[1], "-g") == 0) { //GUI MODE

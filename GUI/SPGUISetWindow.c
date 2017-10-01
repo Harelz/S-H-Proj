@@ -106,7 +106,7 @@ SPGUI_SET_EVENT spSetWindowEventHandler(SPGUISetWindow *src, SDL_Event *event) {
 	SPGUI_BUTTON_TYPE btn;
 	switch (event->type) {
 	case SDL_MOUSEBUTTONUP:
-		btn = getButtonClicked(src->btns, src->numOfBtns, event, true);
+		btn = getClickedButtonType(src->btns, src->numOfBtns, event, true);
 		if (btn == BUTTON_SET_TWO_PLAYER) {
 			src->game->settings->game_mode = SP_MODE_2P;
 			src->btns[11]->active = true; //activate start button

@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_SPCHESSGUISETWIN_H_
 #define GRAPHICS_SPCHESSGUISETWIN_H_
 
-#include "SPGUICommon.h"
+#include "SPGUIBasics.h"
 #define NUM_OF_SET_BUTTONS 13
 
 /*

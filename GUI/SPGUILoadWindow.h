@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_SPCHESSGUILOADWIN_H_
 #define GRAPHICS_SPCHESSGUILOADWIN_H_
 
-#include "SPGUICommon.h"
+#include "SPGUIBasics.h"
 #define NUM_OF_LOAD_BUTTONS 7
 
 /*

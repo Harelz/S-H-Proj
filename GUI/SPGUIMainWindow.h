@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_SPCHESSGUIMAINWIN_H_
 #define GRAPHICS_SPCHESSGUIMAINWIN_H_
 
-#include "SPGUICommon.h"
+#include "SPGUIBasics.h"
 #define NUM_OF_MAIN_BUTTONS 3
 /*
  * enum represents main window events.

@@ -85,7 +85,7 @@ configure_file(GUI/images/button_noob.bmp GUI/images/button_noob.bmp COPYONLY)
 set(CMAKE_C_STANDARD 99)
 set(gcc Wall Werror Wextra pedantic-errors)
 set(SOURCE_FILES main.c SPGame.c SPMiniMax.c SPParser.c SPSettings.c SPQueue.c SPMoves.h SPMoves.c
-        GUI/SPGUIButton.c GUI/SPGUICommon.c GUI/SPGUIGameWindow.c GUI/SPGUILoadWindow.c
-        GUI/SPGUIMainWindow.c GUI/SPGUIManager.c GUI/SPGUISetWindow.c)
+        GUI/SPGUIBasics.c GUI/SPGUIGameWindow.c GUI/SPGUILoadWindow.c
+        GUI/SPGUIMainWindow.c GUI/SPGUIController.c GUI/SPGUISetWindow.c)
 add_executable(untitled1 ${SOURCE_FILES})
 target_link_libraries(untitled1 ${SDL2_LIBRARIES} SDL2main SDL2 -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid -static-libgcc)

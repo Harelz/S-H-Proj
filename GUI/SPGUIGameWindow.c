@@ -349,7 +349,7 @@ SPGUI_GAME_EVENT spStatusAfterMove(SPGUI_GAME_EVENT msg, SPGUIGameWindow* src, S
 
 SPGUI_GAME_EVENT spPanelHandleEvent(SPGUIGameWindow* src, SDL_Event* event) {
 	SPGUI_BUTTON_TYPE btn = NO_BUTTON;
-	btn = getButtonClicked(src->panel, src->numOfPanel, event, true);
+	btn = getClickedButtonType(src->panel, src->numOfPanel, event, true);
 	if (btn == BUTTON_GAME_RESTART) {
 		SPGame* restarted = spGameCreate(spSettingsCopy(src->game->settings));
 		spGameDestroy(src->game);

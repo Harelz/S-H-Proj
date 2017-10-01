@@ -5,10 +5,32 @@
 #include <SDL_video.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <unistd.h>
+#include "../SPGame.h"
 
-//button eight and width
 #define BUTTON_W 150
 #define BUTTON_H 50
+#define NUM_OF_SAVES 5
+#ifdef _WIN32
+#define ACTIVE_BMP_PATH(g) "../GUI/images/button_"#g".bmp"
+#define INACTIVE_BMP_PATH(g) "../GUI/images/button_"#g"_F.bmp"
+#define SAVE1 "../GUI/saved_games/save1.xml"
+#define SAVE2 "../GUI/saved_games/save2.xml"
+#define SAVE3 "../GUI/saved_games/save3.xml"
+#define SAVE4 "../GUI/saved_games/save4.xml"
+#define SAVE5 "../GUI/saved_games/save5.xml"
+#elif __unix__
+#define ACTIVE_BMP_PATH(g) "./GUI/images/button_"#g".bmp"
+	#define INACTIVE_BMP_PATH(g) "./GUI/images/button_"#g"_F.bmp"
+	#define SAVE1 "./GUI/saved_games/save1.xml"
+	#define SAVE2 "./GUI/saved_games/save2.xml"
+	#define SAVE3 "./GUI/saved_games/save3.xml"
+	#define SAVE4 "./GUI/saved_games/save4.xml"
+	#define SAVE5 "./GUI/saved_games/save5.xml"
+#endif
+
+
+
 
 /*
  * enum describes the diffrent buttons' type.
@@ -87,7 +109,7 @@ Button** createButtons(SDL_Renderer* windowRender, const char* activeImages[],
  * function destroys all memory related to button.
  */
 void destroyButton(Button* src);
-void destroyButtons(Button** btns, int numOfBtns);
+void destroyButtons(Button** buttons, int numOfBtns);
 
 /*
  * function draws a button according to it's window
@@ -99,5 +121,22 @@ void drawButton(Button* src);
  * function creates a copy of a rectangle given.
  */
 SDL_Rect* spCopyRect(SDL_Rect* src);
+
+/*
+ * The function counts how many saved games exist (0-5)
+ */
+int countSavedFiles();
+
+/*
+ * The function promote the saved games: each game is promoted to it's next location.
+ * In addition the last saved game is removed.
+ */
+void promoteSlots();
+/*
+ * The function returns the button's type that was clicked (in the current window).
+ */
+SPGUI_BUTTON_TYPE getClickedButtonType(Button **buttons, int numOfButtons, SDL_Event *event, bool checkActive);
+
+
 
 #endif /* GRAPHICS_SPCHESSGUIBUTTON_H_ */
