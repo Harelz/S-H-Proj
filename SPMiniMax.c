@@ -61,7 +61,7 @@ int spMinimaxScoring(char board[SP_GAMEBOARD_SIZE][SP_GAMEBOARD_SIZE], SP_USER_C
     return boardScore;
 }
 
-int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, int diff, SPMove *bestMove) {
+int spMinimaxRecCalc(SPGame* game, int alphaScore, int betaScore, int isMaxi, int diff, SPMove *bestMove) {
     int bestScore, nodeScore,i,j,k;
     SPMovesList* moveLst;
     bestScore = isMaxi ? alphaScore : betaScore;
@@ -84,10 +84,10 @@ int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, in
                         cutFlag = true; nodeScore = isMax(INT_MAX, INT_MIN); }
                     free(spGameUndoHandler(game));
                     changeColor(game);
-                    if (!isMaxi &&(defMove() || bestScore > nodeScore)) {
+                    if (!isMaxi &&(defMove || bestScore > nodeScore)) {
                         UPDATE_SCORE();
                     }
-                    if (isMaxi && (defMove() || bestScore < nodeScore)) {
+                    if (isMaxi && (defMove || bestScore < nodeScore)) {
                         UPDATE_SCORE();
                     }
                 }
@@ -100,8 +100,19 @@ int spMinimaxRecCalc(SPGame *game, int alphaScore, int betaScore, int isMaxi, in
 }
 
 int spMinimaxSuggestMove(SPGame *game, SPMove *bestMove) {
-    if (game->settings->curr_turn == WHITE)
-        return spMinimaxRecCalc(GAME_PACK_WHITE);
-    else
-        return spMinimaxRecCalc(GAME_PACK_BLACK);
+    SPGame* game_cpy = spGameCopy(game);
+    if (!game_cpy)
+        return -1;
+    HARD_SIZE(); // if game is hard, need to extend queue to save upto 4 moves.
+    int stat;
+    if (game->settings->curr_turn == WHITE) {
+        stat = spMinimaxRecCalc(GAME_PACK_WHITE);
+        spGameDestroy(game_cpy);
+        return stat;
+    }
+    else{
+        stat = spMinimaxRecCalc(GAME_PACK_BLACK);
+        spGameDestroy(game_cpy);
+        return stat;
+    }
 }
